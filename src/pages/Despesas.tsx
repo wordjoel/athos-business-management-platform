@@ -384,10 +384,16 @@ const DespesasPage: React.FC = () => {
                 <textarea value={form.observacoes} onChange={e => setForm({ ...form, observacoes: e.target.value })} rows={2} className={`w-full px-4 py-3 rounded-xl border ${darkMode ? 'bg-gray-800 border-white/10 text-white' : 'bg-white border-gray-200'} focus:border-athos-500 outline-none resize-none`} placeholder="Observações adicionais..." />
               </div>
             </div>
-            <div className="p-6 border-t border-white/10 flex justify-end gap-3">
-              <button onClick={() => setShowForm(false)} className={`px-4 py-2 rounded-lg ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>Cancelar</button>
-              <button onClick={saveDespesa} className="px-6 py-2.5 bg-athos-500 hover:bg-athos-600 text-white rounded-lg font-medium flex items-center gap-2">
-                <Save size={16} /> {editingDespesa ? 'Atualizar' : 'Cadastrar'}
+            <div className="p-6 border-t border-white/10 flex justify-between items-center bg-inherit">
+              <button onClick={() => setShowForm(false)} className={`px-6 py-3 rounded-xl font-medium transition-colors ${darkMode ? 'bg-red-500/10 text-red-400 hover:bg-red-500/20' : 'bg-red-50 text-red-600 hover:bg-red-100'}`}>
+                ✕ Cancelar
+              </button>
+              <button 
+                onClick={saveDespesa} 
+                className="px-8 py-3 bg-gradient-to-r from-athos-500 to-athos-600 hover:from-athos-600 hover:to-athos-700 text-white rounded-xl font-bold text-base flex items-center gap-3 shadow-lg shadow-athos-500/30 transition-all transform hover:scale-105"
+              >
+                <Save size={20} /> 
+                {editingDespesa ? '💾 ATUALIZAR DESPESA' : '💾 CADASTRAR DESPESA'}
               </button>
             </div>
           </div>
