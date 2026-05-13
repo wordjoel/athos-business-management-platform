@@ -20,7 +20,7 @@ const navItems = [
 ];
 
 const Sidebar: React.FC = () => {
-  const { currentPage, setCurrentPage, sidebarCollapsed, toggleSidebar, darkMode, logout, unreadAlertCount } = useApp();
+  const { currentPage, setCurrentPage, sidebarCollapsed, toggleSidebar, darkMode, logout, unreadAlertCount, nomeEmpresa } = useApp();
 
   const groupedItems = navItems.reduce((acc, item) => {
     if (!acc[item.section]) acc[item.section] = [];
@@ -44,7 +44,7 @@ const Sidebar: React.FC = () => {
         </div>
         {!sidebarCollapsed && (
           <div className="animate-fade-in">
-            <h1 className="text-xl font-bold text-gradient tracking-tight">ATOS</h1>
+            <h1 className="text-xl font-bold text-gradient tracking-tight">{nomeEmpresa}</h1>
             <p className={`text-[10px] font-medium tracking-[0.2em] uppercase ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
               Centro de Organização
             </p>

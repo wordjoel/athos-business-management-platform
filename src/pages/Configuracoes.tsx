@@ -3,7 +3,7 @@ import { useApp } from '../context/AppContext';
 import { Settings, Building2, Bell, Zap, Smartphone, Cloud, Server, Code, Layers, Wifi } from 'lucide-react';
 
 const Configuracoes: React.FC = () => {
-  const { darkMode } = useApp();
+  const { darkMode, nomeEmpresa, setNomeEmpresa } = useApp();
   const [configTab, setConfigTab] = useState<'geral' | 'notificacoes' | 'integracoes' | 'api'>('geral');
 
   return (
@@ -38,10 +38,23 @@ const Configuracoes: React.FC = () => {
           {configTab === 'geral' && (
             <div className="space-y-6">
               <div>
+                <h3 className={`text-sm font-semibold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>Nome da Empresa</h3>
+                <div className="flex items-center gap-4">
+                  <input 
+                    type="text" 
+                    value={nomeEmpresa} 
+                    onChange={(e) => setNomeEmpresa(e.target.value)} 
+                    className={`flex-1 px-4 py-3 rounded-xl text-lg font-bold outline-none border transition-colors ${darkMode ? 'bg-white/5 border-white/10 text-white focus:border-athos-500/50' : 'bg-gray-50 border-gray-200 text-gray-900 focus:border-athos-400'}`}
+                    placeholder="Digite o nome da empresa"
+                  />
+                </div>
+                <p className={`text-xs mt-2 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>Este nome aparecerá no menu lateral, login e em todo o sistema.</p>
+              </div>
+              <div>
                 <h3 className={`text-sm font-semibold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>Dados da Empresa</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {[
-                    { label: 'Razão Social', value: 'ATOS Centro de Organização LTDA' },
+                    { label: 'Razão Social', value: `${nomeEmpresa} Centro de Organização LTDA` },
                     { label: 'CNPJ', value: '12.345.678/0001-90' },
                     { label: 'E-mail', value: 'contato@athos.com' },
                     { label: 'Telefone', value: '(11) 99999-0000' },

@@ -10,6 +10,7 @@ interface AppState {
   alertas: Alerta[];
   aiPanelOpen: boolean;
   selectedSetor: string;
+  nomeEmpresa: string;
 }
 
 interface AppContextType extends AppState {
@@ -21,20 +22,25 @@ interface AppContextType extends AppState {
   toggleAIPanel: () => void;
   markAlertRead: (id: string) => void;
   setSelectedSetor: (setor: string) => void;
+  setNomeEmpresa: (nome: string) => void;
   unreadAlertCount: number;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [state, setState] = useState<AppState>({
-    currentPage: 'dashboard',
-    darkMode: true,
-    isLoggedIn: false,
-    sidebarCollapsed: false,
-    alertas: mockAlertas,
-    aiPanelOpen: false,
-    selectedSetor: 'todos',
+  const [state, setState] = useState<AppState>(() => {
+    const savedNome = localStorage.getItem('athos_nome_empresa');
+    return {
+      currentPage: 'dashboard',
+      darkMode: true,
+      isLoggedIn: false,
+      sidebarCollapsed: false,
+      alertas: mockAlertas,
+      aiPanelOpen: false,
+      selectedSetor: 'todos',
+      nomeEmpresa: savedNome || 'ATOS',
+    };
   });
 
   const setCurrentPage = useCallback((page: string) => {
@@ -76,6 +82,11 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setState(prev => ({ ...prev, selectedSetor: setor }));
   }, []);
 
+  const setNomeEmpresa = useCallback((nome: string) => {
+    localStorage.setItem('athos_nome_empresa', nome);
+    setState(prev => ({ ...prev, nomeEmpresa: nome }));
+  }, []);
+
   const unreadAlertCount = state.alertas.filter(a => !a.lido).length;
 
   return (
@@ -89,6 +100,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       toggleAIPanel,
       markAlertRead,
       setSelectedSetor,
+      setNomeEmpresa,
       unreadAlertCount,
     }}>
       {children}

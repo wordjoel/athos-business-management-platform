@@ -3,7 +3,7 @@ import { useApp } from '../context/AppContext';
 import { Zap, Lock, Mail, Eye, EyeOff, Shield, Brain, Building2, ChevronRight } from 'lucide-react';
 
 const LoginPage: React.FC = () => {
-  const { login } = useApp();
+  const { login, nomeEmpresa } = useApp();
   const [email, setEmail] = useState('carlos@atos.com');
   const [password, setPassword] = useState('atos2025');
   const [showPassword, setShowPassword] = useState(false);
@@ -37,9 +37,9 @@ const LoginPage: React.FC = () => {
         {/* Logo */}
         <div className="text-center mb-8 animate-fade-in">
           <div className="inline-flex items-center justify-center w-24 h-24 mb-4 overflow-hidden rounded-2xl">
-            <img src="/logo.png" alt="ATOS Logo" className="w-full h-full object-contain" />
+            <img src="/logo.png" alt={`${nomeEmpresa} Logo`} className="w-full h-full object-contain" />
           </div>
-          <h1 className="text-3xl font-bold text-white tracking-tight">ATOS</h1>
+          <h1 className="text-3xl font-bold text-white tracking-tight">{nomeEmpresa}</h1>
           <p className="text-sm text-gray-500 mt-1 tracking-[0.2em] uppercase">Centro de Organização</p>
         </div>
 
