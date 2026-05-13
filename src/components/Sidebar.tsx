@@ -2,13 +2,15 @@ import React from 'react';
 import { useApp } from '../context/AppContext';
 import {
   LayoutDashboard, DollarSign, Building2, BrainCircuit, FileText, Database,
-  Shield, ChevronLeft, ChevronRight, Users, Settings, LogOut, Zap
+  Shield, ChevronLeft, ChevronRight, Users, Settings, LogOut, Zap, FileSignature, Receipt
 } from 'lucide-react';
 
 const navItems = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, section: 'Principal' },
   { id: 'financeiro', label: 'Financeiro', icon: DollarSign, section: 'Gestão' },
   { id: 'setores', label: 'Setores', icon: Building2, section: 'Gestão' },
+  { id: 'contratos', label: 'Contratos IA', icon: FileSignature, section: 'Gestão' },
+  { id: 'despesas', label: 'Despesas', icon: Receipt, section: 'Gestão' },
   { id: 'ia', label: 'IA Assistente', icon: BrainCircuit, section: 'Inteligência' },
   { id: 'relatorios', label: 'Relatórios', icon: FileText, section: 'Inteligência' },
   { id: 'banco-dados', label: 'Banco de Dados', icon: Database, section: 'Sistema' },

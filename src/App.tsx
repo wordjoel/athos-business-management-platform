@@ -13,6 +13,8 @@ import BancoDados from './pages/BancoDados';
 import UsuariosPage from './pages/Usuarios';
 import SegurancaPage from './pages/Seguranca';
 import Configuracoes from './pages/Configuracoes';
+import ContratosPage from './pages/Contratos';
+import DespesasPage from './pages/Despesas';
 
 const AppContent: React.FC = () => {
   const { isLoggedIn, currentPage, darkMode, aiPanelOpen, toggleAIPanel } = useApp();
@@ -31,6 +33,8 @@ const AppContent: React.FC = () => {
     usuarios: UsuariosPage,
     seguranca: SegurancaPage,
     configuracoes: Configuracoes,
+    contratos: ContratosPage,
+    despesas: DespesasPage,
   };
 
   const Page = pages[currentPage] || Dashboard;
