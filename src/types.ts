@@ -135,3 +135,209 @@ export interface InsightIA {
   impacto: 'alto' | 'medio' | 'baixo';
   data: string;
 }
+
+export interface ModuloATHOS {
+  id: string;
+  nome: string;
+  icon: string;
+  descricao: string;
+  ativo: boolean;
+  badge?: string;
+}
+
+export interface Lead {
+  id: string;
+  nome: string;
+  email: string;
+  telefone: string;
+  empresa: string;
+  origem: 'whatsapp' | 'site' | 'indicacao' | 'campanha' | 'cold';
+  etapa: 'novo' | 'contatado' | 'qualificado' | 'proposta' | 'negociacao' | 'fechado' | 'perdido';
+  valor: number;
+  probabilidade: number;
+  ultimoContato: string;
+  proximoContato: string;
+  responsavel: string;
+  tags: string[];
+  score: number;
+}
+
+export interface Oportunidade {
+  id: string;
+  titulo: string;
+  leadId: string;
+  leadNome: string;
+  valor: number;
+  etapa: 'proposta' | 'negociacao' | 'fechamento' | 'ganho' | 'perdido';
+  probFechamento: number;
+  dataFechamentoPrevista: string;
+  responsavel: string;
+  notas: string[];
+}
+
+export interface ContaPagar {
+  id: string;
+  descricao: string;
+  valor: number;
+  fornecedor: string;
+  categoria: string;
+  centroCusto: string;
+  vencimento: string;
+  status: 'pendente' | 'pago' | 'atrasado' | 'cancelado';
+  dataPagamento?: string;
+  formaPagamento?: string;
+  documento?: string;
+  recorrente: boolean;
+  parcela?: number;
+  totalParcelas?: number;
+}
+
+export interface ContaReceber {
+  id: string;
+  descricao: string;
+  valor: number;
+  cliente: string;
+  categoria: string;
+  centroCusto: string;
+  vencimento: string;
+  status: 'pendente' | 'recebido' | 'atrasado' | 'cancelado';
+  dataRecebimento?: string;
+  formaPagamento?: string;
+  documento?: string;
+  recorrente: boolean;
+  parcela?: number;
+  totalParcelas?: number;
+}
+
+export interface CentroCusto {
+  id: string;
+  nome: string;
+  tipo: 'departamento' | 'projeto' | 'filial';
+  orcamento: number;
+  utilizado: number;
+  responsavel: string;
+  cor: string;
+}
+
+export interface ContratoDigital {
+  id: string;
+  titulo: string;
+  tipo: 'prestacao_servico' | 'licenca' | 'comodato' | 'parceria' | 'fornecimento';
+  partes: { nome: string; documento: string; email: string }[];
+  valor: number;
+ Periodicidade: 'mensal' | 'trimestral' | 'semestral' | 'anual' | 'unica';
+  inicio: string;
+  fim: string;
+  status: 'rascunho' | 'enviado' | 'assinado' | 'ativo' | 'encerrado' | 'cancelado';
+  arquivo?: string;
+  assinaturas: { parte: string; data?: string; ip?: string; hash?: string }[];
+  versao: number;
+  historico: { versao: number; data: string; alteracao: string }[];
+  automacoes: { tipo: 'renovacao' | 'alerta_vencimento' | 'faturamento'; config: Record<string, unknown> }[];
+}
+
+export interface Chamado {
+  id: string;
+  titulo: string;
+  descricao: string;
+  categoria: 'incidente' | 'solicitacao' | 'duvida' | 'sugestao';
+  prioridade: 'critica' | 'alta' | 'media' | 'baixa';
+  status: 'aberto' | 'em_andamento' | 'pendente' | 'resolvido' | 'fechado';
+  solicitante: string;
+  responsavel?: string;
+  SLA: { inicio: string; limite: string; resposta?: string; solucao?: string };
+  historico: { data: string; acao: string; usuario: string; observacao?: string }[];
+  avaliacao?: number;
+  solucao?: string;
+  tempoResposta?: number;
+  tempoResolucao?: number;
+}
+
+export interface Tarefa {
+  id: string;
+  titulo: string;
+  descricao: string;
+  projetoId: string;
+  responsavel: string;
+  status: 'pendente' | 'em_andamento' | 'concluida' | 'bloqueada';
+  prioridade: 'critica' | 'alta' | 'media' | 'baixa';
+  estimativa: number;
+  complexidade: 'simples' | 'media' | 'complexa';
+  tags: string[];
+  prazo: string;
+  dependencias?: string[];
+}
+
+export interface Projeto {
+  id: string;
+  nome: string;
+  descricao: string;
+  status: 'planejamento' | 'em_andamento' | 'pausado' | 'concluido' | 'cancelado';
+  metodologia: 'kanban' | 'scrum' | 'waterfall' | 'hibrida';
+  responsavel: string;
+  dataInicio: string;
+  dataFimPrevista: string;
+  orcamento: number;
+  gastos: number;
+  progresso: number;
+  sprints?: { nome: string; inicio: string; fim: string; status: 'ativa' | 'concluida' }[];
+  sprintsAtivas?: number;
+  membros: { usuario: string; funcao: string }[];
+  tarefasConcluidas: number;
+  tarefasTotal: number;
+}
+
+export interface Funcionario {
+  id: string;
+  nome: string;
+  cpf: string;
+  email: string;
+  telefone: string;
+  cargo: string;
+  departamento: string;
+  dataAdmissao: string;
+  status: 'ativo' | 'afastado' | 'desligado';
+  salario: number;
+  beneficios: string[];
+  documentos: { tipo: string; arquivo: string; validade?: string }[];
+  registrosPonto: { data: string; entrada?: string; saida?: string; localizacao?: string }[];
+}
+
+export interface Ativo {
+  id: string;
+  nome: string;
+  tipo: 'equipamento' | 'veiculo' | 'imovel' | 'software' | 'mobiliario';
+  descricao: string;
+  localizacao: string;
+  responsavel: string;
+  dataAquisicao: string;
+  valor: number;
+  vidaUtil: number;
+  depreciacao: number;
+  status: 'disponivel' | 'em_uso' | 'manutencao' | 'baixa';
+ Serial?: string;
+  patrimonio?: string;
+  historico: { data: string; acao: string; usuario: string }[];
+}
+
+export interface Camera {
+  id: string;
+  nome: string;
+  local: string;
+  ip: string;
+  status: 'online' | 'offline' | 'manutencao';
+  ultimoAcesso?: string;
+  alertas: { tipo: string; data: string; descricao: string }[];
+}
+
+export interface AlertaSistema {
+  id: string;
+  tipo: 'acesso' | 'movimento' | 'intrusao' | 'falha' | 'manutencao';
+  gravidade: 'critica' | 'alta' | 'media' | 'baixa';
+  titulo: string;
+  descricao: string;
+  origem: string;
+  data: string;
+ Ack?: { usuario: string; data: string };
+  resolvido: boolean;
+}

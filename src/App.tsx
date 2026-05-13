@@ -16,6 +16,36 @@ import Configuracoes from './pages/Configuracoes';
 import ContratosPage from './pages/Contratos';
 import DespesasPage from './pages/Despesas';
 
+import ATHOSFlow from './pages/modules/ATHOSFlow';
+import Leads from './pages/modules/Leads';
+import FunilComercial from './pages/modules/FunilComercial';
+import WhatsApp from './pages/modules/WhatsApp';
+import ATHOSFinance from './pages/modules/ATHOSFinance';
+import ContasPagar from './pages/modules/ContasPagar';
+import ContasReceber from './pages/modules/ContasReceber';
+import FluxoCaixa from './pages/modules/FluxoCaixa';
+import DRE from './pages/modules/DRE';
+import PrevisãoIA from './pages/modules/PrevisaoIA';
+import ATHOSSign from './pages/modules/ATHOSSign';
+import Modelos from './pages/modules/Modelos';
+import Assinaturas from './pages/modules/Assinaturas';
+import Chatbot from './pages/modules/Chatbot';
+import RelatoriosIA from './pages/modules/RelatoriosIA';
+import ATHOSSupport from './pages/modules/ATHOSSupport';
+import Chamados from './pages/modules/Chamados';
+import Inventario from './pages/modules/Inventario';
+import ATHOSProjects from './pages/modules/ATHOSProjects';
+import Tarefas from './pages/modules/Tarefas';
+import KanbanBoard from './pages/modules/KanbanBoard';
+import ATHOSPeople from './pages/modules/ATHOSPeople';
+import Funcionarios from './pages/modules/Funcionarios';
+import PontoDigital from './pages/modules/PontoDigital';
+import Onboarding from './pages/modules/Onboarding';
+import ATHOSShield from './pages/modules/ATHOSShield';
+import Cameras from './pages/modules/Cameras';
+import Alertas from './pages/modules/Alertas';
+import Ativos from './pages/modules/Ativos';
+
 const AppContent: React.FC = () => {
   const { isLoggedIn, currentPage, darkMode, aiPanelOpen, toggleAIPanel } = useApp();
 
@@ -25,15 +55,53 @@ const AppContent: React.FC = () => {
 
   const pages: Record<string, React.FC> = {
     dashboard: Dashboard,
+    
+    flow: ATHOSFlow,
+    leads: Leads,
+    funil: FunilComercial,
+    whatsapp: WhatsApp,
+    
+    finance: ATHOSFinance,
+    'contas-pagar': ContasPagar,
+    'contas-receber': ContasReceber,
+    'fluxo-caixa': FluxoCaixa,
+    dre: DRE,
+    previsao: PrevisãoIA,
+    
+    sign: ATHOSSign,
+    contratos: ContratosPage,
+    modelos: Modelos,
+    assinaturas: Assinaturas,
+    
+    ai: IAPage,
+    chatbot: Chatbot,
+    'relatorios-ia': RelatoriosIA,
+    
+    support: ATHOSSupport,
+    chamados: Chamados,
+    inventario: Inventario,
+    
+    projects: ATHOSProjects,
+    tarefas: Tarefas,
+    kanban: KanbanBoard,
+    
+    people: ATHOSPeople,
+    funcionarios: Funcionarios,
+    ponto: PontoDigital,
+    onboarding: Onboarding,
+    
+    shield: ATHOSShield,
+    cameras: Cameras,
+    alertas: Alertas,
+    ativos: Ativos,
+    
     financeiro: Financeiro,
     setores: SetoresPage,
-    ia: IAPage,
     relatorios: Relatorios,
     'banco-dados': BancoDados,
     usuarios: UsuariosPage,
     seguranca: SegurancaPage,
     configuracoes: Configuracoes,
-    contratos: ContratosPage,
     despesas: DespesasPage,
   };
 
