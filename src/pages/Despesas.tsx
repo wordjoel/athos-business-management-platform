@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
-import { Plus, Upload, X, Image, FileText, DollarSign, Tag, Trash2, Edit2, Eye, Save, Camera, MessageCircle, CheckCircle } from 'lucide-react';
+import { Plus, Upload, X, Image, FileText, DollarSign, Tag, Trash2, Edit2, Eye, Save, Camera, MessageCircle, CheckCircle, TrendingUp } from 'lucide-react';
 
 interface Comprovante {
   id: string;
@@ -38,37 +38,92 @@ const DespesasPage: React.FC = () => {
   const { darkMode } = useApp();
   const [despesas, setDespesas] = useState<Despesa[]>(() => {
     const saved = localStorage.getItem('athos_despesas');
-    return saved ? JSON.parse(saved) : [
-      { id: '1', descricao: 'Material de escritório', valor: 250.00, categoria: 'material', data: '2026-05-10', fornecedor: 'Papelaria Central', observacoes: 'Canetas, blocos', comprovantes: [], status: 'pendente' },
-      { id: '2', descricao: 'Almoço reunião', valor: 180.00, categoria: 'alimentacao', data: '2026-05-08', fornecedor: 'Restaurante Sabor', observacoes: 'Reunião marketing', comprovantes: [], status: 'aprovada' },
-    ];
+    return saved ? JSON.parse(saved) : [];
   });
 
   const [showForm, setShowForm] = useState(false);
-  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editingDespesa, setEditingDespesa] = useState<Despesa | null>(null);
   const [selectedDespesa, setSelectedDespesa] = useState<Despesa | null>(null);
   const [showSextaFeira, setShowSextaFeira] = useState(false);
   const [filter, setFilter] = useState<'todas' | 'pendente' | 'aprovada' | 'rejeitada'>('todas');
+  const [msgSucesso, setMsgSucesso] = useState('');
 
-  const [form, setForm] = useState({ descricao: '', valor: '', categoria: 'outros', data: '', fornecedor: '', observacoes: '' });
+  const [form, setForm] = useState({
+    descricao: '',
+    valor: '',
+    categoria: 'outros',
+    data: new Date().toISOString().split('T')[0],
+    fornecedor: '',
+    observacoes: '',
+  });
 
   useEffect(() => { localStorage.setItem('athos_despesas', JSON.stringify(despesas)); }, [despesas]);
 
-  const resetForm = () => { setForm({ descricao: '', valor: '', categoria: 'outros', data: '', fornecedor: '', observacoes: '' }); setEditingId(null); setShowForm(false); };
+  const showMensagem = (msg: string) => {
+    setMsgSucesso(msg);
+    setTimeout(() => setMsgSucesso(''), 3000);
+  };
+
+  const openForm = (despesa?: Despesa) => {
+    if (despesa) {
+      setEditingDespesa(despesa);
+      setForm({
+        descricao: despesa.descricao,
+        valor: despesa.valor.toString(),
+        categoria: despesa.categoria,
+        data: despesa.data,
+        fornecedor: despesa.fornecedor,
+        observacoes: despesa.observacoes,
+      });
+    } else {
+      setEditingDespesa(null);
+      setForm({ descricao: '', valor: '', categoria: 'outros', data: new Date().toISOString().split('T')[0], fornecedor: '', observacoes: '' });
+    }
+    setShowForm(true);
+  };
 
   const saveDespesa = () => {
-    if (!form.descricao || !form.valor) return;
-    if (editingId) {
-      setDespesas(prev => prev.map(d => d.id === editingId ? { ...d, ...form, valor: parseFloat(form.valor) } : d));
-    } else {
-      const nova: Despesa = { id: Date.now().toString(), ...form, valor: parseFloat(form.valor), comprovantes: [], status: 'pendente' };
-      setDespesas(prev => [nova, ...prev]);
+    if (!form.descricao || !form.valor) {
+      alert('Preencha a descrição e o valor!');
+      return;
     }
-    resetForm();
+    const valorNum = parseFloat(form.valor.replace(',', '.'));
+    
+    if (editingDespesa) {
+      setDespesas(prev => prev.map(d => d.id === editingDespesa.id ? { 
+        ...d, 
+        descricao: form.descricao,
+        valor: valorNum,
+        categoria: form.categoria,
+        data: form.data,
+        fornecedor: form.fornecedor,
+        observacoes: form.observacoes,
+      } : d));
+      showMensagem('Despesa atualizada com sucesso!');
+    } else {
+      const nova: Despesa = {
+        id: Date.now().toString(),
+        descricao: form.descricao,
+        valor: valorNum,
+        categoria: form.categoria,
+        data: form.data,
+        fornecedor: form.fornecedor,
+        observacoes: form.observacoes,
+        comprovantes: [],
+        status: 'pendente',
+      };
+      setDespesas(prev => [nova, ...prev]);
+      showMensagem('Despesa criada com sucesso!');
+    }
+    setShowForm(false);
+    setEditingDespesa(null);
   };
 
   const deleteDespesa = (id: string) => {
-    if (confirm('Excluir esta despesa?')) setDespesas(prev => prev.filter(d => d.id !== id));
+    if (confirm('Excluir esta despesa?')) {
+      setDespesas(prev => prev.filter(d => d.id !== id));
+      showMensagem('Despesa excluída!');
+    }
   };
 
   const handleUploadComprovante = (despesaId: string, arquivos: FileList) => {
@@ -97,20 +152,39 @@ const DespesasPage: React.FC = () => {
 
   const filteredDespesas = despesas.filter(d => filter === 'todas' || d.status === filter);
   const totalGastos = filteredDespesas.reduce((acc, d) => acc + d.valor, 0);
+  
+  const totalPorCategoria = categorias.reduce((acc, cat) => {
+    const total = filteredDespesas.filter(d => d.categoria === cat.id).reduce((sum, d) => sum + d.valor, 0);
+    return { ...acc, [cat.id]: total };
+  }, {} as Record<string, number>);
 
   const getStatusColor = (status: string) => ({ pendente: 'bg-amber-500/20 text-amber-400', aprovada: 'bg-emerald-500/20 text-emerald-400', rejeitada: 'bg-red-500/20 text-red-400' }[status] || 'bg-gray-500/20 text-gray-400');
   const getCategoriaInfo = (catId: string) => categorias.find(c => c.id === catId) || categorias[8];
 
   return (
     <div className="p-6 space-y-6">
+      {msgSucesso && (
+        <div className="fixed top-6 right-6 z-50 bg-emerald-500 text-white px-6 py-3 rounded-xl shadow-lg animate-bounce">
+          ✅ {msgSucesso}
+        </div>
+      )}
+
       <div className="flex items-center justify-between">
         <div>
-          <h1 className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}><span className="text-athos-400">Despesas</span> com Comprovantes</h1>
-          <p className={`text-sm mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Gerencie despesas e faça upload de fotos e documentos</p>
+          <h1 className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+            <span className="text-athos-400">Controle de Despesas</span>
+          </h1>
+          <p className={`text-sm mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+            Cadastre, edite e controle todas as despesas com comprovantes
+          </p>
         </div>
         <div className="flex gap-3">
-          <button onClick={() => setShowSextaFeira(true)} className="flex items-center gap-2 px-4 py-2.5 bg-green-500 hover:bg-green-600 text-white rounded-xl font-medium"><MessageCircle size={18} /> Sexta-feira</button>
-          <button onClick={() => setShowForm(true)} className="flex items-center gap-2 px-4 py-2.5 bg-athos-500 hover:bg-athos-600 text-white rounded-xl font-medium"><Plus size={18} /> Nova Despesa</button>
+          <button onClick={() => setShowSextaFeira(true)} className="flex items-center gap-2 px-4 py-2.5 bg-green-500 hover:bg-green-600 text-white rounded-xl font-medium">
+            <MessageCircle size={18} /> Sexta-feira
+          </button>
+          <button onClick={() => openForm()} className="flex items-center gap-2 px-4 py-2.5 bg-athos-500 hover:bg-athos-600 text-white rounded-xl font-medium">
+            <Plus size={18} /> Nova Despesa
+          </button>
         </div>
       </div>
 
@@ -121,36 +195,83 @@ const DespesasPage: React.FC = () => {
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className={`p-4 rounded-xl ${darkMode ? 'bg-gray-800' : 'bg-white'} border ${darkMode ? 'border-white/10' : 'border-gray-200'}`}>
-          <div className="flex items-center gap-3"><div className="w-10 h-10 rounded-lg bg-amber-500/20 flex items-center justify-center"><DollarSign className="text-amber-400" size={20} /></div><div><p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Total Gasto</p><p className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>R$ {totalGastos.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p></div></div>
+        <div className={`p-4 rounded-xl ${darkMode ? 'bg-gradient-to-br from-amber-500/20 to-amber-600/10' : 'bg-gradient-to-br from-amber-50 to-amber-100'} border ${darkMode ? 'border-amber-500/30' : 'border-amber-200'}`}>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-amber-500/20 flex items-center justify-center"><DollarSign className="text-amber-400" size={20} /></div>
+            <div>
+              <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Total Gasto</p>
+              <p className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>R$ {totalGastos.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
+            </div>
+          </div>
         </div>
         <div className={`p-4 rounded-xl ${darkMode ? 'bg-gray-800' : 'bg-white'} border ${darkMode ? 'border-white/10' : 'border-gray-200'}`}>
-          <div className="flex items-center gap-3"><div className="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center"><Tag className="text-blue-400" size={20} /></div><div><p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Despesas</p><p className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{despesas.length}</p></div></div>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center"><Tag className="text-blue-400" size={20} /></div>
+            <div>
+              <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Total Despesas</p>
+              <p className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{despesas.length}</p>
+            </div>
+          </div>
         </div>
         <div className={`p-4 rounded-xl ${darkMode ? 'bg-gray-800' : 'bg-white'} border ${darkMode ? 'border-white/10' : 'border-gray-200'}`}>
-          <div className="flex items-center gap-3"><div className="w-10 h-10 rounded-lg bg-emerald-500/20 flex items-center justify-center"><CheckCircle className="text-emerald-400" size={20} /></div><div><p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Aprovadas</p><p className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{despesas.filter(d => d.status === 'aprovada').length}</p></div></div>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-emerald-500/20 flex items-center justify-center"><CheckCircle className="text-emerald-400" size={20} /></div>
+            <div>
+              <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Aprovadas</p>
+              <p className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{despesas.filter(d => d.status === 'aprovada').length}</p>
+            </div>
+          </div>
         </div>
         <div className={`p-4 rounded-xl ${darkMode ? 'bg-gray-800' : 'bg-white'} border ${darkMode ? 'border-white/10' : 'border-gray-200'}`}>
-          <div className="flex items-center gap-3"><div className="w-10 h-10 rounded-lg bg-purple-500/20 flex items-center justify-center"><Image className="text-purple-400" size={20} /></div><div><p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Comprovantes</p><p className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{despesas.reduce((acc, d) => acc + d.comprovantes.length, 0)}</p></div></div>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-purple-500/20 flex items-center justify-center"><Image className="text-purple-400" size={20} /></div>
+            <div>
+              <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Comprovantes</p>
+              <p className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{despesas.reduce((acc, d) => acc + d.comprovantes.length, 0)}</p>
+            </div>
+          </div>
         </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {categorias.map(cat => (
+          <div key={cat.id} className={`p-4 rounded-xl ${darkMode ? 'bg-gray-800' : 'bg-white'} border ${darkMode ? 'border-white/10' : 'border-gray-200'}`}>
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-xl">{cat.emoji}</span>
+              <span className={`text-sm font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{cat.label}</span>
+            </div>
+            <p className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>R$ {totalPorCategoria[cat.id]?.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) || '0,00'}</p>
+          </div>
+        ))}
       </div>
 
       <div className="flex gap-2">
         {(['todas', 'pendente', 'aprovada', 'rejeitada'] as const).map(f => (
-          <button key={f} onClick={() => setFilter(f)} className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${filter === f ? 'bg-athos-500 text-white' : darkMode ? 'bg-gray-800 text-gray-400' : 'bg-white text-gray-600 border border-gray-200'}`}>{f.charAt(0).toUpperCase() + f.slice(1)}</button>
+          <button key={f} onClick={() => setFilter(f)} className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${filter === f ? 'bg-athos-500 text-white' : darkMode ? 'bg-gray-800 text-gray-400' : 'bg-white text-gray-600 border border-gray-200'}`}>
+            {f.charAt(0).toUpperCase() + f.slice(1)} ({f === 'todas' ? despesas.length : despesas.filter(d => d.status === f).length})
+          </button>
         ))}
       </div>
 
       <div className={`rounded-2xl ${darkMode ? 'bg-gray-800' : 'bg-white'} border ${darkMode ? 'border-white/10' : 'border-gray-200'}`}>
-        <div className="overflow-x-auto">
+        {filteredDespesas.length === 0 ? (
+          <div className="p-12 text-center">
+            <div className={`w-16 h-16 mx-auto mb-4 rounded-2xl ${darkMode ? 'bg-gray-700' : 'bg-gray-100'} flex items-center justify-center`}>
+              <DollarSign className={darkMode ? 'text-gray-500' : 'text-gray-400'} size={32} />
+            </div>
+            <p className={`${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Nenhuma despesa encontrada</p>
+            <button onClick={() => openForm()} className="mt-4 px-4 py-2 bg-athos-500 text-white rounded-lg">+ Adicionar primeira despesa</button>
+          </div>
+        ) : (
           <table className="w-full">
             <thead>
               <tr className={`border-b ${darkMode ? 'border-white/10' : 'border-gray-200'}`}>
                 <th className={`text-left p-4 text-sm font-medium ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Descrição</th>
                 <th className={`text-left p-4 text-sm font-medium ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Categoria</th>
                 <th className={`text-left p-4 text-sm font-medium ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Fornecedor</th>
+                <th className={`text-left p-4 text-sm font-medium ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Data</th>
                 <th className={`text-left p-4 text-sm font-medium ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Valor</th>
-                <th className={`text-left p-4 text-sm font-medium ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Comprov.</th>
+                <th className={`text-left p-4 text-sm font-medium ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Comp.</th>
                 <th className={`text-left p-4 text-sm font-medium ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Status</th>
                 <th className={`text-left p-4 text-sm font-medium ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Ações</th>
               </tr>
@@ -159,14 +280,37 @@ const DespesasPage: React.FC = () => {
               {filteredDespesas.map(despesa => {
                 const cat = getCategoriaInfo(despesa.categoria);
                 return (
-                  <tr key={despesa.id} className={`border-b ${darkMode ? 'border-white/5' : 'border-gray-100'} hover:bg-white/5`}>
-                    <td className="p-4"><p className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>{despesa.descricao}</p><p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>{despesa.data}</p></td>
-                    <td className="p-4"><span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium" style={{ backgroundColor: `${cat.cor}20`, color: cat.cor }}><span>{cat.emoji}</span> {cat.label}</span></td>
-                    <td className={`p-4 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>{despesa.fornecedor || '-'}</td>
-                    <td className="p-4"><span className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>R$ {despesa.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span></td>
-                    <td className="p-4"><div className="flex items-center gap-2"><span className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{despesa.comprovantes.length}</span>{despesa.comprovantes.length > 0 && <button onClick={() => setSelectedDespesa(despesa)} className="p-1 rounded hover:bg-white/10 text-athos-400"><Eye size={14} /></button>}</div></td>
+                  <tr key={despesa.id} className={`border-b ${darkMode ? 'border-white/5' : 'border-gray-100'} hover:bg-athos-500/5`}>
                     <td className="p-4">
-                      <select value={despesa.status} onChange={e => changeStatus(despesa.id, e.target.value as any)} className={`text-xs px-2 py-1 rounded-full border-0 cursor-pointer ${getStatusColor(despesa.status)}`}>
+                      <p className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>{despesa.descricao}</p>
+                      {despesa.observacoes && <p className={`text-xs mt-1 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>{despesa.observacoes}</p>}
+                    </td>
+                    <td className="p-4">
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium" style={{ backgroundColor: `${cat.cor}20`, color: cat.cor }}>
+                        <span>{cat.emoji}</span> {cat.label}
+                      </span>
+                    </td>
+                    <td className={`p-4 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>{despesa.fornecedor || '-'}</td>
+                    <td className={`p-4 text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{despesa.data ? new Date(despesa.data).toLocaleDateString('pt-BR') : '-'}</td>
+                    <td className="p-4">
+                      <span className={`font-bold text-lg ${darkMode ? 'text-white' : 'text-gray-900'}`}>R$ {despesa.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+                    </td>
+                    <td className="p-4">
+                      <div className="flex items-center gap-2">
+                        <span className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{despesa.comprovantes.length}</span>
+                        {despesa.comprovantes.length > 0 && (
+                          <button onClick={() => setSelectedDespesa(despesa)} className="p-1 rounded hover:bg-athos-500/20 text-athos-400">
+                            <Eye size={14} />
+                          </button>
+                        )}
+                      </div>
+                    </td>
+                    <td className="p-4">
+                      <select 
+                        value={despesa.status} 
+                        onChange={(e) => changeStatus(despesa.id, e.target.value as any)}
+                        className={`text-xs px-2 py-1 rounded-full border-0 cursor-pointer ${getStatusColor(despesa.status)}`}
+                      >
                         <option value="pendente">Pendente</option>
                         <option value="aprovada">Aprovada</option>
                         <option value="rejeitada">Rejeitada</option>
@@ -174,40 +318,77 @@ const DespesasPage: React.FC = () => {
                     </td>
                     <td className="p-4">
                       <div className="flex items-center gap-1">
-                        <button onClick={() => { setEditingId(despesa.id); setForm({ ...despesa, valor: despesa.valor.toString() }); setShowForm(true); }} className={`p-2 rounded-lg ${darkMode ? 'hover:bg-white/10' : 'hover:bg-gray-100'}`}><Edit2 size={16} className="text-athos-400" /></button>
-                        <label className={`p-2 rounded-lg cursor-pointer ${darkMode ? 'hover:bg-white/10' : 'hover:bg-gray-100'}`}><Upload size={16} className="text-blue-400" /><input type="file" multiple accept="image/*,.pdf" className="hidden" onChange={e => e.target.files && handleUploadComprovante(despesa.id, e.target.files)} /></label>
-                        <button onClick={() => deleteDespesa(despesa.id)} className={`p-2 rounded-lg ${darkMode ? 'hover:bg-white/10' : 'hover:bg-gray-100'}`}><Trash2 size={16} className="text-red-400" /></button>
+                        <button onClick={() => openForm(despesa)} className={`p-2 rounded-lg ${darkMode ? 'hover:bg-white/10' : 'hover:bg-gray-100'}`} title="Editar">
+                          <Edit2 size={16} className="text-athos-400" />
+                        </button>
+                        <label className={`p-2 rounded-lg cursor-pointer ${darkMode ? 'hover:bg-white/10' : 'hover:bg-gray-100'}`} title="Adicionar comprovante">
+                          <Upload size={16} className="text-blue-400" />
+                          <input type="file" multiple accept="image/*,.pdf" className="hidden" onChange={(e) => e.target.files && handleUploadComprovante(despesa.id, e.target.files)} />
+                        </label>
+                        <button onClick={() => deleteDespesa(despesa.id)} className={`p-2 rounded-lg ${darkMode ? 'hover:bg-white/10' : 'hover:bg-gray-100'}`} title="Excluir">
+                          <Trash2 size={16} className="text-red-400" />
+                        </button>
                       </div>
                     </td>
                   </tr>
                 );
               })}
             </tbody>
+            <tfoot>
+              <tr className={`border-t-2 ${darkMode ? 'border-white/20 bg-gray-700/50' : 'border-gray-300 bg-gray-50'}`}>
+                <td colSpan={4} className="p-4 text-right font-bold">TOTAL:</td>
+                <td className="p-4 font-bold text-xl text-athos-400">R$ {totalGastos.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
+                <td colSpan={3}></td>
+              </tr>
+            </tfoot>
           </table>
-          {filteredDespesas.length === 0 && <div className="p-12 text-center"><p className={`${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>Nenhuma despesa encontrada</p></div>}
-        </div>
+        )}
       </div>
 
       {showForm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
           <div className={`w-full max-w-lg rounded-2xl ${darkMode ? 'bg-gray-900' : 'bg-white'} shadow-2xl`}>
             <div className="p-6 border-b border-white/10 flex items-center justify-between">
-              <h2 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{editingId ? 'Editar Despesa' : 'Nova Despesa'}</h2>
-              <button onClick={resetForm} className={`p-2 rounded-lg ${darkMode ? 'hover:bg-white/10' : 'hover:bg-gray-100'}`}><X size={20} /></button>
+              <h2 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                {editingDespesa ? '✏️ Editar Despesa' : '➕ Nova Despesa'}
+              </h2>
+              <button onClick={() => setShowForm(false)} className={`p-2 rounded-lg ${darkMode ? 'hover:bg-white/10' : 'hover:bg-gray-100'}`}>
+                <X size={20} />
+              </button>
             </div>
             <div className="p-6 space-y-4">
-              <div><label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Descrição *</label><input type="text" value={form.descricao} onChange={e => setForm({ ...form, descricao: e.target.value })} className={`w-full px-4 py-3 rounded-xl border ${darkMode ? 'bg-gray-800 border-white/10 text-white' : 'bg-white border-gray-200'} focus:border-athos-500 outline-none`} placeholder="Ex: Material de escritório" /></div>
-              <div className="grid grid-cols-2 gap-4">
-                <div><label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Valor (R$) *</label><input type="number" value={form.valor} onChange={e => setForm({ ...form, valor: e.target.value })} className={`w-full px-4 py-3 rounded-xl border ${darkMode ? 'bg-gray-800 border-white/10 text-white' : 'bg-white border-gray-200'} focus:border-athos-500 outline-none`} placeholder="0,00" /></div>
-                <div><label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Data</label><input type="date" value={form.data} onChange={e => setForm({ ...form, data: e.target.value })} className={`w-full px-4 py-3 rounded-xl border ${darkMode ? 'bg-gray-800 border-white/10 text-white' : 'bg-white border-gray-200'} focus:border-athos-500 outline-none`} /></div>
+              <div>
+                <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Descrição *</label>
+                <input type="text" value={form.descricao} onChange={e => setForm({ ...form, descricao: e.target.value })} className={`w-full px-4 py-3 rounded-xl border ${darkMode ? 'bg-gray-800 border-white/10 text-white' : 'bg-white border-gray-200'} focus:border-athos-500 outline-none`} placeholder="Ex: Material de escritório" />
               </div>
-              <div><label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Categoria</label><div className="grid grid-cols-3 gap-2">{categorias.map(cat => (<button key={cat.id} type="button" onClick={() => setForm({ ...form, categoria: cat.id })} className={`p-3 rounded-xl border text-center transition-all ${form.categoria === cat.id ? 'border-athos-500 bg-athos-500/10' : darkMode ? 'border-white/10' : 'border-gray-200'}`}><span className="text-xl">{cat.emoji}</span><p className={`text-xs mt-1 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>{cat.label}</p></button>))}</div></div>
-              <div><label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Fornecedor</label><input type="text" value={form.fornecedor} onChange={e => setForm({ ...form, fornecedor: e.target.value })} className={`w-full px-4 py-3 rounded-xl border ${darkMode ? 'bg-gray-800 border-white/10 text-white' : 'bg-white border-gray-200'} focus:border-athos-500 outline-none`} placeholder="Nome do fornecedor" /></div>
-              <div><label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Observações</label><textarea value={form.observacoes} onChange={e => setForm({ ...form, observacoes: e.target.value })} rows={2} className={`w-full px-4 py-3 rounded-xl border ${darkMode ? 'bg-gray-800 border-white/10 text-white' : 'bg-white border-gray-200'} focus:border-athos-500 outline-none resize-none`} placeholder="Observações adicionais..." /></div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Valor (R$) *</label>
+                  <input type="text" value={form.valor} onChange={e => setForm({ ...form, valor: e.target.value })} className={`w-full px-4 py-3 rounded-xl border ${darkMode ? 'bg-gray-800 border-white/10 text-white' : 'bg-white border-gray-200'} focus:border-athos-500 outline-none`} placeholder="0,00" />
+                </div>
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Data</label>
+                  <input type="date" value={form.data} onChange={e => setForm({ ...form, data: e.target.value })} className={`w-full px-4 py-3 rounded-xl border ${darkMode ? 'bg-gray-800 border-white/10 text-white' : 'bg-white border-gray-200'} focus:border-athos-500 outline-none`} />
+                </div>
+              </div>
+              <div>
+                <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Categoria</label>
+                <div className="grid grid-cols-3 gap-2">{categorias.map(cat => (<button key={cat.id} type="button" onClick={() => setForm({ ...form, categoria: cat.id })} className={`p-3 rounded-xl border text-center transition-all ${form.categoria === cat.id ? 'border-athos-500 bg-athos-500/10' : darkMode ? 'border-white/10' : 'border-gray-200'}`}><span className="text-xl">{cat.emoji}</span><p className={`text-xs mt-1 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>{cat.label}</p></button>))}</div>
+              </div>
+              <div>
+                <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Fornecedor</label>
+                <input type="text" value={form.fornecedor} onChange={e => setForm({ ...form, fornecedor: e.target.value })} className={`w-full px-4 py-3 rounded-xl border ${darkMode ? 'bg-gray-800 border-white/10 text-white' : 'bg-white border-gray-200'} focus:border-athos-500 outline-none`} placeholder="Nome do fornecedor" />
+              </div>
+              <div>
+                <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Observações</label>
+                <textarea value={form.observacoes} onChange={e => setForm({ ...form, observacoes: e.target.value })} rows={2} className={`w-full px-4 py-3 rounded-xl border ${darkMode ? 'bg-gray-800 border-white/10 text-white' : 'bg-white border-gray-200'} focus:border-athos-500 outline-none resize-none`} placeholder="Observações adicionais..." />
+              </div>
             </div>
             <div className="p-6 border-t border-white/10 flex justify-end gap-3">
-              <button onClick={resetForm} className={`px-4 py-2 rounded-lg ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>Cancelar</button>
-              <button onClick={saveDespesa} disabled={!form.descricao || !form.valor} className="px-6 py-2.5 bg-athos-500 hover:bg-athos-600 text-white rounded-lg font-medium disabled:opacity-50 flex items-center gap-2"><Save size={16} /> {editingId ? 'Salvar' : 'Criar Despesa'}</button>
+              <button onClick={() => setShowForm(false)} className={`px-4 py-2 rounded-lg ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>Cancelar</button>
+              <button onClick={saveDespesa} className="px-6 py-2.5 bg-athos-500 hover:bg-athos-600 text-white rounded-lg font-medium flex items-center gap-2">
+                <Save size={16} /> {editingDespesa ? 'Atualizar' : 'Cadastrar'}
+              </button>
             </div>
           </div>
         </div>
