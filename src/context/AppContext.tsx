@@ -2,6 +2,20 @@ import React, { createContext, useContext, useState, useCallback, ReactNode } fr
 import { Alerta } from '../types';
 import { alertas as mockAlertas } from '../data/mockData';
 
+interface DadosEmpresa {
+  razaoSocial: string;
+  cnpj: string;
+  email: string;
+  telefone: string;
+  endereco: string;
+  cidade: string;
+  estado: string;
+  cep: string;
+  site: string;
+  segmento: string;
+  dataAbertura: string;
+}
+
 interface AppState {
   currentPage: string;
   darkMode: boolean;
@@ -11,6 +25,7 @@ interface AppState {
   aiPanelOpen: boolean;
   selectedSetor: string;
   nomeEmpresa: string;
+  dadosEmpresa: DadosEmpresa;
 }
 
 interface AppContextType extends AppState {
@@ -23,6 +38,7 @@ interface AppContextType extends AppState {
   markAlertRead: (id: string) => void;
   setSelectedSetor: (setor: string) => void;
   setNomeEmpresa: (nome: string) => void;
+  setDadosEmpresa: (dados: Partial<DadosEmpresa>) => void;
   unreadAlertCount: number;
 }
 
@@ -31,6 +47,20 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [state, setState] = useState<AppState>(() => {
     const savedNome = localStorage.getItem('athos_nome_empresa');
+    const savedDados = localStorage.getItem('athos_dados_empresa');
+    const dadosEmpresa: DadosEmpresa = savedDados ? JSON.parse(savedDados) : {
+      razaoSocial: 'ATOS Centro de Organização LTDA',
+      cnpj: '',
+      email: '',
+      telefone: '',
+      endereco: '',
+      cidade: '',
+      estado: '',
+      cep: '',
+      site: '',
+      segmento: '',
+      dataAbertura: '',
+    };
     return {
       currentPage: 'dashboard',
       darkMode: true,
@@ -40,6 +70,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       aiPanelOpen: false,
       selectedSetor: 'todos',
       nomeEmpresa: savedNome || 'ATOS',
+      dadosEmpresa,
     };
   });
 
@@ -87,6 +118,12 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setState(prev => ({ ...prev, nomeEmpresa: nome }));
   }, []);
 
+  const setDadosEmpresa = useCallback((dados: Partial<DadosEmpresa>) => {
+    const newDados = { ...state.dadosEmpresa, ...dados };
+    localStorage.setItem('athos_dados_empresa', JSON.stringify(newDados));
+    setState(prev => ({ ...prev, dadosEmpresa: newDados }));
+  }, [state.dadosEmpresa]);
+
   const unreadAlertCount = state.alertas.filter(a => !a.lido).length;
 
   return (
@@ -101,6 +138,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       markAlertRead,
       setSelectedSetor,
       setNomeEmpresa,
+      setDadosEmpresa,
       unreadAlertCount,
     }}>
       {children}
