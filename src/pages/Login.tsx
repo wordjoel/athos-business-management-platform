@@ -56,57 +56,49 @@ const LoginPage: React.FC = () => {
         backgroundSize: '60px 60px'
       }} />
 
-      <div className="relative z-10 w-full max-w-lg px-6">
-        <div className="text-center mb-6">
-          <div className="w-40 h-40 flex items-center justify-center overflow-hidden rounded-2xl">
+      <div className="relative z-10 w-full max-w-md px-6">
+        <div className="flex justify-center">
+          <div className="w-32 h-32">
             <img src="/logo.png" alt="ATHOS Logo" className="w-full h-full object-contain" />
           </div>
         </div>
 
-        <div className="bg-gray-900/80 backdrop-blur-xl border border-white/10 rounded-3xl p-8 shadow-2xl animate-slide-up">
-          <div className="text-center mb-6">
-            <h2 className="text-xl font-bold text-white">Bem-vindo de volta</h2>
-            <p className="text-sm text-gray-500 mt-1">Acesse sua conta para continuar</p>
+        <div className="bg-gray-900/90 backdrop-blur-xl border border-white/10 rounded-2xl p-6 mt-4">
+          <div className="text-center mb-5">
+            <h2 className="text-lg font-semibold text-white">Bem-vindo</h2>
+            <p className="text-xs text-gray-500 mt-1">Acesse sua conta para continuar</p>
           </div>
 
-          <form onSubmit={handleLogin} className="space-y-4">
+          <form onSubmit={handleLogin} className="space-y-3">
             <div>
-              <label className="text-sm text-gray-400 mb-1.5 block">Email</label>
-              <div className="relative">
-                <Mail size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 bg-gray-800/50 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500"
-                  placeholder="seu@email.com"
-                />
-              </div>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full px-4 py-3 bg-gray-800/50 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500 text-center"
+                placeholder="Email"
+              />
             </div>
 
-            <div>
-              <label className="text-sm text-gray-400 mb-1.5 block">Senha</label>
-              <div className="relative">
-                <Lock size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-10 pr-12 py-3 bg-gray-800/50 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500"
-                  placeholder="••••••••"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-400"
-                >
-                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                </button>
-              </div>
+            <div className="relative">
+              <input
+                type={showPassword ? 'text' : 'password'}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full px-4 py-3 bg-gray-800/50 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500 text-center"
+                placeholder="Senha"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+              >
+                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+              </button>
             </div>
 
             {error && (
-              <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm text-center">
+              <div className="p-2 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-xs text-center">
                 {error}
               </div>
             )}
@@ -114,47 +106,39 @@ const LoginPage: React.FC = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 bg-gradient-to-r from-cyan-500 to-cyan-400 hover:from-cyan-400 hover:to-cyan-300 text-gray-900 font-semibold rounded-xl transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+              className="w-full py-2.5 bg-cyan-500 hover:bg-cyan-400 text-gray-900 font-medium rounded-lg transition-all disabled:opacity-50"
             >
-              {loading ? (
-                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-              ) : (
-                <>
-                  Entrar <ChevronRight size={18} />
-                </>
-              )}
+              {loading ? 'Entrando...' : 'Entrar'}
             </button>
           </form>
 
-          <div className="mt-6 pt-6 border-t border-white/10">
-            <p className="text-sm text-gray-500 mb-3">Selecione um perfil para teste:</p>
-            <div className="grid grid-cols-1 gap-2">
+          <div className="mt-4 pt-4 border-t border-white/10">
+            <p className="text-xs text-gray-500 mb-2">Testar perfil:</p>
+            <div className="grid grid-cols-1 gap-1.5">
               {usuariosValidos.map((u, i) => (
                 <button
                   key={i}
                   onClick={() => fillCredentials(u)}
-                  className={`p-2 rounded-lg flex items-center gap-3 transition-all text-left ${
+                  className={`p-2 rounded-lg flex items-center gap-2 transition-all text-left ${
                     email === u.email 
                       ? 'bg-cyan-500/20 border border-cyan-500/50' 
-                      : 'bg-gray-800/50 border border-white/5 hover:bg-gray-800'
+                      : 'bg-gray-800/30 border border-white/5 hover:bg-gray-800'
                   }`}
                 >
-                  <div className="w-8 h-8 rounded-lg bg-gradient-to-r from-cyan-500 to-cyan-400 flex items-center justify-center text-gray-900 text-xs font-bold">
+                  <div className="w-6 h-6 rounded bg-cyan-500 text-gray-900 text-xs font-bold flex items-center justify-center">
                     {u.avatar}
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm font-medium text-white">{u.nome}</p>
-                    <p className="text-xs text-gray-400">{u.email}</p>
+                    <p className="text-xs text-white">{u.nome}</p>
                   </div>
-                  <span className="text-xs text-cyan-400">Teste</span>
                 </button>
               ))}
             </div>
           </div>
         </div>
 
-        <p className="text-center text-gray-600 text-sm mt-6">
-          © 2026 ATHOS Solution Tecnologia LTDA
+        <p className="text-center text-gray-600 text-xs mt-4">
+          © 2026 ATHOS
         </p>
       </div>
     </div>
