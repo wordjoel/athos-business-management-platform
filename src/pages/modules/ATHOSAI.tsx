@@ -199,6 +199,35 @@ const ATHOSAI: React.FC = () => {
     setSuggestions(sugestoes);
   };
 
+  const speakWithEmotion = (text: string, lang: string = 'pt-BR', emotion: 'happy' | 'neutral' | 'excited' = 'neutral') => {
+    if (!('speechSynthesis' in window)) {
+      alert('Seu navegador não suporta síntese de voz');
+      return;
+    }
+
+    const utterance = new SpeechSynthesisUtterance(text);
+    
+    const voices = speechSynthesis.getVoices();
+    const langCode = lang === 'pt' ? 'pt-BR' : lang === 'en' ? 'en-US' : lang === 'es' ? 'es-ES' : lang === 'fr' ? 'fr-FR' : 'de-DE';
+    const voice = voices.find(v => v.lang.startsWith(langCode.split('-')[0])) || voices[0];
+    
+    if (voice) utterance.voice = voice;
+    utterance.lang = langCode;
+    utterance.rate = emotion === 'excited' ? 1.2 : emotion === 'happy' ? 1.05 : 0.9;
+    utterance.pitch = emotion === 'happy' ? 1.1 : emotion === 'excited' ? 1.2 : 1;
+    utterance.volume = 1;
+
+    speechSynthesis.speak(utterance);
+  };
+
+  const templatesVoz: Record<string, { texto: string; emocao: 'happy' | 'excited' | 'neutral' }> = {
+    bomdia: { texto: 'Bom dia, Sr. Joel! Que você tenha um excelente dia de trabalho. Estou aqui para ajudar com qualquer coisa que precisar.', emocao: 'happy' },
+    lembrete: { texto: 'Atenção! Você tem um compromisso importante agendado para hoje. Não se esqueça de verificar os detalhes.', emocao: 'excited' },
+    cobranca: { texto: 'Aviso importante. Você possui contas pendentes que precisam de atenção. Verifique o painel financeiro para mais detalhes.', emocao: 'neutral' },
+    aniversario: { texto: 'Parabéns!Hoje é um dia especial. A equipe ATHOS deseja a você um feliz aniversário cheio de alegrias e sucesso!', emocao: 'happy' },
+    bemvindo: { texto: 'Olá! Seja bem-vindo ao sistema ATHOS Business Management. É um prazer ter você conosco. Estou aqui para auxiliar em tudo o que precisar.', emocao: 'happy' },
+  };
+
   const salvarInsight = () => {
     if (!formData.titulo) return;
     const novo: Insight = {
