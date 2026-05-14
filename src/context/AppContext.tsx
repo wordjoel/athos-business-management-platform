@@ -2,6 +2,12 @@ import React, { createContext, useContext, useState, useCallback, ReactNode } fr
 import { Alerta } from '../types';
 import { alertas as mockAlertas } from '../data/mockData';
 
+interface UsuarioLogado {
+  email: string;
+  nome: string;
+  avatar: string;
+}
+
 interface DadosEmpresa {
   razaoSocial: string;
   cnpj: string;
@@ -26,6 +32,7 @@ interface AppState {
   selectedSetor: string;
   nomeEmpresa: string;
   dadosEmpresa: DadosEmpresa;
+  usuarioLogado: UsuarioLogado | null;
 }
 
 interface AppContextType extends AppState {
@@ -40,6 +47,7 @@ interface AppContextType extends AppState {
   setNomeEmpresa: (nome: string) => void;
   setDadosEmpresa: (dados: Partial<DadosEmpresa>) => void;
   unreadAlertCount: number;
+  usuarioLogado: UsuarioLogado | null;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -48,6 +56,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [state, setState] = useState<AppState>(() => {
     const savedNome = localStorage.getItem('athos_nome_empresa');
     const savedDados = localStorage.getItem('athos_dados_empresa');
+    const savedUsuario = localStorage.getItem('athos_usuario_logado');
     const dadosEmpresa: DadosEmpresa = savedDados ? JSON.parse(savedDados) : {
       razaoSocial: 'ATHOS Solution Tecnologia LTDA',
       cnpj: '',
@@ -61,6 +70,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       segmento: '',
       dataAbertura: '',
     };
+    const usuarioLogado: UsuarioLogado | null = savedUsuario ? JSON.parse(savedUsuario) : null;
     return {
       currentPage: 'dashboard',
       darkMode: true,
@@ -71,6 +81,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       selectedSetor: 'todos',
       nomeEmpresa: savedNome || 'ATHOS',
       dadosEmpresa,
+      usuarioLogado,
     };
   });
 
@@ -83,6 +94,12 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   }, []);
 
   const login = useCallback((email: string, _password: string) => {
+    const savedUsuario = localStorage.getItem('athos_usuario_logado');
+    const usuario = savedUsuario ? JSON.parse(savedUsuario) : null;
+    if (email && usuario) {
+      setState(prev => ({ ...prev, isLoggedIn: true, usuarioLogado: usuario }));
+      return true;
+    }
     if (email) {
       setState(prev => ({ ...prev, isLoggedIn: true }));
       return true;
@@ -91,7 +108,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   }, []);
 
   const logout = useCallback(() => {
-    setState(prev => ({ ...prev, isLoggedIn: false, currentPage: 'dashboard' }));
+    localStorage.removeItem('athos_usuario_logado');
+    setState(prev => ({ ...prev, isLoggedIn: false, currentPage: 'dashboard', usuarioLogado: null }));
   }, []);
 
   const toggleSidebar = useCallback(() => {
@@ -140,6 +158,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       setNomeEmpresa,
       setDadosEmpresa,
       unreadAlertCount,
+      usuarioLogado: state.usuarioLogado,
     }}>
       {children}
     </AppContext.Provider>

@@ -4,7 +4,7 @@ import { Bell, Search, Moon, Sun, User, Settings, LogOut, ChevronDown, Calendar 
 import { alertas as mockAlertas } from '../data/mockData';
 
 const Header: React.FC = () => {
-  const { darkMode, toggleDarkMode, unreadAlertCount, markAlertRead, logout, setCurrentPage } = useApp();
+  const { darkMode, toggleDarkMode, unreadAlertCount, markAlertRead, logout, setCurrentPage, usuarioLogado } = useApp();
   const [showNotifications, setShowNotifications] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
 
@@ -106,9 +106,9 @@ const Header: React.FC = () => {
             }`}
           >
             <div className="w-8 h-8 rounded-lg bg-gradient-to-r from-athos-500 to-athos-600 flex items-center justify-center text-white text-xs font-bold">
-              KD
+              {usuarioLogado?.avatar || 'US'}
             </div>
-            <span className={`text-sm font-medium hidden sm:block ${darkMode ? 'text-white' : 'text-gray-900'}`}>Kleber</span>
+            <span className={`text-sm font-medium hidden sm:block ${darkMode ? 'text-white' : 'text-gray-900'}`}>{usuarioLogado?.nome?.split(' ')[0] || 'Usuário'}</span>
             <ChevronDown size={14} className={darkMode ? 'text-gray-500' : 'text-gray-400'} />
           </button>
 
@@ -117,8 +117,8 @@ const Header: React.FC = () => {
               darkMode ? 'bg-gray-900 border border-white/10' : 'bg-white border border-gray-200'
             }`}>
               <div className={`p-4 border-b ${darkMode ? 'border-white/5' : 'border-gray-100'}`}>
-                <p className={`text-sm font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Kleber Duarte</p>
-                <p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>kleber@athos.com</p>
+                <p className={`text-sm font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{usuarioLogado?.nome || 'Usuário'}</p>
+                <p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>{usuarioLogado?.email || 'usuario@athos.com'}</p>
               </div>
               <div className="p-2">
                 <button className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors ${darkMode ? 'text-gray-300 hover:bg-white/5' : 'text-gray-600 hover:bg-gray-50'}`}>
