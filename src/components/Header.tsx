@@ -105,7 +105,7 @@ const Header: React.FC = () => {
               darkMode ? 'hover:bg-white/5' : 'hover:bg-gray-100'
             }`}
           >
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-r from-athos-500 to-athos-600 flex items-center justify-center text-white text-xs font-bold">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-r from-cyan-500 to-cyan-400 flex items-center justify-center text-gray-900 text-xs font-bold">
               {usuarioLogado?.avatar || 'US'}
             </div>
             <span className={`text-sm font-medium hidden sm:block ${darkMode ? 'text-white' : 'text-gray-900'}`}>{usuarioLogado?.nome?.split(' ')[0] || 'Usuário'}</span>

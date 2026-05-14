@@ -106,14 +106,14 @@ const Sidebar: React.FC = () => {
     }`}>
       <div className={`p-6 flex items-center gap-3 ${sidebarCollapsed ? 'justify-center px-2' : ''}`}>
         <div className="relative">
-          <div className="w-10 h-10 flex items-center justify-center overflow-hidden rounded-xl">
-            <img src="/logo.png" alt="ATHOS Logo" className="w-full h-full object-contain" />
+          <div className="w-10 h-10 flex items-center justify-center overflow-hidden rounded-xl bg-gradient-to-r from-cyan-500 to-cyan-400">
+            <span className="text-gray-900 font-bold text-xl">A</span>
           </div>
           <div className="absolute -top-1 -right-1 w-3 h-3 bg-emerald-400 rounded-full border-2 border-gray-950" />
         </div>
         {!sidebarCollapsed && (
           <div className="animate-fade-in">
-            <h1 className="text-xl font-bold text-gradient tracking-tight">ATHOS</h1>
+            <h1 className="text-xl font-bold text-cyan-400 tracking-tight">ATHOS</h1>
             <p className={`text-[10px] font-medium tracking-[0.2em] uppercase ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
               Business Platform
             </p>
@@ -163,19 +163,19 @@ const Sidebar: React.FC = () => {
                       } ${
                         isModuleHeader
                           ? darkMode
-                            ? 'font-bold text-white bg-gradient-to-r from-athos-500/20 to-transparent border-l-2 border-athos-500'
-                            : 'font-bold text-gray-900 bg-gradient-to-r from-athos-50 to-transparent border-l-2 border-athos-500'
+                            ? 'font-bold text-white bg-gradient-to-r from-cyan-500/20 to-transparent border-l-2 border-cyan-500'
+                            : 'font-bold text-gray-900 bg-gradient-to-r from-cyan-50 to-transparent border-l-2 border-cyan-500'
                           : isActive
                             ? darkMode
-                              ? 'bg-athos-500/10 text-athos-400'
-                              : 'bg-athos-50 text-athos-600'
+                              ? 'bg-cyan-500/10 text-cyan-400'
+                              : 'bg-cyan-50 text-cyan-600'
                             : darkMode
                               ? 'text-gray-400 hover:text-white hover:bg-white/5'
                               : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                       }`}
                     >
                       {isActive && (
-                        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 rounded-r-full bg-athos-500" />
+                        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 rounded-r-full bg-cyan-500" />
                       )}
                       {!sidebarCollapsed && (
                         <>
@@ -202,7 +202,7 @@ const Sidebar: React.FC = () => {
 
       <div className={`p-4 border-t ${darkMode ? 'border-white/5' : 'border-gray-200'}`}>
         <div className={`flex items-center gap-3 ${sidebarCollapsed ? 'justify-center' : ''}`}>
-          <div className="w-9 h-9 rounded-lg bg-gradient-to-r from-athos-500 to-athos-600 flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
+          <div className="w-9 h-9 rounded-lg bg-gradient-to-r from-cyan-500 to-cyan-400 flex items-center justify-center text-gray-900 text-sm font-bold flex-shrink-0">
             {usuarioLogado?.avatar || 'US'}
           </div>
           {!sidebarCollapsed && (

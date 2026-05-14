@@ -44,11 +44,11 @@ const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-gray-950">
+    <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-gray-900">
       <div className="absolute inset-0">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-athos-500/10 rounded-full blur-3xl animate-pulse-slow" />
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse-slow" style={{ animationDelay: '2s' }} />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-athos-900/20 rounded-full blur-3xl" />
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl animate-pulse-slow" />
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl animate-pulse-slow" style={{ animationDelay: '2s' }} />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-cyan-900/20 rounded-full blur-3xl" />
       </div>
 
       <div className="absolute inset-0 opacity-[0.02]" style={{
@@ -58,10 +58,10 @@ const LoginPage: React.FC = () => {
 
       <div className="relative z-10 w-full max-w-lg px-6">
         <div className="text-center mb-8 animate-fade-in">
-          <div className="inline-flex items-center justify-center w-24 h-24 mb-4 overflow-hidden rounded-2xl">
-            <img src="/logo.png" alt={`${nomeEmpresa} Logo`} className="w-full h-full object-contain" />
+          <div className="inline-flex items-center justify-center w-24 h-24 mb-4 overflow-hidden rounded-2xl bg-gradient-to-r from-cyan-500 to-cyan-400">
+            <span className="text-gray-900 font-bold text-5xl">A</span>
           </div>
-          <h1 className="text-3xl font-bold text-white tracking-tight">ATHOS Solution</h1>
+          <h1 className="text-3xl font-bold text-cyan-400 tracking-tight">ATHOS Solution</h1>
           <p className="text-sm text-gray-500 mt-1 tracking-[0.2em] uppercase">Tecnologia LTDA</p>
         </div>
 
@@ -80,7 +80,7 @@ const LoginPage: React.FC = () => {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 bg-gray-800/50 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-athos-500"
+                  className="w-full pl-10 pr-4 py-3 bg-gray-800/50 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500"
                   placeholder="seu@email.com"
                 />
               </div>
@@ -94,7 +94,7 @@ const LoginPage: React.FC = () => {
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-10 pr-12 py-3 bg-gray-800/50 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-athos-500"
+                  className="w-full pl-10 pr-12 py-3 bg-gray-800/50 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500"
                   placeholder="••••••••"
                 />
                 <button
@@ -116,7 +116,7 @@ const LoginPage: React.FC = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 bg-gradient-to-r from-athos-500 to-athos-600 hover:from-athos-600 hover:to-athos-700 text-white font-semibold rounded-xl transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+              className="w-full py-3 bg-gradient-to-r from-cyan-500 to-cyan-400 hover:from-cyan-400 hover:to-cyan-300 text-gray-900 font-semibold rounded-xl transition-all flex items-center justify-center gap-2 disabled:opacity-50"
             >
               {loading ? (
                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -137,18 +137,18 @@ const LoginPage: React.FC = () => {
                   onClick={() => fillCredentials(u)}
                   className={`p-2 rounded-lg flex items-center gap-3 transition-all text-left ${
                     email === u.email 
-                      ? 'bg-athos-500/20 border border-athos-500/50' 
+                      ? 'bg-cyan-500/20 border border-cyan-500/50' 
                       : 'bg-gray-800/50 border border-white/5 hover:bg-gray-800'
                   }`}
                 >
-                  <div className="w-8 h-8 rounded-lg bg-gradient-to-r from-athos-500 to-athos-600 flex items-center justify-center text-white text-xs font-bold">
+                  <div className="w-8 h-8 rounded-lg bg-gradient-to-r from-cyan-500 to-cyan-400 flex items-center justify-center text-gray-900 text-xs font-bold">
                     {u.avatar}
                   </div>
                   <div className="flex-1">
                     <p className="text-sm font-medium text-white">{u.nome}</p>
                     <p className="text-xs text-gray-400">{u.email}</p>
                   </div>
-                  <span className="text-xs text-athos-400">Teste</span>
+                  <span className="text-xs text-cyan-400">Teste</span>
                 </button>
               ))}
             </div>
