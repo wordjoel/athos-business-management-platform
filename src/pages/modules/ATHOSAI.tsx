@@ -132,8 +132,47 @@ const ATHOSAI: React.FC = () => {
   const [showForm, setShowForm] = useState(false);
   const [showFormMsg, setShowFormMsg] = useState(false);
   const [formData, setFormData] = useState({ titulo: '', descricao: '', tipo: 'operacional' as any, impacto: 'medio' });
-  const [formMsg, setFormMsg] = useState({ destinatario: '', email: '', telefone: '', tipo: 'lembrete' as any, titulo: '', mensagem: '' });
+  const [formMsg, setFormMsg] = useState({ destinatario: '', email: '', telefone: '', tipo: 'lembrete' as any, titulo: '', mensagem: '', idioma: 'pt' });
   const [suggestions, setSuggestions] = useState<string[]>([]);
+
+  const idiomas = [
+    { code: 'pt', nome: 'Português', flag: '🇧🇷' },
+    { code: 'en', nome: 'English', flag: '🇺🇸' },
+    { code: 'es', nome: 'Español', flag: '🇪🇸' },
+    { code: 'fr', nome: 'Français', flag: '🇫🇷' },
+    { code: 'de', nome: 'Deutsch', flag: '🇩🇪' },
+    { code: 'it', nome: 'Italiano', flag: '🇮🇹' },
+    { code: 'zh', nome: '中文', flag: '🇨🇳' },
+    { code: 'ja', nome: '日本語', flag: '🇯🇵' },
+  ];
+
+  const templatesMensagem: Record<string, Record<string, { titulo: string; corpo: string }>> = {
+    lembrete: {
+      pt: { titulo: '🔔 Lembrete ATHOS', corpo: 'Olá {nome}! Você tem um compromisso pendente: {mensagem}. Não se esqueça!' },
+      en: { titulo: '🔔 ATHOS Reminder', corpo: 'Hello {name}! You have a pending appointment: {message}. Don\'t forget!' },
+      es: { titulo: '🔔 Recordatorio ATHOS', cuerpo: '¡Hola {nombre}! Tienes una cita pendiente: {mensaje}. ¡No olvides!' },
+      fr: { titulo: '🔔 Rappel ATHOS', corpo: 'Bonjour {nom}! Vous avez un rendez-vous en attente: {message}. N\'oubliez pas!' },
+      de: { titulo: '🔔 ATHOS Erinnerung', corpo: 'Hallo {name}! Sie haben einen ausstehenden Termin: {message}. Nicht vergessen!' },
+      it: { titulo: '🔔 Promemoria ATHOS', corpo: 'Ciao {nome}! Hai un appuntamento in sospeso: {message}. Non dimenticare!' },
+      zh: { titulo: '🔔 ATHOS提醒', corpo: '您好{nome}！您有一个待处理的事项：{message}。请不要忘记！' },
+      ja: { titulo: '🔔 ATHOSリマインダー', corpo: 'こんにちは{nome}さん！保留中の予定があります：{message}。お忘れなく！' },
+    },
+    cobranca: {
+      pt: { titulo: '💰 Athos - Aviso de Cobrança', corpo: 'Olá {nome}! Este é um aviso de cobrança da ATHOS. Valor: R${valor}. Vencimento: {vencimento}. Pague em dia para evitar juros.' },
+      en: { titulo: '💰 ATHOS - Payment Notice', corpo: 'Hello {name}! This is a payment notice from ATHOS. Amount: ${value}. Due: {due}. Pay on time to avoid fees.' },
+      es: { titulo: '💰 ATHOS - Aviso de Cobro', corpo: '¡Hola {nombre}! Este es un aviso de cobro de ATHOS. Monto: ${valor}. Vencimiento: {vencimiento}. Pague a tiempo.' },
+    },
+    aniversario: {
+      pt: { titulo: '🎂 ATHOS deseja feliz aniversário!', corpo: 'Olá {nome}! A equipe ATHOS deseja a você um feliz aniversário! Que este novo ano trouque muitas alegrias e sucesso!' },
+      en: { titulo: '🎂 Happy Birthday from ATHOS!', corpo: 'Hello {name}! The ATHOS team wishes you a happy birthday! May this new year bring you joy and success!' },
+      es: { titulo: '🎂 ¡Feliz cumpleaños de ATHOS!', corpo: '¡Hola {nombre}! El equipo de ATHOS te desea un feliz cumpleaños! ¡Que este nuevo año te trae alegría y éxito!' },
+    },
+    bemvindo: {
+      pt: { titulo: '👋 Bem-vindo à ATHOS!', corpo: 'Olá {nome}! Seja bem-vindo ao sistema ATHOS Business Management. Estamos felizes em ter você conosco!' },
+      en: { titulo: '👋 Welcome to ATHOS!', corpo: 'Hello {name}! Welcome to ATHOS Business Management System. We are happy to have you with us!' },
+      es: { titulo: '👋 ¡Bienvenido a ATHOS!', corpo: '¡Hola {nombre}! Bienvenido al sistema ATHOS Business Management. ¡Nos alegra tenerte con nosotros!' },
+    },
+  };
 
   const usuarioAtual = usuarioLogado?.nome || 'Usuário';
 
@@ -379,8 +418,8 @@ const ATHOSAI: React.FC = () => {
             </button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-            <div onClick={() => { setFormMsg({ ...formMsg, tipo: 'lembrete' }); setShowFormMsg(true); }} className="p-3 bg-blue-500/10 rounded-xl border border-blue-500/30 cursor-pointer hover:bg-blue-500/20">
+<div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div onClick={() => { setFormMsg({ destinatario: 'Joel Oliveira', email: 'joel@athos.com', telefone: '+5511953992662', tipo: 'lembrete' as any, titulo: 'Lembrete deテスト', mensagem: 'Olá! Este é um mensaje de teste do sistema ATHOS AI.' }); setShowFormMsg(true); }} className="p-3 bg-blue-500/10 rounded-xl border border-blue-500/30 cursor-pointer hover:bg-blue-500/20">
               <Bell size={20} className="text-blue-400 mb-1" />
               <p className="text-xs font-medium text-white">Lembrete</p>
               <p className="text-[10px] text-gray-500">Lembrar compromissos</p>
@@ -394,6 +433,45 @@ const ATHOSAI: React.FC = () => {
               <Gift size={20} className="text-violet-400 mb-1" />
               <p className="text-xs font-medium text-white">Aniversário</p>
               <p className="text-[10px] text-gray-500">Parabenizar</p>
+            </div>
+          </div>
+
+          <div className="mt-4 p-4 bg-green-600/20 rounded-xl border border-green-500/30">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-green-500/20 rounded-full flex items-center justify-center">
+                  <Phone size={20} className="text-green-400" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-white">WhatsApp Teste</p>
+                  <p className="text-xs text-gray-400">Enviar mensaje para +55 11 95399-2662</p>
+                </div>
+              </div>
+              <div className="flex flex-wrap gap-2 mt-3">
+                {idiomas.slice(0, 4).map(idioma => (
+                  <button 
+                    key={idioma.code}
+                    onClick={() => {
+                      const template = templatesMensagem.bemvindo[idioma.code as keyof typeof templatesMensagem.bemvindo] || templatesMensagem.bemvindo.pt;
+                      const testMsg: Mensagem = {
+                        id: Date.now().toString(),
+                        destinatario: 'Joel Oliveira',
+                        telefone: '+5511953992662',
+                        tipo: 'geral',
+                        titulo: `${idioma.flag} ${template.titulo}`,
+                        mensagem: template.corpo.replace('{nome}', 'Joel Oliveira'),
+                        dataEnvio: new Date().toLocaleString('pt-BR'),
+                        enviada: true
+                      };
+                      setMensagens([testMsg, ...mensagens]);
+                      alert(`${idioma.flag} Mensagem enviada em ${idioma.nome}!\n\n"${template.corpo.replace('{nome}', 'Joel Oliveira').substring(0, 80)}..."`);
+                    }}
+                    className="px-3 py-1.5 bg-green-600/50 hover:bg-green-600 rounded-lg text-xs text-white font-medium"
+                  >
+                    {idioma.flag}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 
@@ -684,13 +762,20 @@ const ATHOSAI: React.FC = () => {
               <input type="text" value={formMsg.destinatario} onChange={e => setFormMsg({ ...formMsg, destinatario: e.target.value })} placeholder="Nome do destinatário" className="w-full px-3 py-2 bg-gray-700/50 rounded-lg border border-white/10 text-white text-sm" />
               <input type="email" value={formMsg.email} onChange={e => setFormMsg({ ...formMsg, email: e.target.value })} placeholder="Email (opcional)" className="w-full px-3 py-2 bg-gray-700/50 rounded-lg border border-white/10 text-white text-sm" />
               <input type="tel" value={formMsg.telefone} onChange={e => setFormMsg({ ...formMsg, telefone: e.target.value })} placeholder="WhatsApp (opcional)" className="w-full px-3 py-2 bg-gray-700/50 rounded-lg border border-white/10 text-white text-sm" />
-              <select value={formMsg.tipo} onChange={e => setFormMsg({ ...formMsg, tipo: e.target.value })} className="w-full px-3 py-2 bg-gray-700/50 rounded-lg border border-white/10 text-white text-sm">
-                <option value="lembrete">Lembrete</option>
-                <option value="aviso">Aviso</option>
-                <option value="cobranca">Cobrança</option>
-                <option value="aniversario">Aniversário</option>
-                <option value="geral">Geral</option>
-              </select>
+              <div className="grid grid-cols-2 gap-2">
+                <select value={formMsg.tipo} onChange={e => setFormMsg({ ...formMsg, tipo: e.target.value })} className="px-3 py-2 bg-gray-700/50 rounded-lg border border-white/10 text-white text-sm">
+                  <option value="lembrete">Lembrete</option>
+                  <option value="aviso">Aviso</option>
+                  <option value="cobranca">Cobrança</option>
+                  <option value="aniversario">Aniversário</option>
+                  <option value="geral">Geral</option>
+                </select>
+                <select value={formMsg.idioma} onChange={e => setFormMsg({ ...formMsg, idioma: e.target.value })} className="px-3 py-2 bg-gray-700/50 rounded-lg border border-white/10 text-white text-sm">
+                  {idiomas.map(idioma => (
+                    <option key={idioma.code} value={idioma.code}>{idioma.flag} {idioma.nome}</option>
+                  ))}
+                </select>
+              </div>
               <input type="text" value={formMsg.titulo} onChange={e => setFormMsg({ ...formMsg, titulo: e.target.value })} placeholder="Assunto/Título" className="w-full px-3 py-2 bg-gray-700/50 rounded-lg border border-white/10 text-white text-sm" />
               <textarea value={formMsg.mensagem} onChange={e => setFormMsg({ ...formMsg, mensagem: e.target.value })} placeholder="Mensagem..." rows={4} className="w-full px-3 py-2 bg-gray-700/50 rounded-lg border border-white/10 text-white text-sm" />
               <button onClick={enviarMensagem} className="w-full py-2 bg-violet-600 rounded-lg text-white text-sm hover:bg-violet-500 flex items-center justify-center gap-2">

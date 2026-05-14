@@ -6,6 +6,7 @@ interface UsuarioLogado {
   email: string;
   nome: string;
   avatar: string;
+  telefone?: string;
 }
 
 interface DadosEmpresa {

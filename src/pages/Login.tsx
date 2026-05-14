@@ -3,11 +3,11 @@ import { useApp } from '../context/AppContext';
 import { Zap, Lock, Mail, Eye, EyeOff, Shield, Brain, Building2, ChevronRight } from 'lucide-react';
 
 const usuariosValidos = [
-  { email: 'kleber@athos.com', senha: 'kleber2025', nome: 'Kleber Duarte', avatar: 'KD' },
-  { email: 'luiz@athos.com', senha: 'luiz2025', nome: 'Luiz Victor', avatar: 'LV' },
-  { email: 'joel@athos.com', senha: 'joel2025', nome: 'Joel Oliveira', avatar: 'JO' },
-  { email: 'oscar@athos.com', senha: 'oscar2025', nome: 'Oscar Carvalho', avatar: 'OC' },
-  { email: 'mauricio@athos.com', senha: 'mauricio2025', nome: 'Mauricio Baro', avatar: 'MB' },
+  { email: 'kleber@athos.com', senha: 'kleber2025', nome: 'Kleber Duarte', avatar: 'KD', telefone: '' },
+  { email: 'luiz@athos.com', senha: 'luiz2025', nome: 'Luiz Victor', avatar: 'LV', telefone: '' },
+  { email: 'joel@athos.com', senha: 'joel2025', nome: 'Joel Oliveira', avatar: 'JO', telefone: '+5511953992662' },
+  { email: 'oscar@athos.com', senha: 'oscar2025', nome: 'Oscar Carvalho', avatar: 'OC', telefone: '' },
+  { email: 'mauricio@athos.com', senha: 'mauricio2025', nome: 'Mauricio Baro', avatar: 'MB', telefone: '' },
 ];
 
 const LoginPage: React.FC = () => {
