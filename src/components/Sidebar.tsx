@@ -36,7 +36,7 @@ const navItems: NavItem[] = [
   { id: 'modelos', label: 'Modelos', section: 'Contratos' },
   { id: 'assinaturas', label: 'Assinaturas', section: 'Contratos' },
   
-  { id: 'ai', label: 'ATHOS AI', section: 'Inteligência' },
+  { id: 'ai', label: 'ATHOS AI', section: 'Inteligência', badge: 'Novo' },
   { id: 'chatbot', label: 'Chatbot', section: 'Inteligência' },
   { id: 'relatorios-ia', label: 'Relatórios IA', section: 'Inteligência' },
   

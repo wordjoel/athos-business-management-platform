@@ -7,7 +7,7 @@ import LoginPage from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Financeiro from './pages/Financeiro';
 import SetoresPage from './pages/Setores';
-import IAPage from './pages/IA';
+import ATHOSAI from './pages/modules/ATHOSAI';
 import Relatorios from './pages/Relatorios';
 import BancoDados from './pages/BancoDados';
 import UsuariosPage from './pages/Usuarios';
@@ -75,7 +75,7 @@ const AppContent: React.FC = () => {
     modelos: Modelos,
     assinaturas: Assinaturas,
     
-    ai: IAPage,
+    ai: ATHOSAI,
     chatbot: Chatbot,
     'relatorios-ia': RelatoriosIA,
     
