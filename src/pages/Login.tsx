@@ -57,13 +57,13 @@ const LoginPage: React.FC = () => {
       }} />
 
       <div className="relative z-10 w-full max-w-md px-6">
-        <div className="flex justify-center">
-          <div className="w-32 h-32">
-            <img src="/logo.png" alt="ATHOS Logo" className="w-full h-full object-contain" />
+        <div className="flex justify-center mb-2">
+          <div className="w-28 h-28">
+            <img src="/logo.png" alt="ATHOS Logo" className="w-full h-full object-contain opacity-90" />
           </div>
         </div>
 
-        <div className="bg-gray-900/90 backdrop-blur-xl border border-white/10 rounded-2xl p-6 mt-4">
+        <div className="bg-gray-900/60 backdrop-blur-lg rounded-2xl p-5 mt-2">
           <div className="text-center mb-5">
             <h2 className="text-lg font-semibold text-white">Bem-vindo</h2>
             <p className="text-xs text-gray-500 mt-1">Acesse sua conta para continuar</p>
@@ -75,8 +75,8 @@ const LoginPage: React.FC = () => {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-3 bg-gray-800/50 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500 text-center"
-                placeholder="Email"
+                className="w-full px-4 py-2.5 bg-gray-800/30 border border-white/5 rounded-lg text-white placeholder-gray-600 text-center text-sm focus:outline-none focus:border-cyan-500"
+                placeholder="email@athos.com"
               />
             </div>
 
@@ -85,8 +85,8 @@ const LoginPage: React.FC = () => {
                 type={showPassword ? 'text' : 'password'}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-3 bg-gray-800/50 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500 text-center"
-                placeholder="Senha"
+                className="w-full px-4 py-2.5 bg-gray-800/30 border border-white/5 rounded-lg text-white placeholder-gray-600 text-center text-sm focus:outline-none focus:border-cyan-500"
+                placeholder="senha"
               />
               <button
                 type="button"
@@ -106,34 +106,21 @@ const LoginPage: React.FC = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-2.5 bg-cyan-500 hover:bg-cyan-400 text-gray-900 font-medium rounded-lg transition-all disabled:opacity-50"
+              className="w-full py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white font-medium rounded-lg text-sm transition-all disabled:opacity-50"
             >
               {loading ? 'Entrando...' : 'Entrar'}
             </button>
           </form>
 
-          <div className="mt-4 pt-4 border-t border-white/10">
-            <p className="text-xs text-gray-500 mb-2">Testar perfil:</p>
-            <div className="grid grid-cols-1 gap-1.5">
+          <div className="mt-3 text-center">
+            <p className="text-[10px] text-gray-600">
               {usuariosValidos.map((u, i) => (
-                <button
-                  key={i}
-                  onClick={() => fillCredentials(u)}
-                  className={`p-2 rounded-lg flex items-center gap-2 transition-all text-left ${
-                    email === u.email 
-                      ? 'bg-cyan-500/20 border border-cyan-500/50' 
-                      : 'bg-gray-800/30 border border-white/5 hover:bg-gray-800'
-                  }`}
-                >
-                  <div className="w-6 h-6 rounded bg-cyan-500 text-gray-900 text-xs font-bold flex items-center justify-center">
-                    {u.avatar}
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-xs text-white">{u.nome}</p>
-                  </div>
-                </button>
+                <span key={i}>
+                  <button onClick={() => fillCredentials(u)} className="hover:text-cyan-400 transition-colors">{u.nome.split(' ')[0]}</button>
+                  {i < usuariosValidos.length - 1 && <span className="text-gray-700 mx-1">|</span>}
+                </span>
               ))}
-            </div>
+            </p>
           </div>
         </div>
 
