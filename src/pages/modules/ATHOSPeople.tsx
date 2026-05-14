@@ -13,16 +13,14 @@ const ATHOSPeople: React.FC = () => {
   ];
 
   const funcionarios = [
-    { nome: 'Carlos Mendes', cargo: 'Desenvolvedor', departamento: 'TI', entrada: '10:05', status: 'presente', ponto: 'ok' },
-    { nome: 'Juliana Silva', cargo: 'Designer', departamento: 'Marketing', entrada: '09:00', status: 'presente', ponto: 'ok' },
-    { nome: 'Roberto Lima', cargo: 'Vendas', departamento: 'Comercial', entrada: '08:45', status: 'atrasado', ponto: 'ok' },
-    { nome: 'Ana Oliveira', cargo: 'Contadora', departamento: 'Financeiro', entrada: '-', status: 'falta', ponto: 'falta' },
+    { nome: 'Kleber Duarte', cargo: 'Administrador', departamento: 'Administrativo', entrada: '09:00', status: 'presente', ponto: 'ok' },
+    { nome: 'Luiz Victor', cargo: 'Gerente Financeiro', departamento: 'Financeiro', entrada: '09:15', status: 'presente', ponto: 'ok' },
+    { nome: 'Joel Oliveira', cargo: 'Vendas', departamento: 'Comercial', entrada: '08:45', status: 'presente', ponto: 'ok' },
+    { nome: 'Oscar Carvalho', cargo: 'Desenvolvedor', departamento: 'TI', entrada: '09:30', status: 'presente', ponto: 'ok' },
+    { nome: 'Maurício Baro', cargo: 'Gerente Operacional', departamento: 'Operacional', entrada: '09:00', status: 'presente', ponto: 'ok' },
   ];
 
-  const onboarding = [
-    { nome: 'Pedro Santos', cargo: 'Analista', departamento: 'Comercial', dia: 3, total: 10, etapa: 'Documentos' },
-    { nome: 'Mariana Costa', cargo: 'Desenvolvedora', departamento: 'TI', dia: 7, total: 10, etapa: 'Treinamento' },
-  ];
+  const onboarding = [];
 
   return (
     <div className="p-6 space-y-6">

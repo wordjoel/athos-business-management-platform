@@ -18,10 +18,11 @@ const UsuariosPage: React.FC = () => {
   const [usuarios, setUsuarios] = useState<Usuario[]>(() => {
     const saved = localStorage.getItem('athos_usuarios');
     return saved ? JSON.parse(saved) : [
-      { id: '1', name: 'Carlos Mendes', email: 'carlos@athos.com', role: 'admin', sector: 'Administrativo', avatar: 'CM', active: true, lastLogin: '13/05/2026 09:30' },
-      { id: '2', name: 'Ana Silva', email: 'ana@athos.com', role: 'manager', sector: 'Financeiro', avatar: 'AS', active: true, lastLogin: '12/05/2026 14:20' },
-      { id: '3', name: 'Roberto Santos', email: 'roberto@athos.com', role: 'user', sector: 'Marketing', avatar: 'RS', active: true, lastLogin: '11/05/2026 16:45' },
-      { id: '4', name: 'Juliana Costa', email: 'juliana@athos.com', role: 'viewer', sector: 'Vendas', avatar: 'JC', active: false, lastLogin: '10/05/2026 08:15' },
+      { id: '1', name: 'Kleber Duarte', email: 'kleber@athos.com', role: 'admin', sector: 'Administrativo', avatar: 'KD', active: true, lastLogin: '13/05/2026 09:30' },
+      { id: '2', name: 'Luiz Victor', email: 'luiz@athos.com', role: 'manager', sector: 'Financeiro', avatar: 'LV', active: true, lastLogin: '12/05/2026 14:20' },
+      { id: '3', name: 'Joel Oliveira', email: 'joel@athos.com', role: 'user', sector: 'Comercial', avatar: 'JO', active: true, lastLogin: '11/05/2026 16:45' },
+      { id: '4', name: 'Oscar Carvalho', email: 'oscar@athos.com', role: 'user', sector: 'TI', avatar: 'OC', active: true, lastLogin: '13/05/2026 10:00' },
+      { id: '5', name: 'Maurício Baro', email: 'mauricio@athos.com', role: 'manager', sector: 'Operacional', avatar: 'MB', active: true, lastLogin: '12/05/2026 08:15' },
     ];
   });
 

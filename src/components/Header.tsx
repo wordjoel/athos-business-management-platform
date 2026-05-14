@@ -117,7 +117,7 @@ const Header: React.FC = () => {
               darkMode ? 'bg-gray-900 border border-white/10' : 'bg-white border border-gray-200'
             }`}>
               <div className={`p-4 border-b ${darkMode ? 'border-white/5' : 'border-gray-100'}`}>
-                <p className={`text-sm font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Carlos Mendes</p>
+                <p className={`text-sm font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Kleber Duarte</p>
                 <p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>carlos@atos.com</p>
               </div>
               <div className="p-2">

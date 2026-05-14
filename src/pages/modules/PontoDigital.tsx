@@ -4,9 +4,11 @@ import { Clock, CheckCircle } from 'lucide-react';
 const PontoDigital: React.FC = () => {
   const darkMode = true;
   const registros = [
-    { nome: 'Carlos Mendes', entrada: '09:05', saida: '18:30', status: 'ok' },
-    { nome: 'Juliana Silva', entrada: '09:00', saida: '-', status: 'em_andamento' },
-    { nome: 'Roberto Lima', entrada: '08:45', saida: '-', status: 'em_andamento' },
+    { nome: 'Kleber Duarte', entrada: '09:00', saida: '18:30', status: 'ok' },
+    { nome: 'Luiz Victor', entrada: '09:15', saida: '-', status: 'em_andamento' },
+    { nome: 'Joel Oliveira', entrada: '08:45', saida: '-', status: 'em_andamento' },
+    { nome: 'Oscar Carvalho', entrada: '09:30', saida: '-', status: 'em_andamento' },
+    { nome: 'Maurício Baro', entrada: '09:00', saida: '-', status: 'em_andamento' },
   ];
   return (
     <div className="p-6 space-y-6">

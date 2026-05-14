@@ -4,9 +4,11 @@ import { Users, Plus } from 'lucide-react';
 const Funcionarios: React.FC = () => {
   const darkMode = true;
   const func = [
-    { nome: 'Carlos Mendes', cargo: 'Desenvolvedor', dept: 'TI', status: 'ativo' },
-    { nome: 'Juliana Silva', cargo: 'Designer', dept: 'Marketing', status: 'ativo' },
-    { nome: 'Roberto Lima', cargo: 'Vendas', dept: 'Comercial', status: 'ativo' },
+    { nome: 'Kleber Duarte', cargo: 'Administrador', dept: 'Administrativo', status: 'ativo' },
+    { nome: 'Luiz Victor', cargo: 'Gerente Financeiro', dept: 'Financeiro', status: 'ativo' },
+    { nome: 'Joel Oliveira', cargo: 'Vendas', dept: 'Comercial', status: 'ativo' },
+    { nome: 'Oscar Carvalho', cargo: 'Desenvolvedor', dept: 'TI', status: 'ativo' },
+    { nome: 'Maurício Baro', cargo: 'Gerente Operacional', dept: 'Operacional', status: 'ativo' },
   ];
   return (
     <div className="p-6 space-y-6">
