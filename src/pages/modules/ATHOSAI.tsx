@@ -466,41 +466,67 @@ const ATHOSAI: React.FC = () => {
           </div>
 
           <div className="mt-4 p-4 bg-green-600/20 rounded-xl border border-green-500/30">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-10 h-10 bg-green-500/20 rounded-full flex items-center justify-center">
+                <Phone size={20} className="text-green-400" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-white">🎙️ Assistente de Voz ATHOS</p>
+                <p className="text-xs text-gray-400">Clique para ouvir a mensagem com emoção</p>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+              {Object.entries(templatesVoz).map(([key, template]) => (
+                <button
+                  key={key}
+                  onClick={() => speakWithEmotion(template.texto, 'pt', template.emocao)}
+                  className="p-2 bg-gray-800/50 rounded-lg border border-white/10 hover:bg-gray-700/50 transition-colors flex flex-col items-center gap-1"
+                >
+                  <span className="text-lg">
+                    {key === 'bomdia' ? '☀️' : key === 'lembrete' ? '🔔' : key === 'cobranca' ? '💰' : key === 'aniversario' ? '🎂' : '👋'}
+                  </span>
+                  <span className="text-[10px] text-gray-300">{key === 'bomdia' ? 'Bom dia' : key === 'lembrete' ? 'Lembrete' : key === 'cobranca' ? 'Cobrança' : key === 'aniversario' ? 'Aniversário' : 'Bem-vindo'}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-4 p-4 bg-amber-600/20 rounded-xl border border-amber-500/30">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-green-500/20 rounded-full flex items-center justify-center">
-                  <Phone size={20} className="text-green-400" />
+                <div className="w-10 h-10 bg-amber-500/20 rounded-full flex items-center justify-center">
+                  <Mail size={20} className="text-amber-400" />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-white">WhatsApp Teste</p>
+                  <p className="text-sm font-medium text-white">WhatsApp Multilíngue</p>
                   <p className="text-xs text-gray-400">Enviar mensaje para +55 11 95399-2662</p>
                 </div>
               </div>
-              <div className="flex flex-wrap gap-2 mt-3">
-                {idiomas.slice(0, 4).map(idioma => (
-                  <button 
-                    key={idioma.code}
-                    onClick={() => {
-                      const template = templatesMensagem.bemvindo[idioma.code as keyof typeof templatesMensagem.bemvindo] || templatesMensagem.bemvindo.pt;
-                      const testMsg: Mensagem = {
-                        id: Date.now().toString(),
-                        destinatario: 'Joel Oliveira',
-                        telefone: '+5511953992662',
-                        tipo: 'geral',
-                        titulo: `${idioma.flag} ${template.titulo}`,
-                        mensagem: template.corpo.replace('{nome}', 'Joel Oliveira'),
-                        dataEnvio: new Date().toLocaleString('pt-BR'),
-                        enviada: true
-                      };
-                      setMensagens([testMsg, ...mensagens]);
-                      alert(`${idioma.flag} Mensagem enviada em ${idioma.nome}!\n\n"${template.corpo.replace('{nome}', 'Joel Oliveira').substring(0, 80)}..."`);
-                    }}
-                    className="px-3 py-1.5 bg-green-600/50 hover:bg-green-600 rounded-lg text-xs text-white font-medium"
-                  >
-                    {idioma.flag}
-                  </button>
-                ))}
-              </div>
+            </div>
+            <div className="flex flex-wrap gap-2 mt-3">
+              {idiomas.map(idioma => (
+                <button 
+                  key={idioma.code}
+                  onClick={() => {
+                    const template = templatesMensagem.bemvindo[idioma.code as keyof typeof templatesMensagem.bemvindo] || templatesMensagem.bemvindo.pt;
+                    const testMsg: Mensagem = {
+                      id: Date.now().toString(),
+                      destinatario: 'Joel Oliveira',
+                      telefone: '+5511953992662',
+                      tipo: 'geral',
+                      titulo: `${idioma.flag} ${template.titulo}`,
+                      mensagem: template.corpo.replace('{nome}', 'Joel Oliveira'),
+                      dataEnvio: new Date().toLocaleString('pt-BR'),
+                      enviada: true
+                    };
+                    setMensagens([testMsg, ...mensagens]);
+                    alert(`${idioma.flag} Mensagem enviada em ${idioma.nome}!\n\n"${template.corpo.replace('{nome}', 'Joel Oliveira')}"`);
+                  }}
+                  className="px-3 py-1.5 bg-green-600/50 hover:bg-green-600 rounded-lg text-xs text-white font-medium flex items-center gap-1"
+                >
+                  {idioma.flag}
+                </button>
+              ))}
             </div>
           </div>
 
