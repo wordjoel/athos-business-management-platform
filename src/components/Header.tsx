@@ -105,10 +105,10 @@ const Header: React.FC = () => {
               darkMode ? 'hover:bg-white/5' : 'hover:bg-gray-100'
             }`}
           >
-            <div className="w-8 h-8 rounded-lg gradient-athos flex items-center justify-center text-white text-xs font-bold">
-              CM
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-r from-athos-500 to-athos-600 flex items-center justify-center text-white text-xs font-bold">
+              KD
             </div>
-            <span className={`text-sm font-medium hidden sm:block ${darkMode ? 'text-white' : 'text-gray-900'}`}>Carlos</span>
+            <span className={`text-sm font-medium hidden sm:block ${darkMode ? 'text-white' : 'text-gray-900'}`}>Kleber</span>
             <ChevronDown size={14} className={darkMode ? 'text-gray-500' : 'text-gray-400'} />
           </button>
 
@@ -118,7 +118,7 @@ const Header: React.FC = () => {
             }`}>
               <div className={`p-4 border-b ${darkMode ? 'border-white/5' : 'border-gray-100'}`}>
                 <p className={`text-sm font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Kleber Duarte</p>
-                <p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>carlos@atos.com</p>
+                <p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>kleber@athos.com</p>
               </div>
               <div className="p-2">
                 <button className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors ${darkMode ? 'text-gray-300 hover:bg-white/5' : 'text-gray-600 hover:bg-gray-50'}`}>

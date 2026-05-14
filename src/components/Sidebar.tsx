@@ -202,12 +202,13 @@ const Sidebar: React.FC = () => {
 
       <div className={`p-4 border-t ${darkMode ? 'border-white/5' : 'border-gray-200'}`}>
         <div className={`flex items-center gap-3 ${sidebarCollapsed ? 'justify-center' : ''}`}>
-          <div className="w-9 h-9 rounded-lg gradient-athos flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
+          <div className="w-9 h-9 rounded-lg bg-gradient-to-r from-athos-500 to-athos-600 flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
             KD
           </div>
           {!sidebarCollapsed && (
             <div className="flex-1 min-w-0 animate-fade-in">
               <p className={`text-sm font-semibold truncate ${darkMode ? 'text-white' : 'text-gray-900'}`}>Kleber Duarte</p>
+            <p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>kleber@athos.com</p>
               <p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>Administrador</p>
             </div>
           )}
