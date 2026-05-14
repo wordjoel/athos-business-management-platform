@@ -104,28 +104,20 @@ const Sidebar: React.FC = () => {
         ? 'bg-gray-950/95 border-r border-white/5' 
         : 'bg-white border-r border-gray-200'
     }`}>
-      <div className={`p-6 flex items-center gap-3 ${sidebarCollapsed ? 'justify-center px-2' : ''}`}>
+      <div className={`p-6 flex items-center justify-center ${sidebarCollapsed ? 'px-2' : ''}`}>
         <div className="relative">
-          <div className="w-10 h-10 flex items-center justify-center overflow-hidden rounded-xl">
+          <div className={`${sidebarCollapsed ? 'w-10 h-10' : 'w-20 h-20'} flex items-center justify-center overflow-hidden rounded-2xl shadow-lg shadow-cyan-500/20`}>
             <img src="/logo.png" alt="ATHOS Logo" className="w-full h-full object-contain" />
           </div>
-          <div className="absolute -top-1 -right-1 w-3 h-3 bg-emerald-400 rounded-full border-2 border-gray-950" />
+          <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-cyan-500 rounded-full border-2 border-gray-900" />
         </div>
-        {!sidebarCollapsed && (
-          <div className="animate-fade-in">
-            <h1 className="text-xl font-bold text-white tracking-tight">ATHOS</h1>
-            <p className={`text-[10px] font-medium tracking-[0.2em] uppercase ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
-              Business Platform
-            </p>
-          </div>
-        )}
       </div>
 
       <button
         onClick={toggleSidebar}
-        className={`absolute -right-3 top-20 w-6 h-6 rounded-full flex items-center justify-center z-10 transition-all ${
+        className={`absolute -right-3 top-8 w-6 h-6 rounded-full flex items-center justify-center z-10 transition-all ${
           darkMode ? 'bg-gray-800 border border-gray-700 text-gray-400' : 'bg-white border border-gray-300 text-gray-500 shadow-sm'
-        } hover:text-athos-400`}
+        } hover:text-cyan-400`}
       >
         {sidebarCollapsed ? <ChevronRight size={12} /> : <ChevronLeft size={12} />}
       </button>
