@@ -106,8 +106,8 @@ const Sidebar: React.FC = () => {
     }`}>
       <div className={`p-6 flex items-center gap-3 ${sidebarCollapsed ? 'justify-center px-2' : ''}`}>
         <div className="relative">
-          <div className="w-10 h-10 flex items-center justify-center overflow-hidden rounded-xl bg-gradient-to-r from-cyan-500 to-cyan-400">
-            <span className="text-gray-900 font-bold text-xl">A</span>
+          <div className="w-10 h-10 flex items-center justify-center overflow-hidden rounded-xl">
+            <img src="/logo.png" alt="ATHOS Logo" className="w-full h-full object-contain" />
           </div>
           <div className="absolute -top-1 -right-1 w-3 h-3 bg-emerald-400 rounded-full border-2 border-gray-950" />
         </div>
