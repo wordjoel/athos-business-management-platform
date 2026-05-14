@@ -1,28 +1,61 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
-import { BrainCircuit, TrendingUp, Users, MessageSquare, Zap, Target, ArrowRight, Clock, Star } from 'lucide-react';
-import StatCard from '../../components/StatCard';
+import { BrainCircuit, TrendingUp, Users, MessageSquare, Zap, Target, ArrowRight, Clock, Star, Plus, Trash2, X, Save, Phone, Mail, Building2 } from 'lucide-react';
+
+interface Lead {
+  id: string;
+  nome: string;
+  email: string;
+  telefone: string;
+  empresa: string;
+  valor: number;
+  etapa: 'novo' | 'contatado' | 'qualificado' | 'proposta' | 'negociacao' | 'fechado' | 'perdido';
+  responsavel: string;
+  ultimoContato: string;
+}
 
 const ATHOSFlow: React.FC = () => {
   const { darkMode } = useApp();
 
+  const [leads, setLeads] = useState<Lead[]>(() => {
+    const saved = localStorage.getItem('athos_leads');
+    return saved ? JSON.parse(saved) : [
+      { id: '1', nome: 'João Silva', email: 'joao@tech.com', telefone: '(11) 99999-0001', empresa: 'Tech Solutions', valor: 15000, etapa: 'proposta', responsavel: 'Luiz Victor', ultimoContato: '13/05' },
+      { id: '2', nome: 'Maria Santos', email: 'maria@clinica.com', telefone: '(11) 99999-0002', empresa: 'Clínica Viva', valor: 8500, etapa: 'negociacao', responsavel: 'Joel Oliveira', ultimoContato: '12/05' },
+      { id: '3', nome: 'Pedro Costa', email: 'pedro@rest.com', telefone: '(11) 99999-0003', empresa: 'Restaurante Sabor', valor: 5200, etapa: 'qualificado', responsavel: 'Luiz Victor', ultimoContato: '10/05' },
+    ];
+  });
+
+  const [showForm, setShowForm] = useState(false);
+  const [formData, setFormData] = useState({ nome: '', email: '', telefone: '', empresa: '', valor: '', etapa: 'novo', responsavel: 'Luiz Victor' });
+
+  useEffect(() => { localStorage.setItem('athos_leads', JSON.stringify(leads)); }, [leads]);
+
+  const salvarLead = () => {
+    if (!formData.nome || !formData.empresa) return;
+    const novo: Lead = {
+      id: Date.now().toString(),
+      ...formData,
+      valor: parseFloat(formData.valor) || 0,
+      ultimoContato: new Date().toLocaleDateString('pt-BR'),
+    };
+    setLeads([novo, ...leads]);
+    setFormData({ nome: '', email: '', telefone: '', empresa: '', valor: '', etapa: 'novo', responsavel: 'Luiz Victor' });
+    setShowForm(false);
+  };
+
+  const excluirLead = (id: string) => {
+    if (confirm('Excluir este lead?')) setLeads(leads.filter(l => l.id !== id));
+  };
+
+  const etapas = ['novo', 'contatado', 'qualificado', 'proposta', 'negociacao', 'fechado', 'perdido'];
+  const etapaCores: Record<string, string> = { novo: 'gray', contatado: 'blue', qualificado: 'cyan', proposta: 'amber', negociacao: 'violet', fechado: 'emerald', perdido: 'red' };
+
   const stats = [
-    { title: 'Leads Ativos', value: '147', change: '+12%', icon: Users, color: 'pink' },
-    { title: 'Oportunidades', value: '23', change: '+5%', icon: Target, color: 'violet' },
-    { title: 'Conversão', value: '28%', change: '+3%', icon: TrendingUp, color: 'emerald' },
-    { title: 'Ticket Médio', value: 'R$ 4.250', change: '+8%', icon: Star, color: 'amber' },
-  ];
-
-  const proximasAcoes = [
-    { tipo: 'followup', titulo: 'Ligação para João Silva', hora: '14:30', prioridade: 'alta' },
-    { tipo: 'proposta', titulo: 'Enviar proposta - Tech Solutions', hora: '16:00', prioridade: 'media' },
-    { tipo: 'whatsapp', titulo: 'Mensagem automática - Maria Santos', hora: '17:00', prioridade: 'baixa' },
-  ];
-
-  const leadsQuentes = [
-    { nome: 'Tech Solutions', valor: 'R$ 15.000', probabilidade: 85, etapa: 'Proposta' },
-    { nome: 'Clínica Viva', valor: 'R$ 8.500', probabilidade: 70, etapa: 'Negociação' },
-    { nome: 'Restaurante Sabor', valor: 'R$ 5.200', probabilidade: 60, etapa: 'Qualificado' },
+    { title: 'Leads Ativos', value: leads.length.toString(), change: '+12%', icon: Users, color: 'pink' },
+    { title: 'Propostas', value: leads.filter(l => l.etapa === 'proposta').length.toString(), change: '+5%', icon: Target, color: 'violet' },
+    { title: 'Fechados', value: leads.filter(l => l.etapa === 'fechado').length.toString(), change: '+3%', icon: TrendingUp, color: 'emerald' },
+    { title: 'Valor Pipeline', value: `R$ ${leads.reduce((s, l) => s + l.valor, 0).toLocaleString()}`, icon: Star, color: 'amber' },
   ];
 
   return (
@@ -30,7 +63,7 @@ const ATHOSFlow: React.FC = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gradient">ATHOS Flow</h1>
-          <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>CRM Inteligente com Automação</p>
+          <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>CRM Inteligente - Dir. Comercial: Luiz Victor</p>
         </div>
         <div className="flex items-center gap-2 px-3 py-1.5 bg-pink-500/10 rounded-lg">
           <BrainCircuit size={16} className="text-pink-400" />
@@ -38,88 +71,91 @@ const ATHOSFlow: React.FC = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <button onClick={() => setShowForm(true)} className="px-4 py-2 bg-pink-500 text-white rounded-lg text-sm font-medium hover:bg-pink-600 flex items-center gap-2">
+        <Plus size={16} /> Novo Lead
+      </button>
+
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         {stats.map((stat, i) => (
-          <StatCard key={i} {...stat} darkMode={darkMode} />
+          <div key={i} className={`p-4 rounded-xl ${darkMode ? 'bg-gray-900/50' : 'bg-white'}`}>
+            <div className="flex items-center justify-between mb-2">
+              <stat.icon size={20} className={`text-${stat.color}-400`} />
+            </div>
+            <p className="text-2xl font-bold">{stat.value}</p>
+            <p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>{stat.title}</p>
+          </div>
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className={`p-5 rounded-2xl ${darkMode ? 'bg-gray-900/50' : 'bg-white'}`}>
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="font-semibold">Próximas Ações (IA Sugere)</h2>
-            <Zap size={16} className="text-amber-400" />
+      {showForm && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className={`p-6 rounded-2xl w-full max-w-md ${darkMode ? 'bg-gray-900' : 'bg-white'}`}>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-bold">Novo Lead</h2>
+              <button onClick={() => setShowForm(false)}><X size={20} /></button>
+            </div>
+            <div className="space-y-4">
+              <div>
+                <label className="text-sm">Nome</label>
+                <input type="text" value={formData.nome} onChange={e => setFormData({ ...formData, nome: e.target.value })} className="w-full mt-1 p-2 rounded-lg bg-gray-800 border border-gray-700" placeholder="Nome do contato" />
+              </div>
+              <div>
+                <label className="text-sm">Empresa</label>
+                <input type="text" value={formData.empresa} onChange={e => setFormData({ ...formData, empresa: e.target.value })} className="w-full mt-1 p-2 rounded-lg bg-gray-800 border border-gray-700" placeholder="Nome da empresa" />
+              </div>
+              <div>
+                <label className="text-sm">Email</label>
+                <input type="email" value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} className="w-full mt-1 p-2 rounded-lg bg-gray-800 border border-gray-700" placeholder="email@empresa.com" />
+              </div>
+              <div>
+                <label className="text-sm">Telefone</label>
+                <input type="tel" value={formData.telefone} onChange={e => setFormData({ ...formData, telefone: e.target.value })} className="w-full mt-1 p-2 rounded-lg bg-gray-800 border border-gray-700" placeholder="(00) 00000-0000" />
+              </div>
+              <div>
+                <label className="text-sm">Valor Estimado (R$)</label>
+                <input type="number" value={formData.valor} onChange={e => setFormData({ ...formData, valor: e.target.value })} className="w-full mt-1 p-2 rounded-lg bg-gray-800 border border-gray-700" placeholder="0,00" />
+              </div>
+              <div>
+                <label className="text-sm">Responsável</label>
+                <select value={formData.responsavel} onChange={e => setFormData({ ...formData, responsavel: e.target.value })} className="w-full mt-1 p-2 rounded-lg bg-gray-800 border border-gray-700">
+                  <option value="Luiz Victor">Luiz Victor - Comercial</option>
+                  <option value="Joel Oliveira">Joel Oliveira - Adm/Financeiro</option>
+                  <option value="Kleber Duarte">Kleber Duarte - CEO</option>
+                </select>
+              </div>
+              <button onClick={salvarLead} className="w-full py-2 bg-pink-500 rounded-lg font-medium hover:bg-pink-600 flex items-center justify-center gap-2">
+                <Save size={16} /> Salvar Lead
+              </button>
+            </div>
           </div>
-          <div className="space-y-3">
-            {proximasAcoes.map((acao, i) => (
-              <div key={i} className={`flex items-center justify-between p-3 rounded-xl ${darkMode ? 'bg-gray-800/50' : 'bg-gray-50'}`}>
-                <div className="flex items-center gap-3">
-                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                    acao.prioridade === 'alta' ? 'bg-red-500/20 text-red-400' :
-                    acao.prioridade === 'media' ? 'bg-amber-500/20 text-amber-400' :
-                    'bg-gray-500/20 text-gray-400'
-                  }`}>
-                    <Clock size={14} />
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium">{acao.titulo}</p>
-                    <p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>{acao.hora}</p>
-                  </div>
+        </div>
+      )}
+
+      <div className={`p-5 rounded-xl ${darkMode ? 'bg-gray-900/50' : 'bg-white'}`}>
+        <h2 className="font-semibold mb-4">Pipeline de Vendas</h2>
+        <div className="space-y-3">
+          {leads.map(lead => (
+            <div key={lead.id} className={`flex items-center justify-between p-4 rounded-xl ${darkMode ? 'bg-gray-800/50' : 'bg-gray-50'}`}>
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 rounded-full bg-pink-500/20 flex items-center justify-center text-pink-400 font-bold">
+                  {lead.nome.charAt(0)}
                 </div>
-                <button className="p-2 rounded-lg bg-pink-500/20 text-pink-400 hover:bg-pink-500/30">
-                  <ArrowRight size={16} />
+                <div>
+                  <p className="font-medium">{lead.nome}</p>
+                  <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{lead.empresa}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-4">
+                <span className={`text-xs font-medium px-3 py-1 rounded-full bg-${etapaCores[lead.etapa]}-500/20 text-${etapaCores[lead.etapa]}-400`}>
+                  {lead.etapa}
+                </span>
+                <span className="font-semibold text-emerald-400">R$ {lead.valor.toLocaleString()}</span>
+                <button onClick={() => excluirLead(lead.id)} className="p-2 rounded-lg hover:bg-red-500/20 text-gray-400 hover:text-red-400">
+                  <Trash2 size={14} />
                 </button>
               </div>
-            ))}
-          </div>
-          <button className="w-full mt-4 py-2 text-sm font-medium text-pink-400 hover:text-pink-300">
-            Ver todas as ações →
-          </button>
-        </div>
-
-        <div className={`p-5 rounded-2xl ${darkMode ? 'bg-gray-900/50' : 'bg-white'}`}>
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="font-semibold">Leads Quentes</h2>
-            <TrendingUp size={16} className="text-emerald-400" />
-          </div>
-          <div className="space-y-3">
-            {leadsQuentes.map((lead, i) => (
-              <div key={i} className={`flex items-center justify-between p-3 rounded-xl ${darkMode ? 'bg-gray-800/50' : 'bg-gray-50'}`}>
-                <div>
-                  <p className="text-sm font-medium">{lead.nome}</p>
-                  <p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>{lead.etapa}</p>
-                </div>
-                <div className="text-right">
-                  <p className="text-sm font-semibold text-emerald-400">{lead.valor}</p>
-                  <p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>{lead.probabilidade}%</p>
-                </div>
-              </div>
-            ))}
-          </div>
-          <button className="w-full mt-4 py-2 text-sm font-medium text-pink-400 hover:text-pink-300">
-            Acessar funil →
-          </button>
-        </div>
-      </div>
-
-      <div className={`p-5 rounded-2xl ${darkMode ? 'bg-gray-900/50' : 'bg-white'}`}>
-        <div className="flex items-center gap-2 mb-4">
-          <MessageSquare size={16} className="text-pink-400" />
-          <h2 className="font-semibold">Integração WhatsApp</h2>
-        </div>
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-full bg-emerald-500/20 flex items-center justify-center">
-              <span className="text-emerald-400 text-lg">✓</span>
             </div>
-            <div>
-              <p className="font-medium">WhatsApp Business Conectado</p>
-              <p className={`text-sm ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>3 conversas ativas</p>
-            </div>
-          </div>
-          <button className="px-4 py-2 bg-pink-500 text-white rounded-lg text-sm font-medium hover:bg-pink-600">
-            Abrir Conversas
-          </button>
+          ))}
         </div>
       </div>
     </div>
