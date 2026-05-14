@@ -15,6 +15,7 @@ import SegurancaPage from './pages/Seguranca';
 import Configuracoes from './pages/Configuracoes';
 import ContratosPage from './pages/Contratos';
 import DespesasPage from './pages/Despesas';
+import SociosPage from './pages/Socios';
 
 import ATHOSFlow from './pages/modules/ATHOSFlow';
 import Leads from './pages/modules/Leads';
@@ -103,6 +104,7 @@ const AppContent: React.FC = () => {
     seguranca: SegurancaPage,
     configuracoes: Configuracoes,
     despesas: DespesasPage,
+    socios: SociosPage,
   };
 
   const Page = pages[currentPage] || Dashboard;

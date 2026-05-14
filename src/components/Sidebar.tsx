@@ -16,6 +16,7 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { id: 'dashboard', label: 'Dashboard', section: 'Principal' },
+  { id: 'socios', label: 'Sócios & Diretores', section: 'Principal' },
   
   { id: 'flow', label: 'ATHOS Flow', section: 'CRM', badge: 'Novo' },
   { id: 'leads', label: 'Leads', section: 'CRM' },
