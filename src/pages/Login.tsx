@@ -57,13 +57,9 @@ const LoginPage: React.FC = () => {
       }} />
 
       <div className="relative z-10 w-full max-w-lg px-6">
-        <div className="text-center mb-8 animate-fade-in">
-          <div className="inline-flex items-center justify-center w-40 h-40 mb-6 overflow-hidden rounded-3xl shadow-2xl shadow-cyan-500/30">
+        <div className="text-center mb-6 animate-fade-in">
+          <div className="inline-flex items-center justify-center w-48 h-48 mb-4 overflow-hidden rounded-3xl shadow-2xl shadow-cyan-500/40">
             <img src="/logo.png" alt="ATHOS Logo" className="w-full h-full object-contain" />
-          </div>
-          <div className="flex items-center justify-center gap-2">
-            <span className="w-2 h-2 bg-cyan-500 rounded-full animate-pulse"></span>
-            <span className="text-sm text-cyan-400 font-medium">ATHOS Solution Tecnologia LTDA</span>
           </div>
         </div>
 
