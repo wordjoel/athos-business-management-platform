@@ -61,7 +61,7 @@ const LoginPage: React.FC = () => {
           <div className="inline-flex items-center justify-center w-24 h-24 mb-4 overflow-hidden rounded-2xl">
             <img src="/logo.png" alt="ATHOS Logo" className="w-full h-full object-contain" />
           </div>
-          <h1 className="text-3xl font-bold text-cyan-400 tracking-tight">ATHOS Solution</h1>
+          <h1 className="text-3xl font-bold text-white tracking-tight">ATHOS Solution</h1>
           <p className="text-sm text-gray-500 mt-1 tracking-[0.2em] uppercase">Tecnologia LTDA</p>
         </div>
 
