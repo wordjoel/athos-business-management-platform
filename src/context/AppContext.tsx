@@ -49,7 +49,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     const savedNome = localStorage.getItem('athos_nome_empresa');
     const savedDados = localStorage.getItem('athos_dados_empresa');
     const dadosEmpresa: DadosEmpresa = savedDados ? JSON.parse(savedDados) : {
-      razaoSocial: 'ATOS Centro de Organização LTDA',
+      razaoSocial: 'ATHOS Solution Tecnologia LTDA',
       cnpj: '',
       email: '',
       telefone: '',
@@ -69,7 +69,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       alertas: mockAlertas,
       aiPanelOpen: false,
       selectedSetor: 'todos',
-      nomeEmpresa: savedNome || 'ATOS',
+      nomeEmpresa: savedNome || 'ATHOS',
       dadosEmpresa,
     };
   });
