@@ -16,6 +16,7 @@ import Configuracoes from './pages/Configuracoes';
 import ContratosPage from './pages/Contratos';
 import DespesasPage from './pages/Despesas';
 import SociosPage from './pages/Socios';
+import ATHOSDrive from './pages/modules/ATHOSDrive';
 
 import ATHOSFlow from './pages/modules/ATHOSFlow';
 import Leads from './pages/modules/Leads';
@@ -105,6 +106,7 @@ const AppContent: React.FC = () => {
     configuracoes: Configuracoes,
     despesas: DespesasPage,
     socios: SociosPage,
+    drive: ATHOSDrive,
   };
 
   const Page = pages[currentPage] || Dashboard;

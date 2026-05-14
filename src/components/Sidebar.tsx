@@ -4,7 +4,7 @@ import {
   LayoutDashboard, DollarSign, BrainCircuit, FileText, Database,
   Shield, ChevronLeft, ChevronRight, Users, Settings, LogOut, 
   HandHelping, Kanban, UserCheck, FileSignature, Building2,
-  Briefcase, Eye, AlertTriangle
+  Briefcase, Eye, AlertTriangle, HardDrive
 } from 'lucide-react';
 
 interface NavItem {
@@ -17,6 +17,7 @@ interface NavItem {
 const navItems: NavItem[] = [
   { id: 'dashboard', label: 'Dashboard', section: 'Principal' },
   { id: 'socios', label: 'Sócios & Diretores', section: 'Principal' },
+  { id: 'drive', label: 'ATHOS Drive', section: 'Principal', badge: 'Novo' },
   
   { id: 'flow', label: 'ATHOS Flow', section: 'CRM', badge: 'Novo' },
   { id: 'leads', label: 'Leads', section: 'CRM' },
@@ -65,6 +66,7 @@ const navItems: NavItem[] = [
 
 const sectionIcons: Record<string, React.FC<{ size?: number; className?: string }>> = {
   'Principal': LayoutDashboard,
+  'Drive': HardDrive,
   'CRM': HandHelping,
   'Financeiro': DollarSign,
   'Contratos': FileSignature,
@@ -78,6 +80,7 @@ const sectionIcons: Record<string, React.FC<{ size?: number; className?: string 
 
 const sectionColors: Record<string, string> = {
   'Principal': 'bg-athos-500',
+  'Drive': 'bg-cyan-500',
   'CRM': 'bg-pink-500',
   'Financeiro': 'bg-emerald-500',
   'Contratos': 'bg-violet-500',
