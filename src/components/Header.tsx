@@ -9,55 +9,36 @@ const Header: React.FC = () => {
   const [showUserMenu, setShowUserMenu] = useState(false);
 
   return (
-    <header className={`h-16 px-6 flex items-center justify-between border-b transition-colors ${
-      darkMode ? 'bg-gray-950/80 border-white/5 backdrop-blur-xl' : 'bg-white/80 border-gray-200 backdrop-blur-xl'
+    <header className={`h-14 px-5 flex items-center justify-between border-b ${
+      darkMode ? 'bg-gray-900/50 border-white/5' : 'bg-white/50 border-gray-200'
     }`}>
       {/* Left: Search */}
       <div className="flex items-center gap-4">
-        <div className={`flex items-center gap-2 rounded-xl px-4 py-2 transition-all ${
-          darkMode ? 'bg-white/5 border border-white/5 focus-within:border-athos-500/50 focus-within:bg-white/8' : 'bg-gray-50 border border-gray-200 focus-within:border-athos-400'
+        <div className={`flex items-center gap-2 rounded-lg px-3 py-1.5 ${
+          darkMode ? 'bg-gray-800/30 border border-white/5' : 'bg-gray-50 border border-gray-200'
         }`}>
-          <Search size={16} className={darkMode ? 'text-gray-500' : 'text-gray-400'} />
+          <Search size={14} className={darkMode ? 'text-gray-600' : 'text-gray-400'} />
           <input
             type="text"
-            placeholder="Buscar na plataforma..."
-            className={`bg-transparent text-sm outline-none w-64 ${darkMode ? 'text-white placeholder-gray-500' : 'text-gray-900 placeholder-gray-400'}`}
+            placeholder="Buscar..."
+            className={`bg-transparent text-xs outline-none w-40 ${darkMode ? 'text-white placeholder-gray-600' : 'text-gray-900 placeholder-gray-400'}`}
           />
-          <kbd className={`text-[10px] px-1.5 py-0.5 rounded ${darkMode ? 'bg-white/10 text-gray-500' : 'bg-gray-200 text-gray-400'}`}>⌘K</kbd>
         </div>
       </div>
 
       {/* Right: Actions */}
       <div className="flex items-center gap-2">
-        {/* Date */}
-        <div className={`hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium ${
-          darkMode ? 'text-gray-400 bg-white/5' : 'text-gray-500 bg-gray-50'
-        }`}>
-          <Calendar size={12} />
-          <span>15 Jan 2025</span>
-        </div>
-
-        {/* Theme Toggle */}
-        <button
-          onClick={toggleDarkMode}
-          className={`p-2.5 rounded-xl transition-all ${
-            darkMode ? 'text-gray-400 hover:text-yellow-400 hover:bg-yellow-400/10' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'
-          }`}
-        >
-          {darkMode ? <Sun size={18} /> : <Moon size={18} />}
-        </button>
-
         {/* Notifications */}
         <div className="relative">
-          <button
+<button
             onClick={() => setShowNotifications(!showNotifications)}
-            className={`p-2.5 rounded-xl transition-all relative ${
-              darkMode ? 'text-gray-400 hover:text-white hover:bg-white/5' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'
+            className={`p-2 rounded-lg transition-all ${
+              darkMode ? 'text-gray-500 hover:text-cyan-400 hover:bg-gray-800' : 'text-gray-500 hover:bg-gray-100'
             }`}
           >
-            <Bell size={18} />
+            <Bell size={16} />
             {unreadAlertCount > 0 && (
-              <span className="absolute -top-0.5 -right-0.5 w-5 h-5 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center animate-pulse-slow">
+              <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-cyan-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center">
                 {unreadAlertCount}
               </span>
             )}
@@ -101,24 +82,24 @@ const Header: React.FC = () => {
         <div className="relative">
           <button
             onClick={() => setShowUserMenu(!showUserMenu)}
-            className={`flex items-center gap-2 p-1.5 pr-3 rounded-xl transition-all ${
-              darkMode ? 'hover:bg-white/5' : 'hover:bg-gray-100'
+            className={`flex items-center gap-2 p-1.5 rounded-lg transition-all ${
+              darkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-100'
             }`}
           >
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-r from-cyan-500 to-cyan-400 flex items-center justify-center text-gray-900 text-xs font-bold">
+            <div className="w-7 h-7 rounded-lg bg-cyan-600 flex items-center justify-center text-white text-xs font-bold">
               {usuarioLogado?.avatar || 'US'}
             </div>
-            <span className={`text-sm font-medium hidden sm:block ${darkMode ? 'text-white' : 'text-gray-900'}`}>{usuarioLogado?.nome?.split(' ')[0] || 'Usuário'}</span>
-            <ChevronDown size={14} className={darkMode ? 'text-gray-500' : 'text-gray-400'} />
+            <span className={`text-xs hidden sm:block ${darkMode ? 'text-gray-400' : 'text-gray-700'}`}>{usuarioLogado?.nome?.split(' ')[0] || 'Usuário'}</span>
+            <ChevronDown size={12} className={darkMode ? 'text-gray-600' : 'text-gray-400'} />
           </button>
 
           {showUserMenu && (
-            <div className={`absolute right-0 top-14 w-56 rounded-2xl shadow-2xl z-50 overflow-hidden animate-slide-up ${
-              darkMode ? 'bg-gray-900 border border-white/10' : 'bg-white border border-gray-200'
+            <div className={`absolute right-0 top-12 w-48 rounded-lg shadow-lg z-50 overflow-hidden ${
+              darkMode ? 'bg-gray-800 border border-white/10' : 'bg-white border border-gray-200'
             }`}>
-              <div className={`p-4 border-b ${darkMode ? 'border-white/5' : 'border-gray-100'}`}>
-                <p className={`text-sm font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{usuarioLogado?.nome || 'Usuário'}</p>
-                <p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>{usuarioLogado?.email || 'usuario@athos.com'}</p>
+              <div className={`p-3 border-b ${darkMode ? 'border-white/5' : 'border-gray-100'}`}>
+                <p className={`text-xs font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>{usuarioLogado?.nome || 'Usuário'}</p>
+                <p className={`text-[10px] ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>{usuarioLogado?.email || 'usuario@athos.com'}</p>
               </div>
               <div className="p-2">
                 <button className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors ${darkMode ? 'text-gray-300 hover:bg-white/5' : 'text-gray-600 hover:bg-gray-50'}`}>

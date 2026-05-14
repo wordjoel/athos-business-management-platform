@@ -110,7 +110,7 @@ const AppContent: React.FC = () => {
   const Page = pages[currentPage] || Dashboard;
 
   return (
-    <div className={`flex h-screen overflow-hidden transition-colors ${darkMode ? 'bg-gray-950 text-white' : 'bg-gray-50 text-gray-900'}`}>
+    <div className={`flex h-screen overflow-hidden ${darkMode ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'}`}>
       <Sidebar />
       <div className="flex-1 flex flex-col overflow-hidden">
         <Header />
