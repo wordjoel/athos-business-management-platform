@@ -110,7 +110,7 @@ const WhatsAppIntegration: React.FC = () => {
   const [configBridge, setConfigBridge] = useState<ConfigBridge>(() => {
     const saved = localStorage.getItem('athos_bridge_config');
     const base = saved ? JSON.parse(saved) : {};
-    return { url: base.url || 'http://localhost:3000', ativo: base.ativo || false };
+    return { url: base.url || 'https://whatsapp-bridge-production-2140.up.railway.app', ativo: base.ativo || true };
   });
 
   const [aba, setAba] = useState<'chat' | 'contatos' | 'automacao' | 'config'>('chat');
@@ -708,6 +708,7 @@ const WhatsAppIntegration: React.FC = () => {
                   <li>5. Mantenha o terminal aberto (pode minimizar)</li>
                 </ol>
               </div>
+              <BridgeQRCode url={configBridge.url} />
             </div>
           </div>
         </div>
@@ -717,3 +718,46 @@ const WhatsAppIntegration: React.FC = () => {
 };
 
 export default WhatsAppIntegration;
+
+function BridgeQRCode({ url }: { url: string }) {
+  const [qrData, setQrData] = useState<string | null>(null);
+  const [status, setStatus] = useState('disconnected');
+
+  useEffect(() => {
+    const check = async () => {
+      try {
+        const res = await fetch(`${url.replace(/\/$/, '')}/qr`);
+        if (res.ok) {
+          const data = await res.json();
+          setQrData(data.qr);
+          setStatus(data.status);
+        }
+      } catch { /* bridge offline */ }
+    };
+    check();
+    const interval = setInterval(check, 5000);
+    return () => clearInterval(interval);
+  }, [url]);
+
+  if (status === 'connected') {
+    return <div className="p-3 bg-green-500/10 rounded-lg border border-green-500/30 text-center">
+      <p className="text-xs text-green-400 font-medium">WhatsApp Conectado ✅</p>
+    </div>;
+  }
+
+  return <div className="p-3 bg-gray-800/50 rounded-lg border border-white/5 text-center">
+    {qrData ? (
+      <>
+        <img src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(qrData)}`} alt="QR Code WhatsApp" className="mx-auto mb-2" />
+        <p className="text-[10px] text-gray-500">Escaneie o QR Code com seu WhatsApp</p>
+      </>
+    ) : (
+      <>
+        <div className="animate-pulse flex justify-center mb-2">
+          <div className="w-12 h-12 bg-gray-700 rounded-lg"></div>
+        </div>
+        <p className="text-[10px] text-gray-500">Aguardando QR Code...</p>
+      </>
+    )}
+  </div>;
+}
