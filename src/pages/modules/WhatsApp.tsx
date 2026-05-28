@@ -110,7 +110,7 @@ const WhatsAppIntegration: React.FC = () => {
   const [configBridge, setConfigBridge] = useState<ConfigBridge>(() => {
     const saved = localStorage.getItem('athos_bridge_config');
     const base = saved ? JSON.parse(saved) : {};
-    return { url: base.url || 'https://whatsapp-bridge-production-2140.up.railway.app', ativo: base.ativo || true };
+    return { url: base.url || 'http://localhost:3000', ativo: base.ativo || false };
   });
 
   const [aba, setAba] = useState<'chat' | 'contatos' | 'automacao' | 'config'>('chat');

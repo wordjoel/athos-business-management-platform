@@ -178,5 +178,6 @@ app.listen(PORT, () => {
   console.log(`🤖 WhatsApp Bridge rodando na porta ${PORT}`);
   console.log(`🔗 Webhook: ${WEBHOOK_URL}`);
   console.log(`📱 Número do usuário: ${NUMERO_USUARIO}`);
+  console.log(`⏱ Iniciando conexão WhatsApp...`);
   startBot();
 });
