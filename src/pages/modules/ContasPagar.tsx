@@ -1,17 +1,80 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
-import { Wallet, Plus, Search, Filter, ArrowUpRight } from 'lucide-react';
+import { Plus, Search, X, Trash2, Pencil, AlertTriangle } from 'lucide-react';
+import { getLancamentos, criarLancamento, atualizarLancamento, excluirLancamento, Lancamento } from '../../services/lancamentoService';
+
+const CATEGORIAS_DESPESA = ['Geral', 'Aluguel', 'Utilidades', 'Pessoal', 'Operacional', 'Marketing', 'CPV', 'Deduções', 'Financeiro', 'IR', 'Outros'];
 
 const ContasPagar: React.FC = () => {
   const { darkMode } = useApp();
+  const [lancamentos, setLancamentos] = useState<Lancamento[]>([]);
+  const [search, setSearch] = useState('');
+  const [showForm, setShowForm] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [formData, setFormData] = useState({ descricao: '', contraparte: '', valor: '', vencimento: '', categoria: 'Geral' });
 
-  const contas = [
-    { descricao: 'Aluguel - Maio', fornecedor: 'Imobiliária Silva', valor: 8500, vencimento: '15/05', status: 'pago' },
-    { descricao: 'Contabilidade', fornecedor: 'Silva & Associados', valor: 2500, vencimento: '20/05', status: 'pendente' },
-    { descricao: 'Internet', fornecedor: 'Telecom Brasil', valor: 350, vencimento: '22/05', status: 'pendente' },
-    { descricao: 'Luz', fornecedor: 'Companhia Elétrica', valor: 1200, vencimento: '25/05', status: 'pendente' },
-    { descricao: 'Software', fornecedor: 'TechCorp', valor: 1800, vencimento: '28/05', status: 'atrasado' },
-  ];
+  const carregar = () => setLancamentos(getLancamentos().filter(l => l.tipo === 'despesa'));
+  useEffect(() => { carregar(); }, []);
+
+  const filtered = lancamentos.filter(l => l.descricao.toLowerCase().includes(search.toLowerCase()) || l.contraparte.toLowerCase().includes(search.toLowerCase()));
+
+  const abrirNovo = () => {
+    setEditingId(null);
+    setFormData({ descricao: '', contraparte: '', valor: '', vencimento: '', categoria: 'Geral' });
+    setShowForm(true);
+  };
+
+  const abrirEditar = (l: Lancamento) => {
+    setEditingId(l.id);
+    setFormData({ descricao: l.descricao, contraparte: l.contraparte, valor: l.valor.toString(), vencimento: l.vencimento, categoria: l.categoria });
+    setShowForm(true);
+  };
+
+  const salvar = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formData.descricao || !formData.valor || !formData.vencimento) return;
+
+    if (editingId) {
+      atualizarLancamento(editingId, {
+        descricao: formData.descricao,
+        contraparte: formData.contraparte,
+        valor: parseFloat(formData.valor),
+        vencimento: formData.vencimento,
+        categoria: formData.categoria,
+      });
+    } else {
+      criarLancamento({
+        tipo: 'despesa',
+        descricao: formData.descricao,
+        contraparte: formData.contraparte,
+        valor: parseFloat(formData.valor),
+        vencimento: formData.vencimento,
+        data: formData.vencimento,
+        status: 'pendente',
+        categoria: formData.categoria,
+      });
+    }
+    carregar();
+    setShowForm(false);
+    setEditingId(null);
+  };
+
+  const excluir = (id: string) => {
+    excluirLancamento(id);
+    carregar();
+  };
+
+  const toggleStatus = (id: string) => {
+    const l = lancamentos.find(x => x.id === id);
+    if (!l) return;
+    const novoStatus = l.status === 'pendente' ? 'pago' : l.status === 'pago' ? 'pendente' : 'pendente';
+    atualizarLancamento(id, { status: novoStatus as Lancamento['status'] });
+    carregar();
+  };
+
+  const totalPendente = lancamentos.filter(l => l.status !== 'pago').reduce((s, l) => s + l.valor, 0);
+  const totalPago = lancamentos.filter(l => l.status === 'pago').reduce((s, l) => s + l.valor, 0);
+  const atrasadas = lancamentos.filter(l => l.status === 'atrasado').length;
 
   return (
     <div className="p-6 space-y-6">
@@ -20,39 +83,42 @@ const ContasPagar: React.FC = () => {
           <h1 className="text-2xl font-bold text-gradient">Contas a Pagar</h1>
           <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>ATHOS Finance - Gestão de Despesas</p>
         </div>
-        <button className="px-4 py-2 bg-emerald-500 text-white rounded-lg text-sm font-medium hover:bg-emerald-600 flex items-center gap-2">
-          <Plus size={16} />
-          Nova Conta
+        <button onClick={abrirNovo} className="px-4 py-2 bg-emerald-500 text-white rounded-lg text-sm font-medium hover:bg-emerald-600 flex items-center gap-2">
+          <Plus size={16} /> Nova Despesa
         </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className={`p-4 rounded-xl ${darkMode ? 'bg-gray-900/50' : 'bg-white'}`}>
           <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Total Pendente</p>
-          <p className="text-xl font-bold text-red-400">R$ 13.750</p>
-        </div>
-        <div className={`p-4 rounded-xl ${darkMode ? 'bg-gray-900/50' : 'bg-white'}`}>
-          <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Vencendo Hoje</p>
-          <p className="text-xl font-bold text-amber-400">2</p>
+          <p className="text-xl font-bold text-red-400">R$ {totalPendente.toLocaleString()}</p>
         </div>
         <div className={`p-4 rounded-xl ${darkMode ? 'bg-gray-900/50' : 'bg-white'}`}>
           <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Atrasadas</p>
-          <p className="text-xl font-bold text-red-500">1</p>
+          <p className="text-xl font-bold text-red-500">{atrasadas}</p>
         </div>
         <div className={`p-4 rounded-xl ${darkMode ? 'bg-gray-900/50' : 'bg-white'}`}>
           <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Pago no Mês</p>
-          <p className="text-xl font-bold text-emerald-400">R$ 8.500</p>
+          <p className="text-xl font-bold text-emerald-400">R$ {totalPago.toLocaleString()}</p>
         </div>
       </div>
 
-      <div className="flex gap-4 mb-4">
+      <div className="flex gap-4">
         <div className="flex-1 relative">
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-          <input type="text" placeholder="Buscar contas..." className={`w-full pl-10 pr-4 py-2 rounded-lg ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`} />
+          <input value={search} onChange={e => setSearch(e.target.value)} type="text" placeholder="Buscar despesas..." className={`w-full pl-10 pr-4 py-2 rounded-lg outline-none border ${darkMode ? 'bg-gray-800 border-gray-700 text-white' : 'bg-white border-gray-200 text-gray-900'}`} />
         </div>
-        <button className="px-4 py-2 bg-gray-800 rounded-lg flex items-center gap-2">
-          <Filter size={16} />
-          Filtrar
+        <button
+          onClick={() => {
+            localStorage.removeItem('athos_lancamentos');
+            localStorage.removeItem('athos_migracao_feita');
+            localStorage.removeItem('athos_contas_pagar');
+            localStorage.removeItem('athos_contas_receber');
+            window.location.reload();
+          }}
+          className="px-3 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-lg text-xs font-medium flex items-center gap-1.5 transition-all"
+        >
+          <AlertTriangle size={14} /> Limpar dados de exemplo
         </button>
       </div>
 
@@ -62,6 +128,7 @@ const ContasPagar: React.FC = () => {
             <tr>
               <th className="text-left p-4 text-sm font-medium">Descrição</th>
               <th className="text-left p-4 text-sm font-medium">Fornecedor</th>
+              <th className="text-left p-4 text-sm font-medium">Categoria</th>
               <th className="text-left p-4 text-sm font-medium">Valor</th>
               <th className="text-left p-4 text-sm font-medium">Vencimento</th>
               <th className="text-left p-4 text-sm font-medium">Status</th>
@@ -69,29 +136,55 @@ const ContasPagar: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {contas.map((conta, i) => (
-              <tr key={i} className={`border-t ${darkMode ? 'border-gray-800' : 'border-gray-100'}`}>
-                <td className="p-4 text-sm">{conta.descricao}</td>
-                <td className="p-4 text-sm text-gray-400">{conta.fornecedor}</td>
-                <td className="p-4 text-sm font-medium">R$ {conta.valor.toLocaleString()}</td>
-                <td className="p-4 text-sm">{conta.vencimento}</td>
+            {filtered.map(l => (
+              <tr key={l.id} className={`border-t ${darkMode ? 'border-gray-800' : 'border-gray-100'}`}>
+                <td className="p-4 text-sm">{l.descricao}</td>
+                <td className="p-4 text-sm text-gray-400">{l.contraparte}</td>
+                <td className="p-4 text-sm text-gray-400">{l.categoria}</td>
+                <td className="p-4 text-sm font-medium">R$ {l.valor.toLocaleString()}</td>
+                <td className="p-4 text-sm">{l.vencimento}</td>
                 <td className="p-4">
-                  <span className={`text-xs font-medium px-2 py-1 rounded-lg ${
-                    conta.status === 'pago' ? 'bg-emerald-500/20 text-emerald-400' :
-                    conta.status === 'pendente' ? 'bg-amber-500/20 text-amber-400' :
-                    'bg-red-500/20 text-red-400'
-                  }`}>{conta.status}</span>
+                  <button onClick={() => toggleStatus(l.id)} className={`text-xs font-medium px-2 py-1 rounded-lg transition-all ${
+                    l.status === 'pago' ? 'bg-emerald-500/20 text-emerald-400' :
+                    l.status === 'atrasado' ? 'bg-red-500/20 text-red-400' :
+                    'bg-amber-500/20 text-amber-400'
+                  }`}>{l.status}</button>
                 </td>
                 <td className="p-4">
-                  <button className="p-2 rounded-lg bg-gray-800 hover:bg-gray-700">
-                    <ArrowUpRight size={14} />
-                  </button>
+                  <div className="flex gap-1">
+                    <button onClick={() => abrirEditar(l)} className="p-2 rounded-lg bg-gray-800 hover:bg-gray-700"><Pencil size={14} /></button>
+                    <button onClick={() => excluir(l.id)} className="p-2 rounded-lg bg-red-500/20 hover:bg-red-500/30"><Trash2 size={14} className="text-red-400" /></button>
+                  </div>
                 </td>
               </tr>
             ))}
+            {filtered.length === 0 && (
+              <tr><td colSpan={7} className={`p-8 text-center text-sm ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>Nenhuma despesa encontrada</td></tr>
+            )}
           </tbody>
         </table>
       </div>
+
+      {showForm && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className={`p-6 rounded-xl w-full max-w-md ${darkMode ? 'bg-gray-800' : 'bg-white'}`}>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold">{editingId ? 'Editar Despesa' : 'Nova Despesa'}</h2>
+              <button onClick={() => { setShowForm(false); setEditingId(null); }}><X size={18} className="text-gray-400" /></button>
+            </div>
+            <form onSubmit={salvar} className="space-y-3">
+              <input value={formData.descricao} onChange={e => setFormData({ ...formData, descricao: e.target.value })} placeholder="Descrição" className="w-full px-3 py-2.5 bg-gray-700/50 rounded-lg border border-white/10 text-white text-sm outline-none" required />
+              <input value={formData.contraparte} onChange={e => setFormData({ ...formData, contraparte: e.target.value })} placeholder="Fornecedor" className="w-full px-3 py-2.5 bg-gray-700/50 rounded-lg border border-white/10 text-white text-sm outline-none" />
+              <select value={formData.categoria} onChange={e => setFormData({ ...formData, categoria: e.target.value })} className="w-full px-3 py-2.5 bg-gray-700/50 rounded-lg border border-white/10 text-white text-sm outline-none">
+                {CATEGORIAS_DESPESA.map(c => <option key={c} value={c}>{c}</option>)}
+              </select>
+              <input value={formData.valor} onChange={e => setFormData({ ...formData, valor: e.target.value })} type="number" step="0.01" placeholder="Valor" className="w-full px-3 py-2.5 bg-gray-700/50 rounded-lg border border-white/10 text-white text-sm outline-none" required />
+              <input value={formData.vencimento} onChange={e => setFormData({ ...formData, vencimento: e.target.value })} placeholder="Vencimento (DD/MM)" className="w-full px-3 py-2.5 bg-gray-700/50 rounded-lg border border-white/10 text-white text-sm outline-none" required />
+              <button type="submit" className="w-full py-2.5 bg-emerald-600 rounded-lg text-white text-sm font-medium hover:bg-emerald-500 transition-all">{editingId ? 'Salvar Alterações' : 'Adicionar Despesa'}</button>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

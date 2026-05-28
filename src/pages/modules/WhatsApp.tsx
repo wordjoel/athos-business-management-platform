@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useApp } from '../../context/AppContext';
+import { useToast } from '../../components/Toast';
 import { MessageCircle, Send, Phone, Video, MoreVertical, Search, Paperclip, Image, Sticker, Archive, Settings, Users, MessageSquare, Bot, Webhook, Check, CheckCheck, Clock, Circle, Plus, X, Link, Key, Zap, Bell, Gift, DollarSign, Calendar, FileText, Save, RefreshCw, PhoneCall, MessageFilled } from 'lucide-react';
 
 interface Contato {
@@ -36,8 +37,23 @@ interface ConfiguracaoN8N {
   ultimoTeste?: string;
 }
 
+interface ConfigWhatsAppCloud {
+  provider: 'meta' | 'zapi';
+  instanceId: string;
+  token: string;
+  ativo: boolean;
+}
+
+interface ConfigBridge {
+  url: string;
+  ativo: boolean;
+}
+
+const NUMERO_USUARIO = '5511953992662';
+
 const WhatsAppIntegration: React.FC = () => {
   const { usuarioLogado } = useApp();
+  const { addToast } = useToast();
   const [contatos, setContatos] = useState<Contato[]>(() => {
     const saved = localStorage.getItem('athos_whatsapp_contatos');
     return saved ? JSON.parse(saved) : [
@@ -69,13 +85,31 @@ const WhatsAppIntegration: React.FC = () => {
     ];
   });
 
+  const WEBHOOK_PADRAO = 'https://athos-business-management-platform.vercel.app/api/webhook';
   const [configN8N, setConfigN8N] = useState<ConfiguracaoN8N>(() => {
     const saved = localStorage.getItem('athos_n8n_config');
-    return saved ? JSON.parse(saved) : {
-      webhookUrl: 'https://seu-n8n.com/webhook/athos-whatsapp',
-      apiKey: '',
-      ativo: false
+    const base = saved ? JSON.parse(saved) : {};
+    return {
+      webhookUrl: base.webhookUrl || WEBHOOK_PADRAO,
+      apiKey: base.apiKey || '',
+      ativo: base.ativo || false,
     };
+  });
+
+  const [configWA, setConfigWA] = useState<ConfigWhatsAppCloud>(() => {
+    const saved = localStorage.getItem('athos_whatsapp_cloud_config');
+    const base = saved ? JSON.parse(saved) : {};
+    return {
+      provider: base.provider || 'zapi',
+      instanceId: base.instanceId || '3F3CDA897F74E2C64AACDA62BB9C89AA',
+      token: base.token || 'BE83650B21DF4F027747525F',
+      ativo: base.ativo || false,
+    };
+  });
+
+  const [configBridge, setConfigBridge] = useState<ConfigBridge>(() => {
+    const saved = localStorage.getItem('athos_bridge_config');
+    return saved ? JSON.parse(saved) : { url: '', ativo: false };
   });
 
   const [aba, setAba] = useState<'chat' | 'contatos' | 'automacao' | 'config'>('chat');
@@ -89,10 +123,119 @@ const WhatsAppIntegration: React.FC = () => {
   useEffect(() => { localStorage.setItem('athos_whatsapp_mensagens', JSON.stringify(mensagens)); }, [mensagens]);
   useEffect(() => { localStorage.setItem('athos_whatsapp_respostas', JSON.stringify(respostasAutomaticas)); }, [respostasAutomaticas]);
   useEffect(() => { localStorage.setItem('athos_n8n_config', JSON.stringify(configN8N)); }, [configN8N]);
+  useEffect(() => { localStorage.setItem('athos_whatsapp_cloud_config', JSON.stringify(configWA)); }, [configWA]);
+  useEffect(() => { localStorage.setItem('athos_bridge_config', JSON.stringify(configBridge)); }, [configBridge]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [mensagens, contatoSelecionado]);
+
+  // Polling de mensagens recebidas via API (n8n → nosso webhook)
+  useEffect(() => {
+    if (!configN8N.ativo || !configN8N.webhookUrl) return;
+    const interval = setInterval(async () => {
+      try {
+        const res = await fetch(`${configN8N.webhookUrl}?t=${Date.now()}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (Array.isArray(data) && data.length > 0) {
+            const novasMensagens = data.filter((item: { id: string }) =>
+              !mensagens.some(m => m.id === item.id)
+            );
+            novasMensagens.forEach((item: { mensagem: string; contato: string; telefone?: string; data?: string; id: string }) => {
+              if (!item.mensagem) return;
+              const contatoExistente = contatos.find(c => c.telefone === item.telefone || c.nome === item.contato);
+              const contatoId = contatoExistente?.id;
+              if (!contatoId) return;
+              setMensagens(prev => [...prev, {
+                id: item.id || `webhook-${Date.now()}-${Math.random()}`,
+                contatoId,
+                tipo: 'recebida',
+                texto: item.mensagem,
+                timestamp: item.data ? new Date(item.data).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+                status: 'lida',
+              }]);
+            });
+          }
+        }
+      } catch {
+        // Falha silenciosa no polling
+      }
+    }, 10000);
+    return () => clearInterval(interval);
+  }, [configN8N.ativo, configN8N.webhookUrl, contatos, mensagens]);
+
+  const enviarParaWebhook = async (texto: string, contatoId: string) => {
+    const cfg = configN8N;
+    if (!cfg.ativo || !cfg.webhookUrl) return;
+    const contato = contatos.find(c => c.id === contatoId);
+    try {
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      if (cfg.apiKey) headers['Authorization'] = `Bearer ${cfg.apiKey}`;
+      await fetch(cfg.webhookUrl, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          tipo: 'mensagem',
+          acao: 'enviar',
+          numeroUsuario: NUMERO_USUARIO,
+          contato: contato?.nome || 'Desconhecido',
+          telefone: contato?.telefone || '',
+          mensagem: texto,
+          timestamp: new Date().toISOString(),
+          usuario: usuarioLogado?.nome || 'Sistema',
+        }),
+      });
+    } catch {
+      // Falha silenciosa no webhook
+    }
+  };
+
+  const enviarWhatsAppReal = async (texto: string, numeroDestino: string) => {
+    if (!configWA.ativo || !configWA.instanceId || !configWA.token) return;
+    const numero = numeroDestino.replace(/\D/g, '');
+    if (numero.length < 10) return;
+    try {
+      const baseUrl = `https://api.z-api.io/instances/${configWA.instanceId}/token/${configWA.token}`;
+      const res = await fetch(`${baseUrl}/send-text`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          phone: numero,
+          message: texto,
+        }),
+      });
+      if (!res.ok) {
+        const err = await res.text();
+        console.error('Z-API error:', err);
+      }
+      return res.ok;
+    } catch (err) {
+      console.error('Z-API send error:', err);
+      return false;
+    }
+  };
+
+  const configurarWebhookZAPI = async () => {
+    const { instanceId, token } = configWA;
+    if (!instanceId || !token) return;
+    try {
+      const webhookUrl = `${window.location.origin}/api/webhook`;
+      const res = await fetch(`https://api.z-api.io/instances/${instanceId}/token/${token}/webhook`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ value: webhookUrl }),
+      });
+      if (res.ok) {
+        addToast('Webhook Z-API configurado com sucesso!', 'success');
+      } else {
+        const errText = await res.text();
+        addToast('Erro ao configurar webhook: ' + errText, 'error');
+      }
+    } catch {
+      addToast('Erro de conexão com Z-API', 'error');
+    }
+  };
 
   const enviarMensagem = () => {
     if (!novaMensagem.trim() || !contatoSelecionado) return;
@@ -107,6 +250,15 @@ const WhatsAppIntegration: React.FC = () => {
     };
     setMensagens([...mensagens, msg]);
     setNovaMensagem('');
+
+    // Enviar para webhook n8n se ativo
+    enviarParaWebhook(msg.texto, contatoSelecionado);
+
+    // Enviar WhatsApp real se configurado
+    const contato = contatos.find(c => c.id === contatoSelecionado);
+    if (contato?.telefone) {
+      enviarWhatsAppReal(msg.texto, contato.telefone);
+    }
 
     // Simular resposta automática
     setDigitando(true);
@@ -136,9 +288,37 @@ const WhatsAppIntegration: React.FC = () => {
   const contatoAtual = contatos.find(c => c.id === contatoSelecionado);
   const mensagensContato = mensagens.filter(m => m.contatoId === contatoSelecionado);
 
-  const testarN8N = () => {
-    setConfigN8N({ ...configN8N, ultimoTeste: new Date().toLocaleString('pt-BR') });
-    alert(`✅ Webhook testado!\n\nURL: ${configN8N.webhookUrl}\nStatus: Conectado\n\nO n8n está pronto para receber mensagens.`);
+  const testarN8N = async () => {
+    try {
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      if (configN8N.apiKey) headers['Authorization'] = `Bearer ${configN8N.apiKey}`;
+
+      addToast({ type: 'info', title: '🔄 Testando...', message: `Conectando a ${configN8N.webhookUrl}` });
+
+      const res = await fetch(configN8N.webhookUrl, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          tipo: 'teste',
+          mensagem: 'Teste de conexão ATHOS WhatsApp',
+          timestamp: new Date().toISOString(),
+          numero: NUMERO_USUARIO,
+          contato: usuarioLogado?.nome || 'Sistema',
+        }),
+      });
+
+      if (res.ok) {
+        setConfigN8N({ ...configN8N, ultimoTeste: new Date().toLocaleString('pt-BR') });
+        addToast({ type: 'success', title: '✅ Conexão OK', message: `Webhook respondeu com status ${res.status}` });
+      } else {
+        const texto = await res.text();
+        addToast({ type: 'error', title: `❌ HTTP ${res.status}`, message: texto.slice(0, 100) || 'Resposta vazia' });
+      }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      console.error('Webhook test error:', msg);
+      addToast({ type: 'error', title: '❌ Erro de conexão', message: msg });
+    }
   };
 
   return (
@@ -413,6 +593,65 @@ const WhatsAppIntegration: React.FC = () => {
                 <li>4. Configure as ações</li>
                 <li>5. Ative a integração</li>
               </ol>
+            </div>
+
+            <hr className="border-white/10 my-4" />
+
+            <h3 className="text-sm font-bold text-white mb-4 flex items-center gap-2">
+              <MessageCircle size={16} className="text-green-400" /> Z-API (WhatsApp Real)
+            </h3>
+
+            <div className="space-y-4">
+              <div className="p-4 bg-green-500/10 rounded-xl border border-green-500/30">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-xs font-medium text-white">ID da Instância</span>
+                </div>
+                <input
+                  type="text"
+                  value={configWA.instanceId}
+                  onChange={(e) => setConfigWA({ ...configWA, instanceId: e.target.value })}
+                  className="w-full px-3 py-2 bg-gray-800 rounded-lg text-xs text-white border border-white/10 font-mono"
+                />
+              </div>
+
+              <div className="p-4 bg-green-500/10 rounded-xl border border-green-500/30">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-xs font-medium text-white">Token</span>
+                </div>
+                <input
+                  type="password"
+                  value={configWA.token}
+                  onChange={(e) => setConfigWA({ ...configWA, token: e.target.value })}
+                  className="w-full px-3 py-2 bg-gray-800 rounded-lg text-xs text-white border border-white/10 font-mono"
+                />
+              </div>
+
+              <div className="flex items-center justify-between p-3 bg-gray-800 rounded-lg">
+                <div className="flex items-center gap-2">
+                  <Zap size={14} className="text-green-400" />
+                  <span className="text-xs text-white">Ativar WhatsApp Real</span>
+                </div>
+                <button
+                  onClick={() => setConfigWA({ ...configWA, ativo: !configWA.ativo })}
+                  className={`w-10 h-5 rounded-full transition-colors ${configWA.ativo ? 'bg-green-500' : 'bg-gray-600'}`}
+                >
+                  <span className={`block w-4 h-4 rounded-full bg-white transform transition-transform ${configWA.ativo ? 'translate-x-5' : 'translate-x-0.5'}`} />
+                </button>
+              </div>
+
+              <div className="p-3 bg-gray-800/50 rounded-lg border border-white/5">
+                <p className="text-xs font-medium text-green-400 mb-2">📋 Configurar Webhook (Z-API)</p>
+                <button
+                  onClick={configurarWebhookZAPI}
+                  className="w-full mb-3 px-3 py-2 bg-green-600 hover:bg-green-700 rounded-lg text-xs text-white font-medium transition-colors"
+                >
+                  🔄 Configurar Webhook Automaticamente
+                </button>
+                <p className="text-[10px] text-gray-500 mb-2">Ou copie a URL abaixo e cole no painel Z-API:</p>
+                <div className="px-2 py-1.5 bg-gray-900 rounded text-[10px] text-green-400 font-mono break-all select-all">
+                  {typeof window !== 'undefined' ? window.location.origin : 'https://athos-business-management-platform.vercel.app'}/api/webhook
+                </div>
+              </div>
             </div>
           </div>
         </div>
