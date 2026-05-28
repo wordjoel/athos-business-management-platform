@@ -20,21 +20,22 @@ global.connectionState = 'disconnected';
 global.lastQR = null;
 
 async function startBot() {
-  const { version } = await fetchLatestBaileysVersion();
-  console.log(`[Baileys] Versão: ${version.join('.')}`);
+  try {
+    const { version } = await fetchLatestBaileysVersion();
+    console.log(`[Baileys] Versão: ${version.join('.')}`);
 
-  if (!fs.existsSync(AUTH_DIR)) {
-    fs.mkdirSync(AUTH_DIR, { recursive: true });
-  }
+    if (!fs.existsSync(AUTH_DIR)) {
+      fs.mkdirSync(AUTH_DIR, { recursive: true });
+    }
 
-  const { state, saveCreds } = await useMultiFileAuthState(AUTH_DIR);
+    const { state, saveCreds } = await useMultiFileAuthState(AUTH_DIR);
 
-  const sock = makeWASocket({
-    version,
-    browser: Browsers.windows('Chrome'),
-    auth: state,
-    logger: pino({ level: 'silent' }),
-    printQRInTerminal: false,
+    const sock = makeWASocket({
+      version,
+      browser: Browsers.windows('Chrome'),
+      auth: state,
+      logger: pino({ level: 'error' }),
+      printQRInTerminal: true,
     generateHighQualityLink: true,
     syncFullHistory: false,
   });
@@ -100,6 +101,10 @@ async function startBot() {
       }
     }
   });
+  } catch (err) {
+    console.error('Erro ao iniciar WhatsApp:', err);
+    setTimeout(startBot, 10000);
+  }
 }
 
 app.get('/health', (req, res) => {
