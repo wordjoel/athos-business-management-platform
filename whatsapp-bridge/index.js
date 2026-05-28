@@ -17,6 +17,7 @@ const NUMERO_USUARIO = process.env.NUMERO_USUARIO || '5511953992662';
 global.recentMessages = [];
 global.sock = null;
 global.connectionState = 'disconnected';
+global.lastQR = null;
 
 async function startBot() {
   const { version } = await fetchLatestBaileysVersion();
@@ -45,6 +46,7 @@ async function startBot() {
   sock.ev.on('connection.update', async ({ connection, lastDisconnect, qr }) => {
     if (qr) {
       global.connectionState = 'qr';
+      global.lastQR = qr;
       qrcode.generate(qr, { small: true });
       console.log('📱 ESCANEIE O QR CODE ACIMA para conectar o WhatsApp!');
     }
@@ -105,6 +107,18 @@ app.get('/health', (req, res) => {
     status: global.connectionState,
     connected: global.connectionState === 'connected',
     contatos: global.sock ? 'ok' : 'no_session',
+    hasQR: !!global.lastQR,
+  });
+});
+
+app.get('/qr', (req, res) => {
+  if (!global.lastQR) {
+    return res.json({ qr: null, status: global.connectionState });
+  }
+  res.json({
+    qr: global.lastQR,
+    url: `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(global.lastQR)}`,
+    status: global.connectionState,
   });
 });
 
