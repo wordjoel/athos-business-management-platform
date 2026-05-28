@@ -112,6 +112,8 @@ const WhatsAppIntegration: React.FC = () => {
     const base = saved ? JSON.parse(saved) : {};
     return { url: base.url || 'http://localhost:3000', ativo: base.ativo || false };
   });
+  const configBridgeRef = useRef(configBridge);
+  configBridgeRef.current = configBridge;
 
   const [aba, setAba] = useState<'chat' | 'contatos' | 'automacao' | 'config'>('chat');
   const [contatoSelecionado, setContatoSelecionado] = useState<string | null>('1');
@@ -193,23 +195,9 @@ const WhatsAppIntegration: React.FC = () => {
   };
 
   const enviarWhatsAppReal = async (texto: string, numeroDestino: string) => {
+    if (!configWA.ativo || !configWA.instanceId || !configWA.token) return false;
     const numero = numeroDestino.replace(/\D/g, '');
     if (numero.length < 10) return false;
-
-    // Try bridge first (local or cloud)
-    if (configBridge.ativo && configBridge.url) {
-      try {
-        const res = await fetch(`${configBridge.url.replace(/\/$/, '')}/send`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ telefone: numero, mensagem: texto }),
-        });
-        if (res.ok) return true;
-      } catch {}
-    }
-
-    // Fallback: Z-API
-    if (!configWA.ativo || !configWA.instanceId || !configWA.token) return false;
     try {
       const baseUrl = `https://api.z-api.io/instances/${configWA.instanceId}/token/${configWA.token}`;
       const res = await fetch(`${baseUrl}/send-text`, {
@@ -664,51 +652,6 @@ const WhatsAppIntegration: React.FC = () => {
                   {typeof window !== 'undefined' ? window.location.origin : 'https://athos-business-management-platform.vercel.app'}/api/webhook
                 </div>
               </div>
-            </div>
-
-            <hr className="border-white/10 my-4" />
-
-            <h3 className="text-sm font-bold text-white mb-4 flex items-center gap-2">
-              <MessageCircle size={16} className="text-blue-400" /> WhatsApp Bridge (Grátis)
-            </h3>
-
-            <div className="space-y-4">
-              <div className="p-4 bg-blue-500/10 rounded-xl border border-blue-500/30">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-xs font-medium text-white">URL do Bridge</span>
-                </div>
-                <input
-                  type="text"
-                  value={configBridge.url}
-                  onChange={(e) => setConfigBridge({ ...configBridge, url: e.target.value })}
-                  className="w-full px-3 py-2 bg-gray-800 rounded-lg text-xs text-white border border-white/10 font-mono"
-                />
-              </div>
-
-              <div className="flex items-center justify-between p-3 bg-gray-800 rounded-lg">
-                <div className="flex items-center gap-2">
-                  <Zap size={14} className="text-blue-400" />
-                  <span className="text-xs text-white">Usar Bridge</span>
-                </div>
-                <button
-                  onClick={() => setConfigBridge({ ...configBridge, ativo: !configBridge.ativo })}
-                  className={`w-10 h-5 rounded-full transition-colors ${configBridge.ativo ? 'bg-blue-500' : 'bg-gray-600'}`}
-                >
-                  <span className={`block w-4 h-4 rounded-full bg-white transform transition-transform ${configBridge.ativo ? 'translate-x-5' : 'translate-x-0.5'}`} />
-                </button>
-              </div>
-
-              <div className="p-3 bg-gray-800/50 rounded-lg border border-white/5">
-                <p className="text-xs font-medium text-blue-400 mb-2">📋 Como usar (100% grátis)</p>
-                <ol className="text-[10px] text-gray-500 space-y-1.5">
-                  <li>1. Abra a pasta <strong className="text-white">whatsapp-bridge</strong></li>
-                  <li>2. Dê um duplo clique em <strong className="text-white">iniciar-bridge.bat</strong></li>
-                  <li>3. Escaneie o QR Code com seu WhatsApp</li>
-                  <li>4. Ative o toggle "Usar Bridge" acima</li>
-                  <li>5. Mantenha o terminal aberto (pode minimizar)</li>
-                </ol>
-              </div>
-              <BridgeQRCode url={configBridge.url} />
             </div>
           </div>
         </div>
