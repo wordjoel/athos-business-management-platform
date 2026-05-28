@@ -43,15 +43,20 @@ async function startBot() {
       auth: state,
       logger: pino({ level: 'error' }),
       printQRInTerminal: true,
-    generateHighQualityLink: true,
-    syncFullHistory: false,
-  });
+      generateHighQualityLink: true,
+      syncFullHistory: false,
+      markOnlineOnConnect: false,
+      connectTimeoutMs: 60000,
+      keepAliveIntervalMs: 30000,
+      patch: true,
+    });
 
   global.sock = sock;
 
   sock.ev.on('creds.update', saveCreds);
 
   sock.ev.on('connection.update', async ({ connection, lastDisconnect, qr }) => {
+    console.log('[Connection]', JSON.stringify({ connection, hasQR: !!qr, error: lastDisconnect?.error?.message }));
     if (qr) {
       global.connectionState = 'qr';
       global.lastQR = qr;
