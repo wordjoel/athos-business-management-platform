@@ -107,14 +107,6 @@ const WhatsAppIntegration: React.FC = () => {
     };
   });
 
-  const [configBridge, setConfigBridge] = useState<ConfigBridge>(() => {
-    const saved = localStorage.getItem('athos_bridge_config');
-    const base = saved ? JSON.parse(saved) : {};
-    return { url: base.url || 'http://localhost:3000', ativo: base.ativo || false };
-  });
-  const configBridgeRef = useRef(configBridge);
-  configBridgeRef.current = configBridge;
-
   const [aba, setAba] = useState<'chat' | 'contatos' | 'automacao' | 'config'>('chat');
   const [contatoSelecionado, setContatoSelecionado] = useState<string | null>('1');
   const [novaMensagem, setNovaMensagem] = useState('');
@@ -127,7 +119,6 @@ const WhatsAppIntegration: React.FC = () => {
   useEffect(() => { localStorage.setItem('athos_whatsapp_respostas', JSON.stringify(respostasAutomaticas)); }, [respostasAutomaticas]);
   useEffect(() => { localStorage.setItem('athos_n8n_config', JSON.stringify(configN8N)); }, [configN8N]);
   useEffect(() => { localStorage.setItem('athos_whatsapp_cloud_config', JSON.stringify(configWA)); }, [configWA]);
-  useEffect(() => { localStorage.setItem('athos_bridge_config', JSON.stringify(configBridge)); }, [configBridge]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
