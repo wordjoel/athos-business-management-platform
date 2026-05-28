@@ -85,7 +85,7 @@ const WhatsAppIntegration: React.FC = () => {
     ];
   });
 
-  const WEBHOOK_PADRAO = 'https://athos-business-management-platform.vercel.app/api/webhook';
+  const WEBHOOK_PADRAO = 'https://escritotioathos.app.n8n.cloud/webhook-test/a9fe5c07-d0f5-4994-b6e5-bdb2666b97b6';
   const [configN8N, setConfigN8N] = useState<ConfiguracaoN8N>(() => {
     const saved = localStorage.getItem('athos_n8n_config');
     const base = saved ? JSON.parse(saved) : {};
@@ -124,12 +124,13 @@ const WhatsAppIntegration: React.FC = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [mensagens, contatoSelecionado]);
 
-  // Polling de mensagens recebidas via API (n8n → nosso webhook)
+  // Polling de mensagens recebidas via API da plataforma
   useEffect(() => {
-    if (!configN8N.ativo || !configN8N.webhookUrl) return;
+    const PLATFORM_API = 'https://athos-business-management-platform.vercel.app/api/webhook';
+    if (!configN8N.ativo) return;
     const interval = setInterval(async () => {
       try {
-        const res = await fetch(`${configN8N.webhookUrl}?t=${Date.now()}`);
+        const res = await fetch(`${PLATFORM_API}?t=${Date.now()}`);
         if (res.ok) {
           const data = await res.json();
           if (Array.isArray(data) && data.length > 0) {
