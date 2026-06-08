@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
-import { Settings, Building2, Bell, Zap, Smartphone, Cloud, Server, Code, Layers, Wifi, Save, CheckCircle } from 'lucide-react';
+import { Settings, Building2, Bell, Zap, Code, Save, CheckCircle, Eye, EyeOff } from 'lucide-react';
+import { getLocalUsers, updatePassword } from '../lib/auth';
 
 const Configuracoes: React.FC = () => {
   const { darkMode, nomeEmpresa, setNomeEmpresa, dadosEmpresa, setDadosEmpresa } = useApp();
-  const [configTab, setConfigTab] = useState<'geral' | 'notificacoes' | 'integracoes' | 'api'>('geral');
+  const [configTab, setConfigTab] = useState<'geral' | 'notificacoes' | 'integracoes' | 'api' | 'usuarios'>('geral');
   const [salvo, setSalvo] = useState(false);
 
   const [form, setForm] = useState({
@@ -20,6 +21,11 @@ const Configuracoes: React.FC = () => {
     segmento: dadosEmpresa.segmento,
     dataAbertura: dadosEmpresa.dataAbertura,
   });
+
+  const [users, setUsers] = useState(() => getLocalUsers());
+  const [showPwd, setShowPwd] = useState<Record<string, boolean>>({});
+  const [editPwd, setEditPwd] = useState<Record<string, string>>({});
+  const [pwdSalvo, setPwdSalvo] = useState('');
 
   useEffect(() => {
     setForm({
@@ -44,6 +50,16 @@ const Configuracoes: React.FC = () => {
     setTimeout(() => setSalvo(false), 2000);
   };
 
+  const salvarSenha = (email: string) => {
+    const nova = editPwd[email];
+    if (!nova || nova.length < 6) return;
+    updatePassword(email, nova);
+    setPwdSalvo(email);
+    setEditPwd(prev => ({ ...prev, [email]: '' }));
+    setUsers(getLocalUsers());
+    setTimeout(() => setPwdSalvo(''), 2000);
+  };
+
   return (
     <div className="p-6 space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -66,6 +82,7 @@ const Configuracoes: React.FC = () => {
             { id: 'notificacoes' as const, label: 'Notificações', icon: Bell },
             { id: 'integracoes' as const, label: 'Integrações', icon: Zap },
             { id: 'api' as const, label: 'API & Webhooks', icon: Code },
+            { id: 'usuarios' as const, label: 'Usuários', icon: () => <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg> },
           ].map(t => (
             <button key={t.id} onClick={() => setConfigTab(t.id)} className={`flex items-center gap-2 px-5 py-3.5 text-sm font-medium whitespace-nowrap border-b-2 transition-all ${
               configTab === t.id ? 'border-athos-500 text-athos-400' : `border-transparent ${darkMode ? 'text-gray-500 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'}`
@@ -246,16 +263,51 @@ const Configuracoes: React.FC = () => {
               </div>
             </div>
           )}
+
+          {configTab === 'usuarios' && (
+            <div className="space-y-4">
+              <h3 className={`text-sm font-semibold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>Gerenciar Senhas</h3>
+              <p className={`text-xs mb-4 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Altere as senhas de acesso dos usuários do sistema.</p>
+              <div className="space-y-3">
+                {users.map((u, i) => (
+                  <div key={i} className={`flex items-center gap-4 p-4 rounded-xl border ${darkMode ? 'border-white/5 bg-white/5' : 'border-gray-200 bg-gray-50'}`}>
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center text-sm font-bold ${darkMode ? 'bg-athos-500/20 text-athos-400' : 'bg-athos-100 text-athos-600'}`}>
+                      {u.avatar}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className={`text-sm font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{u.nome}</p>
+                      <p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>{u.email} — {u.cargo}</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="relative">
+                        <input
+                          type={showPwd[u.email] ? 'text' : 'password'}
+                          value={editPwd[u.email] !== undefined ? editPwd[u.email] : ''}
+                          onChange={e => setEditPwd(prev => ({ ...prev, [u.email]: e.target.value }))}
+                          placeholder="Nova senha"
+                          className={`w-32 px-3 py-1.5 rounded-lg text-xs outline-none border ${darkMode ? 'bg-gray-800 border-gray-700 text-white' : 'bg-white border-gray-200 text-gray-900'}`}
+                        />
+                        <button onClick={() => setShowPwd(prev => ({ ...prev, [u.email]: !prev[u.email] }))} className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400">
+                          {showPwd[u.email] ? <EyeOff size={14} /> : <Eye size={14} />}
+                        </button>
+                      </div>
+                      <button
+                        onClick={() => salvarSenha(u.email)}
+                        disabled={!editPwd[u.email]}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${pwdSalvo === u.email ? 'bg-emerald-500 text-white' : editPwd[u.email] ? 'bg-athos-500 text-white hover:bg-athos-600' : 'bg-gray-600 text-gray-400 cursor-not-allowed'}`}
+                      >
+                        {pwdSalvo === u.email ? 'Salvo!' : 'Salvar'}
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
   );
 };
-
-const Users = ({ size }: { size: number }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" />
-  </svg>
-);
 
 export default Configuracoes;

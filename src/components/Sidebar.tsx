@@ -1,10 +1,12 @@
 import React from 'react';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
+import { useAuth } from '../context/AuthContext';
 import {
   LayoutDashboard, DollarSign, BrainCircuit, FileText, Database,
-  Shield, ChevronLeft, ChevronRight, Users, Settings, LogOut, 
+  ChevronLeft, ChevronRight, Users, Settings, LogOut, 
   HandHelping, Kanban, UserCheck, FileSignature, Building2,
-  Briefcase, Eye, AlertTriangle, HardDrive
+  Briefcase, Eye, AlertTriangle, HardDrive, Trophy, Share2
 } from 'lucide-react';
 
 interface NavItem {
@@ -32,7 +34,6 @@ const navItems: NavItem[] = [
   { id: 'previsao', label: 'Previsão IA', section: 'Financeiro', badge: 'IA' },
   
   { id: 'sign', label: 'ATHOS Sign', section: 'Contratos' },
-  { id: 'contratos', label: 'Contratos', section: 'Contratos' },
   { id: 'modelos', label: 'Modelos', section: 'Contratos' },
   { id: 'assinaturas', label: 'Assinaturas', section: 'Contratos' },
   
@@ -53,10 +54,7 @@ const navItems: NavItem[] = [
   { id: 'ponto', label: 'Ponto Digital', section: 'RH' },
   { id: 'onboarding', label: 'Onboarding', section: 'RH' },
   
-  { id: 'shield', label: 'ATHOS Shield', section: 'Segurança' },
-  { id: 'cameras', label: 'Câmeras', section: 'Segurança' },
-  { id: 'alertas', label: 'Alertas', section: 'Seguranção' },
-  { id: 'ativos', label: 'Patrimônio', section: 'Segurança' },
+  { id: 'sharepoints', label: 'Cambom Points', section: 'Comunidade', badge: 'Novo' },
   
   { id: 'relatorios', label: 'Relatórios', section: 'Sistema' },
   { id: 'banco-dados', label: 'Banco de Dados', section: 'Sistema' },
@@ -74,8 +72,8 @@ const sectionIcons: Record<string, React.FC<{ size?: number; className?: string 
   'Suporte': Users,
   'Projetos': Kanban,
   'RH': UserCheck,
-  'Segurança': Shield,
   'Sistema': Settings,
+  'Comunidade': Trophy,
 };
 
 const sectionColors: Record<string, string> = {
@@ -88,12 +86,19 @@ const sectionColors: Record<string, string> = {
   'Suporte': 'bg-cyan-500',
   'Projetos': 'bg-blue-500',
   'RH': 'bg-orange-500',
-  'Segurança': 'bg-red-500',
   'Sistema': 'bg-gray-500',
+  'Comunidade': 'bg-violet-500',
 };
 
 const Sidebar: React.FC = () => {
-  const { currentPage, setCurrentPage, sidebarCollapsed, toggleSidebar, darkMode, logout, unreadAlertCount, nomeEmpresa, usuarioLogado } = useApp();
+  const { sidebarCollapsed, toggleSidebar, darkMode, unreadAlertCount } = useApp();
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/login');
+  };
 
   const groupedItems = navItems.reduce((acc, item) => {
     if (!acc[item.section]) acc[item.section] = [];
@@ -146,14 +151,13 @@ const Sidebar: React.FC = () => {
               )}
               <div className="space-y-0.5">
                 {items.map(item => {
-                  const isActive = currentPage === item.id;
                   const isModuleHeader = item.label.startsWith('ATHOS');
                   
                   return (
-                    <button
+                    <NavLink
                       key={item.id}
-                      onClick={() => setCurrentPage(item.id)}
-                      className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 group relative ${
+                      to={`/${item.id}`}
+                      className={({ isActive }) => `w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 group relative ${
                         sidebarCollapsed ? 'justify-center px-2' : ''
                       } ${
                         isModuleHeader
@@ -169,24 +173,28 @@ const Sidebar: React.FC = () => {
                               : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                       }`}
                     >
-                      {isActive && (
-                        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 rounded-r-full bg-cyan-500" />
-                      )}
-                      {!sidebarCollapsed && (
+                      {({ isActive }) => (
                         <>
-                          <span className={`text-sm ${isModuleHeader ? 'font-bold' : 'font-medium'}`}>{item.label}</span>
-                          {item.badge && (
-                            <span className={`ml-auto text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                              item.badge === 'IA' 
-                                ? 'bg-amber-500/20 text-amber-400' 
-                                : 'bg-athos-500/20 text-athos-400'
-                            }`}>
-                              {item.badge}
-                            </span>
+                          {isActive && (
+                            <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 rounded-r-full bg-cyan-500" />
+                          )}
+                          {!sidebarCollapsed && (
+                            <>
+                              <span className={`text-sm ${isModuleHeader ? 'font-bold' : 'font-medium'}`}>{item.label}</span>
+                              {item.badge && (
+                                <span className={`ml-auto text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                                  item.badge === 'IA' 
+                                    ? 'bg-amber-500/20 text-amber-400' 
+                                    : 'bg-athos-500/20 text-athos-400'
+                                }`}>
+                                  {item.badge}
+                                </span>
+                              )}
+                            </>
                           )}
                         </>
                       )}
-                    </button>
+                    </NavLink>
                   );
                 })}
               </div>
@@ -198,16 +206,16 @@ const Sidebar: React.FC = () => {
       <div className={`p-4 border-t ${darkMode ? 'border-white/5' : 'border-gray-200'}`}>
         <div className={`flex items-center gap-3 ${sidebarCollapsed ? 'justify-center' : ''}`}>
           <div className="w-9 h-9 rounded-lg bg-gradient-to-r from-cyan-500 to-cyan-400 flex items-center justify-center text-gray-900 text-sm font-bold flex-shrink-0">
-            {usuarioLogado?.avatar || 'US'}
+            {user?.avatar || user?.nome?.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() || 'US'}
           </div>
           {!sidebarCollapsed && (
-            <div className="flex-1 min-w-0 animate-fade-in">
-              <p className={`text-sm font-semibold truncate ${darkMode ? 'text-white' : 'text-gray-900'}`}>{usuarioLogado?.nome || 'Usuário'}</p>
-              <p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>{usuarioLogado?.email || 'usuario@athos.com'}</p>
+            <div className="flex-1 min-w-0">
+              <p className={`text-sm font-semibold truncate ${darkMode ? 'text-white' : 'text-gray-900'}`}>{user?.nome || 'Usuário'}</p>
+              <p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>{user?.email || 'usuario@athos.com'}</p>
             </div>
           )}
           {!sidebarCollapsed && (
-            <button onClick={logout} className={`p-1.5 rounded-lg transition-colors ${darkMode ? 'text-gray-500 hover:text-red-400 hover:bg-red-500/10' : 'text-gray-400 hover:text-red-500 hover:bg-red-50'}`}>
+            <button onClick={handleLogout} className={`p-1.5 rounded-lg transition-colors ${darkMode ? 'text-gray-500 hover:text-red-400 hover:bg-red-500/10' : 'text-gray-400 hover:text-red-500 hover:bg-red-50'}`}>
               <LogOut size={16} />
             </button>
           )}

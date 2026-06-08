@@ -18,11 +18,7 @@ const ATHOSSupport: React.FC = () => {
 
   const [chamados, setChamados] = useState<Chamado[]>(() => {
     const saved = localStorage.getItem('athos_chamados');
-    return saved ? JSON.parse(saved) : [
-      { id: '1', titulo: 'Erro no sistema de login', descricao: 'Usuários não conseguem acessar', prioridade: 'alta', status: 'em_andamento', solicitante: 'Luiz Victor', responsavel: 'Oscar Carvalho', data: '13/05' },
-      { id: '2', titulo: 'Solicitação de novo acesso', descricao: 'Novo funcionário precisa de acesso', prioridade: 'media', status: 'aberto', solicitante: 'Joel Oliveira', responsavel: 'Oscar Carvalho', data: '13/05' },
-      { id: '3', titulo: 'Atualização de software', descricao: 'Sistema precisa de update', prioridade: 'baixa', status: 'resolvido', solicitante: 'Mauricio Baro', responsavel: 'Oscar Carvalho', data: '12/05' },
-    ];
+    return saved ? JSON.parse(saved) : [];
   });
 
   const [showForm, setShowForm] = useState(false);

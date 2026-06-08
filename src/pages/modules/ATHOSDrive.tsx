@@ -19,13 +19,7 @@ const ATHOSDrive: React.FC = () => {
 
   const [arquivos, setArquivos] = useState<Arquivo[]>(() => {
     const saved = localStorage.getItem('athos_arquivos');
-    return saved ? JSON.parse(saved) : [
-      { id: '1', nome: 'Proposta Tech Solutions.pdf', tipo: 'projeto', tamanho: 2500000, uploadedPor: 'Luiz Victor', dataUpload: '13/05/2026', categoria: 'Propostas', visivelPara: ['todos'] },
-      { id: '2', nome: 'Contrato Clínica Viva.docx', tipo: 'contrato', tamanho: 850000, uploadedPor: 'Joel Oliveira', dataUpload: '12/05/2026', categoria: 'Contratos', visivelPara: ['todos'] },
-      { id: '3', nome: 'Apresentação ATHOS v2.pptx', tipo: 'projeto', tamanho: 5200000, uploadedPor: 'Mauricio Baro', dataUpload: '11/05/2026', categoria: 'Apresentações', visivelPara: ['todos'] },
-      { id: '4', nome: 'Logo ATHOS.png', tipo: 'imagem', tamanho: 450000, uploadedPor: 'Oscar Carvalho', dataUpload: '10/05/2026', categoria: 'Assets', visivelPara: ['todos'] },
-      { id: '5', nome: 'Relatório Financeiro Abril.xlsx', tipo: 'documento', tamanho: 1200000, uploadedPor: 'Joel Oliveira', dataUpload: '09/05/2026', categoria: 'Financeiro', visivelPara: ['todos'] },
-    ];
+    return saved ? JSON.parse(saved) : [];
   });
 
   const [showUpload, setShowUpload] = useState(false);

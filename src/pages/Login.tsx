@@ -1,47 +1,57 @@
 import React, { useState } from 'react';
-import { useApp } from '../context/AppContext';
-import { Zap, Lock, Mail, Eye, EyeOff, Shield, Brain, Building2, ChevronRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { useToast } from '../components/Toast';
+import { useFormValidation, validationRules } from '../hooks/useFormValidation';
+import { useTranslation } from 'react-i18next';
+import { Zap, Lock, Mail, Eye, EyeOff } from 'lucide-react';
 
-const usuariosValidos = [
-  { email: 'kleber@athos.com', senha: 'kleber2025', nome: 'Kleber Duarte', avatar: 'KD', telefone: '' },
-  { email: 'luiz@athos.com', senha: 'luiz2025', nome: 'Luiz Victor', avatar: 'LV', telefone: '' },
-  { email: 'joel@athos.com', senha: 'joel2025', nome: 'Joel Oliveira', avatar: 'JO', telefone: '+5511953992662' },
-  { email: 'oscar@athos.com', senha: 'oscar2025', nome: 'Oscar Carvalho', avatar: 'OC', telefone: '' },
-  { email: 'mauricio@athos.com', senha: 'mauricio2025', nome: 'Mauricio Baro', avatar: 'MB', telefone: '' },
-];
+interface LoginFormValues {
+  email: string;
+  password: string;
+}
 
 const LoginPage: React.FC = () => {
-  const { login, nomeEmpresa } = useApp();
-  const [email, setEmail] = useState('kleber@athos.com');
-  const [password, setPassword] = useState('kleber2025');
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const { login, loading } = useAuth();
+  const { addToast } = useToast();
   const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
 
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-    
-    const usuario = usuariosValidos.find(u => u.email === email && u.senha === password);
-    
-    if (!usuario) {
-      setError('Email ou senha inválidos');
-      return;
-    }
-    
-    setLoading(true);
-    localStorage.setItem('athos_usuario_logado', JSON.stringify(usuario));
-    setTimeout(() => {
-      login(email, password);
-      setLoading(false);
-    }, 1500);
-  };
-
-  const fillCredentials = (usuario: typeof usuariosValidos[0]) => {
-    setEmail(usuario.email);
-    setPassword(usuario.senha);
-    setError('');
-  };
+  const { values, errors, touched, handleChange, handleBlur, handleSubmit, isSubmitting } = useFormValidation<LoginFormValues>({
+    initialValues: {
+      email: '',
+      password: '',
+    },
+    validationRules: {
+      email: [
+        validationRules.required(t('auth.email_required')),
+        validationRules.email(t('auth.invalid_email')),
+      ],
+      password: [
+        validationRules.required(t('auth.password_required')),
+        validationRules.minLength(6, t('auth.min_length', { count: 6 })),
+      ],
+    },
+    onSubmit: async (formValues) => {
+      const success = await login(formValues.email, formValues.password);
+      
+      if (success) {
+        addToast({
+          type: 'success',
+          title: t('auth.welcome_back'),
+          message: t('common.success'),
+        });
+        navigate('/dashboard');
+      } else {
+        addToast({
+          type: 'error',
+          title: t('auth.invalid_credentials'),
+          message: t('common.error'),
+        });
+      }
+    },
+  });
 
   return (
     <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-gray-900">
@@ -65,67 +75,85 @@ const LoginPage: React.FC = () => {
 
         <div className="bg-gray-900/60 backdrop-blur-lg rounded-2xl p-5 mt-2">
           <div className="text-center mb-5">
-            <h2 className="text-lg font-semibold text-white">Bem-vindo</h2>
-            <p className="text-xs text-gray-500 mt-1">Acesse sua conta para continuar</p>
+            <h2 className="text-lg font-semibold text-white">{t('app.welcome')}</h2>
+            <p className="text-xs text-gray-500 mt-1">{t('auth.enter_credentials')}</p>
           </div>
 
-          <form onSubmit={handleLogin} className="space-y-3">
+          <form onSubmit={handleSubmit} className="space-y-3">
             <div>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-2.5 bg-gray-800/30 border border-white/5 rounded-lg text-white placeholder-gray-600 text-center text-sm focus:outline-none focus:border-cyan-500"
-                placeholder="email@athos.com"
-              />
+              <div className="relative">
+                <Mail size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
+                <input
+                  type="email"
+                  value={values.email}
+                  onChange={handleChange('email')}
+                  onBlur={handleBlur('email')}
+                  className={`w-full pl-10 pr-4 py-2.5 bg-gray-800/30 border rounded-lg text-white placeholder-gray-600 text-sm focus:outline-none transition-colors ${
+                    touched.email && errors.email 
+                      ? 'border-red-500 focus:border-red-500' 
+                      : 'border-white/5 focus:border-cyan-500'
+                  }`}
+                  placeholder={t('auth.email')}
+                  disabled={isSubmitting || loading}
+                />
+              </div>
+              {touched.email && errors.email && (
+                <p className="text-red-400 text-xs mt-1 ml-1">{errors.email}</p>
+              )}
             </div>
 
             <div className="relative">
+              <Lock size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
               <input
                 type={showPassword ? 'text' : 'password'}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-2.5 bg-gray-800/30 border border-white/5 rounded-lg text-white placeholder-gray-600 text-center text-sm focus:outline-none focus:border-cyan-500"
-                placeholder="senha"
+                value={values.password}
+                onChange={handleChange('password')}
+                onBlur={handleBlur('password')}
+                className={`w-full pl-10 pr-12 py-2.5 bg-gray-800/30 border rounded-lg text-white placeholder-gray-600 text-sm focus:outline-none transition-colors ${
+                  touched.password && errors.password 
+                    ? 'border-red-500 focus:border-red-500' 
+                    : 'border-white/5 focus:border-cyan-500'
+                }`}
+                placeholder={t('auth.password')}
+                disabled={isSubmitting || loading}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-cyan-400 transition-colors"
               >
                 {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
             </div>
-
-            {error && (
-              <div className="p-2 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-xs text-center">
-                {error}
-              </div>
+            {touched.password && errors.password && (
+              <p className="text-red-400 text-xs mt-1 ml-1">{errors.password}</p>
             )}
 
             <button
               type="submit"
-              disabled={loading}
-              className="w-full py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white font-medium rounded-lg text-sm transition-all disabled:opacity-50"
+              disabled={isSubmitting || loading}
+              className="w-full py-2.5 bg-cyan-600 hover:bg-cyan-500 disabled:bg-cyan-600/50 disabled:cursor-not-allowed text-white font-medium rounded-lg text-sm transition-all flex items-center justify-center gap-2"
             >
-              {loading ? 'Entrando...' : 'Entrar'}
+              {isSubmitting || loading ? (
+                <>
+                  <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                  </svg>
+                  {t('auth.sign_in')}
+                </>
+              ) : (
+                <>
+                  <Zap size={16} />
+                  {t('auth.sign_in')}
+                </>
+              )}
             </button>
           </form>
-
-          <div className="mt-3 text-center">
-            <p className="text-[10px] text-gray-600">
-              {usuariosValidos.map((u, i) => (
-                <span key={i}>
-                  <button onClick={() => fillCredentials(u)} className="hover:text-cyan-400 transition-colors">{u.nome.split(' ')[0]}</button>
-                  {i < usuariosValidos.length - 1 && <span className="text-gray-700 mx-1">|</span>}
-                </span>
-              ))}
-            </p>
-          </div>
         </div>
 
         <p className="text-center text-gray-600 text-xs mt-4">
-          © 2026 ATHOS
+          © 2026 ATHOS Platform
         </p>
       </div>
     </div>

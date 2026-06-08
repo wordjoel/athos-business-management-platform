@@ -29,53 +29,7 @@ const ATHOSProjects: React.FC = () => {
 
   const [projetos, setProjetos] = useState<Projeto[]>(() => {
     const saved = localStorage.getItem('athos_projetos');
-    return saved ? JSON.parse(saved) : [
-      { 
-        id: '1', 
-        nome: 'ATHOS Platform v2.0', 
-        descricao: 'Nova versão da plataforma com módulos IA', 
-        status: 'em_andamento', 
-        responsavel: 'Kleber Duarte', 
-        progresso: 65, 
-        dataInicio: '01/04/2026', 
-        dataFim: '30/06/2026',
-        equipe: ['Kleber Duarte', 'Oscar Carvalho', 'Mauricio Baro'],
-        tarefas: [
-          { id: 't1', titulo: 'Implementar módulo IA', responsavel: 'Kleber Duarte', status: 'em_andamento', prioridade: 'critica', prazo: '20/05' },
-          { id: 't2', titulo: 'Testes de qualidade', responsavel: 'Oscar Carvalho', status: 'pendente', prioridade: 'alta', prazo: '25/05' },
-          { id: 't3', titulo: 'Revisar documentação', responsavel: 'Mauricio Baro', status: 'concluida', prioridade: 'media', prazo: '15/05' },
-        ]
-      },
-      { 
-        id: '2', 
-        nome: 'App Mobile ATHOS', 
-        descricao: 'Aplicativo mobile para clientes', 
-        status: 'problemas', 
-        responsavel: 'Mauricio Baro', 
-        progresso: 40, 
-        dataInicio: '15/04/2026', 
-        dataFim: '15/08/2026',
-        equipe: ['Mauricio Baro', 'Oscar Carvalho'],
-        tarefas: [
-          { id: 't4', titulo: 'API REST', responsavel: 'Mauricio Baro', status: 'bloqueada', prioridade: 'critica', prazo: '18/05' },
-          { id: 't5', titulo: 'Interface Flutter', responsavel: 'Oscar Carvalho', status: 'em_andamento', prioridade: 'alta', prazo: '22/05' },
-        ]
-      },
-      { 
-        id: '3', 
-        nome: 'Integração WhatsApp API', 
-        descricao: 'Conexão com WhatsApp Business', 
-        status: 'concluido', 
-        responsavel: 'Oscar Carvalho', 
-        progresso: 100, 
-        dataInicio: '01/03/2026', 
-        dataFim: '01/05/2026',
-        equipe: ['Oscar Carvalho', 'Kleber Duarte'],
-        tarefas: [
-          { id: 't6', titulo: 'Setup API', responsavel: 'Oscar Carvalho', status: 'concluida', prioridade: 'alta', prazo: '01/04' },
-        ]
-      },
-    ];
+    return saved ? JSON.parse(saved) : [];
   });
 
   const [showForm, setShowForm] = useState(false);

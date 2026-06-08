@@ -56,36 +56,20 @@ const WhatsAppIntegration: React.FC = () => {
   const { addToast } = useToast();
   const [contatos, setContatos] = useState<Contato[]>(() => {
     const saved = localStorage.getItem('athos_whatsapp_contatos');
-    return saved ? JSON.parse(saved) : [
-      { id: '1', nome: 'Cliente Tech Solutions', telefone: '+5511999990001', empresa: 'Tech Solutions LTDA', status: 'online', ultimoAcesso: 'Agora' },
-      { id: '2', nome: 'Maria Santos', telefone: '+5511999990002', empresa: 'Clínica Viva Saúde', status: 'offline', ultimoAcesso: '2h atrás' },
-      { id: '3', nome: 'Carlos Silva', telefone: '+5511999990003', empresa: 'Restaurante Sabor', status: 'online', ultimoAcesso: 'Agora' },
-      { id: '4', nome: 'Ana Paula', telefone: '+5511999990004', empresa: 'XPTO Tecnologia', status: 'ausente', ultimoAcesso: '30min atrás' },
-    ];
+    return saved ? JSON.parse(saved) : [];
   });
 
   const [mensagens, setMensagens] = useState<MensagemWhatsApp[]>(() => {
     const saved = localStorage.getItem('athos_whatsapp_mensagens');
-    return saved ? JSON.parse(saved) : [
-      { id: '1', contatoId: '1', tipo: 'recebida', texto: 'Olá! Gostaria de informações sobre os serviços da ATHOS.', timestamp: '10:30', status: 'lida' },
-      { id: '2', contatoId: '1', tipo: 'enviada', texto: 'Olá! Tudo bem? Somos a ATHOS Business Management. Como posso ajudar?', timestamp: '10:32', status: 'lida' },
-      { id: '3', contatoId: '1', tipo: 'recebida', texto: 'Preciso de um sistema de gestão para minha empresa. Vocês oferecem?', timestamp: '10:33', status: 'lida' },
-      { id: '4', contatoId: '2', tipo: 'recebida', texto: 'Olá, preciso de suporte técnico.', timestamp: '09:15', status: 'lida' },
-    ];
+    return saved ? JSON.parse(saved) : [];
   });
 
   const [respostasAutomaticas, setRespostasAutomaticas] = useState<RespostaAutomatica[]>(() => {
     const saved = localStorage.getItem('athos_whatsapp_respostas');
-    return saved ? JSON.parse(saved) : [
-      { palavraChave: 'oi', resposta: 'Olá! Seja bem-vindo à ATHOS Business Management! 🏢 Como posso ajudar você hoje?', categoria: 'saudacao' },
-      { palavraChave: 'servico', resposta: 'Oferecemos os seguintes módulos:\n\n📊 ATHOS Finance - Gestão Financeira\n📋 ATHOS Projects - Gestão de Projetos\n💼 ATHOS Flow - CRM\n🔒 ATHOS Shield - Segurança\n📱 ATHOS AI - Inteligência Artificial\n\nQual módulo gostaria de conhecer?', categoria: 'informacao' },
-      { palavraChave: 'preco', resposta: 'Nossos planos começam a partir de R$ 497/mês. Temos opções para micro, pequena e média empresa. Posso agendar uma reunião com nosso consultor comercial?', categoria: 'vendas' },
-      { palavraChave: 'suporte', resposta: 'Você pode abrir um chamado técnico pelo ATHOS Support ou ligando para (11) 4000-1000. Nosso horário de atendimento é das 8h às 18h.', categoria: 'suporte' },
-      { palavraChave: 'obrigado', resposta: 'Por nada! 😊 Estamos sempre à disposição. Qualquer dúvida, é só chamar!', categoria: 'saudacao' },
-    ];
+    return saved ? JSON.parse(saved) : [];
   });
 
-  const WEBHOOK_PADRAO = 'https://escritotioathos.app.n8n.cloud/webhook-test/a9fe5c07-d0f5-4994-b6e5-bdb2666b97b6';
+  const WEBHOOK_PADRAO = 'https://escritotioathos.app.n8n.cloud/webhook/a9fe5c07-d0f5-4994-b6e5-bdb2666b97b6';
   const [configN8N, setConfigN8N] = useState<ConfiguracaoN8N>(() => {
     const saved = localStorage.getItem('athos_n8n_config');
     const base = saved ? JSON.parse(saved) : {};

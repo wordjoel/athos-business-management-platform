@@ -19,11 +19,7 @@ const ATHOSFlow: React.FC = () => {
 
   const [leads, setLeads] = useState<Lead[]>(() => {
     const saved = localStorage.getItem('athos_leads');
-    return saved ? JSON.parse(saved) : [
-      { id: '1', nome: 'João Silva', email: 'joao@tech.com', telefone: '(11) 99999-0001', empresa: 'Tech Solutions', valor: 15000, etapa: 'proposta', responsavel: 'Luiz Victor', ultimoContato: '13/05' },
-      { id: '2', nome: 'Maria Santos', email: 'maria@clinica.com', telefone: '(11) 99999-0002', empresa: 'Clínica Viva', valor: 8500, etapa: 'negociacao', responsavel: 'Joel Oliveira', ultimoContato: '12/05' },
-      { id: '3', nome: 'Pedro Costa', email: 'pedro@rest.com', telefone: '(11) 99999-0003', empresa: 'Restaurante Sabor', valor: 5200, etapa: 'qualificado', responsavel: 'Luiz Victor', ultimoContato: '10/05' },
-    ];
+    return saved ? JSON.parse(saved) : [];
   });
 
   const [showForm, setShowForm] = useState(false);

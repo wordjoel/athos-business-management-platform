@@ -82,31 +82,17 @@ const ATHOSAI: React.FC = () => {
 
   const [insights, setInsights] = useState<Insight[]>(() => {
     const saved = localStorage.getItem('athos_insights');
-    return saved ? JSON.parse(saved) : [
-      { id: '1', tipo: 'financeiro', titulo: 'Aumento de 15% em receitas', descricao: 'Meta fiscal atingida com folga. Considere reinvestir parte do lucro.', impacto: 'alto', data: '13/05', lido: true },
-      { id: '2', tipo: 'vendas', titulo: '3 novos leads qualificados', descricao: 'Pipeline crescendo. Recomendo follow-up em 48h.', impacto: 'medio', data: '12/05', lido: false },
-      { id: '3', tipo: 'operacional', titulo: 'Contrato vencendo em 30 dias', descricao: 'Renegociar contrato Tech Solutions antes do vencimento.', impacto: 'alto', data: '11/05', lido: false },
-      { id: '4', tipo: 'melhoria', titulo: 'Automatizar envio de faturas', descricao: 'Sugestão IA: Implementar automate de faturas para reduzir manualidade.', impacto: 'medio', data: '10/05', lido: false },
-    ];
+    return saved ? JSON.parse(saved) : [];
   });
 
   const [aniversarios, setAniversarios] = useState<Aniversario[]>(() => {
     const saved = localStorage.getItem('athos_aniversarios');
-    return saved ? JSON.parse(saved) : [
-      { id: '1', nome: 'Kleber Duarte', tipo: 'colaborador', data: '15/05', email: 'kleber@athos.com', telefone: '(11) 99999-0001' },
-      { id: '2', nome: 'Tech Solutions LTDA', tipo: 'empresa', data: '20/05', email: 'contato@techsolutions.com', telefone: '(11) 99999-0002' },
-      { id: '3', nome: 'Maria Santos', tipo: 'colaborador', data: '25/05', email: 'maria@athos.com', telefone: '(11) 99999-0003' },
-      { id: '4', nome: 'Clínica Viva Saúde', tipo: 'cliente', data: '28/05', email: 'adm@clinicavivasaude.com', telefone: '(11) 3333-0000' },
-    ];
+    return saved ? JSON.parse(saved) : [];
   });
 
   const [compromissos, setCompromissos] = useState<Compromisso[]>(() => {
     const saved = localStorage.getItem('athos_compromissos');
-    return saved ? JSON.parse(saved) : [
-      { id: '1', titulo: 'Pagamento Tech Solutions', tipo: 'pagamento', data: '15/05/2026', responsavel: 'Joel Oliveira', valor: 15000, lembretes: [15, 7, 1], completado: false, modificadoPor: 'Joel Oliveira' },
-      { id: '2', titulo: 'Reunião de alinhamento', tipo: 'reuniao', data: '18/05/2026', hora: '14:00', responsavel: 'Kleber Duarte', lembretes: [1], completado: false, modificadoPor: 'Kleber Duarte' },
-      { id: '3', titulo: 'Vencimento licença software', tipo: 'vencimento', data: '01/06/2026', responsavel: 'Mauricio Baro', valor: 2500, lembretes: [30, 15], completado: false, modificadoPor: 'Mauricio Baro' },
-    ];
+    return saved ? JSON.parse(saved) : [];
   });
 
   const [mensagens, setMensagens] = useState<Mensagem[]>(() => {
@@ -116,17 +102,12 @@ const ATHOSAI: React.FC = () => {
 
   const [notasDespesa, setNotasDespesa] = useState<NotaDespesa[]>(() => {
     const saved = localStorage.getItem('athos_notas_despesa');
-    return saved ? JSON.parse(saved) : [
-      { id: '1', colaborador: 'Carlos Silva', telefone: '(11) 99999-1234', cpf: '123.456.789-00', descricao: 'Material de escritório', valor: 250, categoria: 'Escritório', data: '10/05/2026', status: 'pendente', dataRecebimento: '13/05/2026' },
-      { id: '2', colaborador: 'Ana Paula', telefone: '(11) 99999-5678', cpf: '987.654.321-00', descricao: 'Transporte - Cliente XPTO', valor: 180, categoria: 'Transporte', data: '08/05/2026', status: 'aprovada', dataRecebimento: '12/05/2026' },
-    ];
+    return saved ? JSON.parse(saved) : [];
   });
 
   const [recibosRecebidos, setRecibosRecebidos] = useState<ReciboRecebido[]>(() => {
     const saved = localStorage.getItem('athos_recibos_recebidos');
-    return saved ? JSON.parse(saved) : [
-      { id: '1', emitente: 'Restaurante Sabor Caseiro', cnpj: '11.222.333/0001-44', telefone: '(11) 4444-5555', endereco: 'Av. Brigadeiro, 500', servico: 'Alimentação', valor: 450, data: '10/05/2026', status: 'pendente', dataRecebimento: '13/05/2026' },
-    ];
+    return saved ? JSON.parse(saved) : [];
   });
 
   const [showForm, setShowForm] = useState(false);

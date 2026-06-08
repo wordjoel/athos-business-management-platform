@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
 import { Alerta } from '../types';
-import { alertas as mockAlertas } from '../data/mockData';
 
 interface UsuarioLogado {
   email: string;
@@ -26,7 +25,6 @@ interface DadosEmpresa {
 interface AppState {
   currentPage: string;
   darkMode: boolean;
-  isLoggedIn: boolean;
   sidebarCollapsed: boolean;
   alertas: Alerta[];
   aiPanelOpen: boolean;
@@ -39,8 +37,6 @@ interface AppState {
 interface AppContextType extends AppState {
   setCurrentPage: (page: string) => void;
   toggleDarkMode: () => void;
-  login: (email: string, password: string) => boolean;
-  logout: () => void;
   toggleSidebar: () => void;
   toggleAIPanel: () => void;
   markAlertRead: (id: string) => void;
@@ -48,7 +44,6 @@ interface AppContextType extends AppState {
   setNomeEmpresa: (nome: string) => void;
   setDadosEmpresa: (dados: Partial<DadosEmpresa>) => void;
   unreadAlertCount: number;
-  usuarioLogado: UsuarioLogado | null;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -71,18 +66,16 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       segmento: '',
       dataAbertura: '',
     };
-    const usuarioLogado: UsuarioLogado | null = savedUsuario ? JSON.parse(savedUsuario) : null;
     return {
       currentPage: 'dashboard',
       darkMode: true,
-      isLoggedIn: false,
       sidebarCollapsed: false,
-      alertas: mockAlertas,
+      alertas: [] as Alerta[],
       aiPanelOpen: false,
       selectedSetor: 'todos',
       nomeEmpresa: savedNome || 'ATHOS',
       dadosEmpresa,
-      usuarioLogado,
+      usuarioLogado: savedUsuario ? JSON.parse(savedUsuario) : null,
     };
   });
 
@@ -92,25 +85,6 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   const toggleDarkMode = useCallback(() => {
     setState(prev => ({ ...prev, darkMode: !prev.darkMode }));
-  }, []);
-
-  const login = useCallback((email: string, _password: string) => {
-    const savedUsuario = localStorage.getItem('athos_usuario_logado');
-    const usuario = savedUsuario ? JSON.parse(savedUsuario) : null;
-    if (email && usuario) {
-      setState(prev => ({ ...prev, isLoggedIn: true, usuarioLogado: usuario }));
-      return true;
-    }
-    if (email) {
-      setState(prev => ({ ...prev, isLoggedIn: true }));
-      return true;
-    }
-    return false;
-  }, []);
-
-  const logout = useCallback(() => {
-    localStorage.removeItem('athos_usuario_logado');
-    setState(prev => ({ ...prev, isLoggedIn: false, currentPage: 'dashboard', usuarioLogado: null }));
   }, []);
 
   const toggleSidebar = useCallback(() => {
@@ -150,8 +124,6 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       ...state,
       setCurrentPage,
       toggleDarkMode,
-      login,
-      logout,
       toggleSidebar,
       toggleAIPanel,
       markAlertRead,
@@ -159,7 +131,6 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       setNomeEmpresa,
       setDadosEmpresa,
       unreadAlertCount,
-      usuarioLogado: state.usuarioLogado,
     }}>
       {children}
     </AppContext.Provider>

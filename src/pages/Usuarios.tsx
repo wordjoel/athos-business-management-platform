@@ -17,13 +17,7 @@ const UsuariosPage: React.FC = () => {
   const { darkMode } = useApp();
   const [usuarios, setUsuarios] = useState<Usuario[]>(() => {
     const saved = localStorage.getItem('athos_usuarios');
-    return saved ? JSON.parse(saved) : [
-      { id: '1', name: 'Kleber Duarte', email: 'kleber@athos.com', role: 'admin', sector: 'Administrativo', avatar: 'KD', active: true, lastLogin: '13/05/2026 09:30' },
-      { id: '2', name: 'Luiz Victor', email: 'luiz@athos.com', role: 'manager', sector: 'Financeiro', avatar: 'LV', active: true, lastLogin: '12/05/2026 14:20' },
-      { id: '3', name: 'Joel Oliveira', email: 'joel@athos.com', role: 'user', sector: 'Comercial', avatar: 'JO', active: true, lastLogin: '11/05/2026 16:45' },
-      { id: '4', name: 'Oscar Carvalho', email: 'oscar@athos.com', role: 'user', sector: 'TI', avatar: 'OC', active: true, lastLogin: '13/05/2026 10:00' },
-      { id: '5', name: 'Maurício Baro', email: 'mauricio@athos.com', role: 'manager', sector: 'Operacional', avatar: 'MB', active: true, lastLogin: '12/05/2026 08:15' },
-    ];
+    return saved ? JSON.parse(saved) : [];
   });
 
   const [showForm, setShowForm] = useState(false);

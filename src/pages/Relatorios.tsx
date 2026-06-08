@@ -1,11 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import { FileText, Download, Eye, FileBarChart, FilePieChart, FileSpreadsheet, Bot, CheckCircle, Clock } from 'lucide-react';
 import { relatorios } from '../data/mockData';
+import { getLancamentos } from '../services/lancamentoService';
 
 const Relatorios: React.FC = () => {
   const { darkMode, toggleAIPanel } = useApp();
   const [generating, setGenerating] = useState<string | null>(null);
+  const [lancamentos, setLancamentos] = useState<ReturnType<typeof getLancamentos>>([]);
+  useEffect(() => { setLancamentos(getLancamentos()); }, []);
+
+  const receitas = lancamentos.filter(l => l.tipo === 'receita');
+  const despesas = lancamentos.filter(l => l.tipo === 'despesa');
+  const totalReceitas = receitas.reduce((s, l) => s + l.valor, 0);
+  const totalDespesas = despesas.reduce((s, l) => s + l.valor, 0);
+  const lucroLiquido = totalReceitas - totalDespesas;
+  const margem = totalReceitas > 0 ? ((lucroLiquido / totalReceitas) * 100).toFixed(1) : '0.0';
 
   const fmt = (v: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v);
 
@@ -102,18 +112,18 @@ const Relatorios: React.FC = () => {
           <h3 className={`text-sm font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Resumo Executivo Automático</h3>
         </div>
         <div className={`p-5 rounded-xl border ${darkMode ? 'bg-athos-500/5 border-athos-500/10' : 'bg-athos-50 border-athos-100'}`}>
-          <h4 className={`text-sm font-bold mb-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>📊 ATOS - Resumo Janeiro 2025</h4>
+          <h4 className={`text-sm font-bold mb-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>📊 Resumo Financeiro</h4>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-            <div><p className={`text-lg font-bold text-emerald-400`}>{fmt(220000)}</p><p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>Receita Total</p></div>
-            <div><p className={`text-lg font-bold text-red-400`}>{fmt(162200)}</p><p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>Despesas</p></div>
-            <div><p className={`text-lg font-bold text-athos-400`}>{fmt(57800)}</p><p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>Lucro Líquido</p></div>
-            <div><p className={`text-lg font-bold text-amber-400`}>26.3%</p><p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>Margem</p></div>
+            <div><p className={`text-lg font-bold text-emerald-400`}>{fmt(totalReceitas)}</p><p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>Receita Total</p></div>
+            <div><p className={`text-lg font-bold text-red-400`}>{fmt(totalDespesas)}</p><p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>Despesas</p></div>
+            <div><p className={`text-lg font-bold ${lucroLiquido >= 0 ? 'text-athos-400' : 'text-red-400'}`}>{fmt(Math.abs(lucroLiquido))}</p><p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>Lucro Líquido</p></div>
+            <div><p className={`text-lg font-bold text-amber-400`}>{margem}%</p><p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>Margem</p></div>
           </div>
           <div className="space-y-2">
-            <p className={`text-xs ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>✅ <strong>Receita cresceu 8.3%</strong> em relação ao mês anterior</p>
-            <p className={`text-xs ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>⚠️ <strong>RH ultrapassou orçamento</strong> em R$ 10.000 - requer atenção</p>
-            <p className={`text-xs ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>💡 <strong>Oportunidade de economia</strong> de R$ 72.312/ano identificada</p>
-            <p className={`text-xs ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>🔮 <strong>Projeção Q1 2025 positiva</strong> com margem estimada de 28-30%</p>
+            <p className={`text-xs ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>📊 <strong>Total de lançamentos:</strong> {lancamentos.length} ({receitas.length} receitas, {despesas.length} despesas)</p>
+            <p className={`text-xs ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>✅ <strong>Receitas recebidas:</strong> {receitas.filter(l => l.status === 'recebido').length} de {receitas.length}</p>
+            <p className={`text-xs ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>⚠️ <strong>Despesas pendentes:</strong> {despesas.filter(l => l.status === 'pendente').length} ({fmt(despesas.filter(l => l.status === 'pendente').reduce((s, l) => s + l.valor, 0))})</p>
+            <p className={`text-xs ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>🔮 <strong>Margem atual:</strong> {margem}% {parseFloat(margem) >= 0 ? '(positiva)' : '(negativa)'}</p>
           </div>
         </div>
       </div>

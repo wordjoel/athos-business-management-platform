@@ -18,13 +18,7 @@ const ATHOSPeople: React.FC = () => {
 
   const [funcionarios, setFuncionarios] = useState<Funcionario[]>(() => {
     const saved = localStorage.getItem('athos_funcionarios');
-    return saved ? JSON.parse(saved) : [
-      { id: '1', nome: 'Kleber Duarte', cargo: 'CEO', departamento: 'Administrativo', email: 'kleber@athos.com', telefone: '(11) 99999-0001', entrada: '09:00', status: 'presente' },
-      { id: '2', nome: 'Luiz Victor', cargo: 'Diretor Comercial', departamento: 'Comercial', email: 'luiz@athos.com', telefone: '(11) 99999-0002', entrada: '09:00', status: 'presente' },
-      { id: '3', nome: 'Joel Oliveira', cargo: 'Diretor Adm/Financeiro', departamento: 'Financeiro', email: 'joel@athos.com', telefone: '(11) 99999-0003', entrada: '09:00', status: 'presente' },
-      { id: '4', nome: 'Oscar Carvalho', cargo: 'Diretor de Qualidade', departamento: 'Qualidade', email: 'oscar@athos.com', telefone: '(11) 99999-0004', entrada: '09:00', status: 'presente' },
-      { id: '5', nome: 'Mauricio Baro', cargo: 'Diretor de Produtos', departamento: 'Produtos', email: 'mauricio@athos.com', telefone: '(11) 99999-0005', entrada: '09:00', status: 'presente' },
-    ];
+    return saved ? JSON.parse(saved) : [];
   });
 
   const [showForm, setShowForm] = useState(false);

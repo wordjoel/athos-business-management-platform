@@ -38,11 +38,7 @@ const ATHOSSign: React.FC = () => {
 
   const [contratos, setContratos] = useState<Contrato[]>(() => {
     const saved = localStorage.getItem('athos_contratos');
-    return saved ? JSON.parse(saved) : [
-      { id: '1', titulo: 'Software ATHOS Pro', parte: 'Tech Solutions LTDA', cnpj: '12.345.678/0001-90', telefone: '(11) 99999-0001', endereco: 'Av. Paulista, 1000 - São Paulo', valor: 15000, tipo: 'licenca', categoria: 'Software', inicio: '01/01/2026', fim: '01/01/2027', status: 'ativo', modificadoPor: 'Joel Oliveira', ultimaModificacao: '13/05/2026', lembrar: 30 },
-      { id: '2', titulo: 'Suporte Técnico', parte: 'Clínica Viva Saúde', cnpj: '98.765.432/0001-10', telefone: '(11) 3333-0000', endereco: 'Rua das Flores, 250 - São Paulo', valor: 2500, tipo: 'servico', categoria: 'Serviços', inicio: '01/03/2026', fim: '01/03/2027', status: 'ativo', modificadoPor: 'Joel Oliveira', ultimaModificacao: '12/05/2026', lembrar: 15 },
-      { id: '3', titulo: 'Desenvolvimento App', parte: 'Restaurante Sabor', cnpj: '11.222.333/0001-44', telefone: '(11) 4444-5555', endereco: 'Av. Brigadeiro, 500', valor: 12000, tipo: 'servico', categoria: 'Desenvolvimento', inicio: '15/04/2026', fim: '15/08/2026', status: 'enviado', modificadoPor: 'Mauricio Baro', ultimaModificacao: '11/05/2026' },
-    ];
+    return saved ? JSON.parse(saved) : [];
   });
 
   const [recibos, setRecibos] = useState<Recibo[]>(() => {

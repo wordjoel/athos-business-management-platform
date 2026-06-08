@@ -1,10 +1,14 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
-import { Bell, Search, Moon, Sun, User, Settings, LogOut, ChevronDown, Calendar } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import { Bell, Search, User, Settings, LogOut, ChevronDown } from 'lucide-react';
 import { alertas as mockAlertas } from '../data/mockData';
 
 const Header: React.FC = () => {
-  const { darkMode, toggleDarkMode, unreadAlertCount, markAlertRead, logout, setCurrentPage, usuarioLogado } = useApp();
+  const { darkMode, unreadAlertCount, markAlertRead } = useApp();
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const [showNotifications, setShowNotifications] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
 
@@ -87,9 +91,9 @@ const Header: React.FC = () => {
             }`}
           >
             <div className="w-7 h-7 rounded-lg bg-cyan-600 flex items-center justify-center text-white text-xs font-bold">
-              {usuarioLogado?.avatar || 'US'}
+              {user?.avatar || 'US'}
             </div>
-            <span className={`text-xs hidden sm:block ${darkMode ? 'text-gray-400' : 'text-gray-700'}`}>{usuarioLogado?.nome?.split(' ')[0] || 'Usuário'}</span>
+            <span className={`text-xs hidden sm:block ${darkMode ? 'text-gray-400' : 'text-gray-700'}`}>{user?.nome?.split(' ')[0] || 'Usuário'}</span>
             <ChevronDown size={12} className={darkMode ? 'text-gray-600' : 'text-gray-400'} />
           </button>
 
@@ -98,18 +102,18 @@ const Header: React.FC = () => {
               darkMode ? 'bg-gray-800 border border-white/10' : 'bg-white border border-gray-200'
             }`}>
               <div className={`p-3 border-b ${darkMode ? 'border-white/5' : 'border-gray-100'}`}>
-                <p className={`text-xs font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>{usuarioLogado?.nome || 'Usuário'}</p>
-                <p className={`text-[10px] ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>{usuarioLogado?.email || 'usuario@athos.com'}</p>
+                <p className={`text-xs font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>{user?.nome || 'Usuário'}</p>
+                <p className={`text-[10px] ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>{user?.email || 'usuario@athos.com'}</p>
               </div>
               <div className="p-2">
-                <button className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors ${darkMode ? 'text-gray-300 hover:bg-white/5' : 'text-gray-600 hover:bg-gray-50'}`}>
+                <button onClick={() => { navigate('/perfil'); setShowUserMenu(false); }} className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors ${darkMode ? 'text-gray-300 hover:bg-white/5' : 'text-gray-600 hover:bg-gray-50'}`}>
                   <User size={14} /> Meu Perfil
                 </button>
-                <button onClick={() => { setCurrentPage('configuracoes'); setShowUserMenu(false); }} className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors ${darkMode ? 'text-gray-300 hover:bg-white/5' : 'text-gray-600 hover:bg-gray-50'}`}>
+                <button onClick={() => { navigate('/configuracoes'); setShowUserMenu(false); }} className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors ${darkMode ? 'text-gray-300 hover:bg-white/5' : 'text-gray-600 hover:bg-gray-50'}`}>
                   <Settings size={14} /> Configurações
                 </button>
                 <hr className={`my-1 ${darkMode ? 'border-white/5' : 'border-gray-100'}`} />
-                <button onClick={logout} className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors text-red-400 hover:bg-red-500/10`}>
+                <button onClick={async () => { await logout(); navigate('/login'); }} className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors text-red-400 hover:bg-red-500/10`}>
                   <LogOut size={14} /> Sair
                 </button>
               </div>
