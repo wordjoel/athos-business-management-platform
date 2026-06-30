@@ -36,6 +36,15 @@ const MobileHome: React.FC = () => {
   const [cashFlow, setCashFlow] = useState({ receita: 0, despesa: 0, saldo: 0 });
   const [projects, setProjects] = useState<any[]>([]);
   const [showFABMenu, setShowFABMenu] = useState(false);
+  const [currentNameIndex, setCurrentNameIndex] = useState(0);
+  const names = ['Carlos', 'Joel', 'Kleber', 'Oscar'];
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentNameIndex(prev => (prev + 1) % names.length);
+    }, 4000);
+    return () => clearInterval(timer);
+  }, []);
   const [showQuickForm, setShowQuickForm] = useState<'receita' | 'despesa' | 'lead' | 'projeto' | 'ocr' | null>(null);
   const [ocrLoading, setOcrLoading] = useState(false);
   const [ocrSuccess, setOcrSuccess] = useState(false);
@@ -200,10 +209,9 @@ const MobileHome: React.FC = () => {
         <div className="flex justify-between items-start">
           <div className="space-y-1">
             <span className="text-xs font-semibold uppercase tracking-wider text-cyan-400">Escritório Virtual</span>
-            <h2 className="text-2xl font-bold tracking-tight">Bom dia, {user?.nome?.split(' ')[0] || 'Sócio'}</h2>
-            <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-              {user?.nome === 'Kleber Duarte' || user?.nome === 'Joel Oliveira' || user?.nome === 'Oscar Carvalho' ? 'Sócio • ' : ''} 
-              ATHOS Solution
+            <h2 className="text-lg font-bold tracking-tight transition-all duration-500">Bom dia, {names[currentNameIndex]}</h2>
+            <p className={`text-[10px] ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+              Sócio • ATHOS Solution
             </p>
           </div>
           <button className={`p-2.5 rounded-full ${darkMode ? 'bg-gray-800/80 border border-white/5 text-gray-300 hover:text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'} transition-all relative`}>
