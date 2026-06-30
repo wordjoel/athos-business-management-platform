@@ -92,12 +92,23 @@ const MobileLayout: React.FC = () => {
         </div>
         
         <div className="flex items-center gap-2">
-          {/* Slogan ou Badge do PWA */}
-          <span className="text-[10px] text-cyan-400 font-semibold px-2 py-0.5 rounded-full bg-cyan-500/10 hidden xs:inline-block">
-            ATHOS Mobile Premium
-          </span>
-          <button onClick={() => setMenuOpen(!menuOpen)} className={`p-2 rounded-full ${darkMode ? 'bg-gray-900/60' : 'bg-gray-100'}`}>
-            {menuOpen ? <X size={18} /> : <Menu size={18} />}
+          {/* Botão de Tema (Sempre Visível) */}
+          <button
+            onClick={() => toggleDarkMode()}
+            className={`p-2 rounded-full transition-all active:scale-90 ${
+              darkMode ? 'bg-gray-900/60 text-amber-400 hover:text-amber-300' : 'bg-gray-100 text-indigo-600 hover:bg-gray-200'
+            }`}
+            title="Alternar Tema"
+          >
+            {darkMode ? <Sun size={18} /> : <Moon size={18} />}
+          </button>
+
+          {/* Botão do Perfil (Avatar do Usuário em vez de Hamburger Menu) */}
+          <button
+            onClick={() => setMenuOpen(!menuOpen)}
+            className="w-8 h-8 rounded-full bg-gradient-to-r from-cyan-500 to-indigo-500 flex items-center justify-center text-white font-bold text-xs shadow-md transition-all active:scale-95 border border-white/10"
+          >
+            {menuOpen ? <X size={16} /> : (user?.avatar || 'U')}
           </button>
         </div>
       </header>
