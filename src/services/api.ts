@@ -1,4 +1,3 @@
-import { supabase } from '../lib/auth';
 import { DataService, DataEntity } from './dataService';
 
 type SyncStatus = 'online' | 'offline' | 'syncing';
@@ -12,7 +11,49 @@ interface SyncQueueItem {
 }
 
 const SYNC_QUEUE_KEY = 'athos_sync_queue';
-const NETWORK_CHECK_KEY = 'athos_network_status';
+
+// Back4App Configuration
+const PARSE_APP_ID = 'MGVO13bUvNoz7wvMl91GNeYMIZMFmli0IefzmfyL';
+const PARSE_REST_KEY = 'bdEUBHi6EEsX7uwbObbnEqiz7ssXfL8Voo7E1j2b';
+const PARSE_BASE_URL = 'https://parseapi.back4app.com';
+
+const parseHeaders = {
+  'X-Parse-Application-Id': PARSE_APP_ID,
+  'X-Parse-Client-Key': PARSE_REST_KEY,
+  'Content-Type': 'application/json',
+};
+
+async function parseRequest(method: string, path: string, body?: any) {
+  const url = `${PARSE_BASE_URL}${path}`;
+  const response = await fetch(url, {
+    method,
+    headers: parseHeaders,
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  if (!response.ok) {
+    const errText = await response.text();
+    throw new Error(`Back4App Parse API Error (${response.status}): ${errText}`);
+  }
+  return response.json();
+}
+
+const getClassName = (storageKey: string): string => {
+  const base = storageKey.replace('athos_', '');
+  return base.charAt(0).toUpperCase() + base.slice(1);
+};
+
+const findObjectId = async (className: string, localId: string): Promise<string | null> => {
+  try {
+    const url = `/classes/${className}?where=${encodeURIComponent(JSON.stringify({ id: localId }))}`;
+    const result = await parseRequest('GET', url);
+    if (result && result.results && result.results.length > 0) {
+      return result.results[0].objectId;
+    }
+  } catch (err) {
+    console.warn(`Failed to find Back4App objectId for ${className}/${localId}:`, err);
+  }
+  return null;
+};
 
 export function getNetworkStatus(): SyncStatus {
   if (!navigator.onLine) return 'offline';
@@ -113,20 +154,35 @@ class ApiCentral {
 
     for (const item of queue) {
       try {
-        const tableName = item.storageKey.replace('athos_', '');
+        const className = getClassName(item.storageKey);
+        
         if (item.action === 'create') {
-          const { error } = await supabase.from(tableName).insert(item.data);
-          if (error) throw error;
+          const existingObjectId = await findObjectId(className, item.id);
+          if (existingObjectId) {
+            await parseRequest('PUT', `/classes/${className}/${existingObjectId}`, item.data);
+          } else {
+            await parseRequest('POST', `/classes/${className}`, item.data);
+          }
         } else if (item.action === 'update') {
-          const { error } = await supabase.from(tableName).update(item.data).eq('id', item.id);
-          if (error) throw error;
+          const objectId = await findObjectId(className, item.id);
+          if (objectId) {
+            await parseRequest('PUT', `/classes/${className}/${objectId}`, item.data);
+          } else {
+            const service = this.getService(item.storageKey);
+            const fullItem = service ? service.getById(item.id) : null;
+            if (fullItem) {
+              await parseRequest('POST', `/classes/${className}`, fullItem);
+            }
+          }
         } else if (item.action === 'delete') {
-          const { error } = await supabase.from(tableName).delete().eq('id', item.id);
-          if (error) throw error;
+          const objectId = await findObjectId(className, item.id);
+          if (objectId) {
+            await parseRequest('DELETE', `/classes/${className}/${objectId}`);
+          }
         }
         synced++;
       } catch (err) {
-        console.warn(`Sync failed for ${item.storageKey}/${item.id}:`, err);
+        console.warn(`Sync failed for Back4App Parse Class ${getClassName(item.storageKey)}/${item.id}:`, err);
         failed++;
       }
     }
@@ -148,15 +204,20 @@ class ApiCentral {
 
     for (const [storageKey] of this.services) {
       try {
-        const tableName = storageKey.replace('athos_', '');
-        const { data, error } = await supabase.from(tableName).select('*');
-        if (error) continue;
-        if (data && data.length > 0) {
-          localStorage.setItem(storageKey, JSON.stringify(data));
-          total += data.length;
+        const className = getClassName(storageKey);
+        const result = await parseRequest('GET', `/classes/${className}`);
+        if (result && result.results) {
+          const data = result.results.map((item: any) => {
+            const { objectId, createdAt, updatedAt, ACL, ...clean } = item;
+            return clean;
+          });
+          if (data.length > 0) {
+            localStorage.setItem(storageKey, JSON.stringify(data));
+            total += data.length;
+          }
         }
-      } catch {
-        // Silently fail per table
+      } catch (err) {
+        console.warn(`Pull failed from Back4App Class ${getClassName(storageKey)}:`, err);
       }
     }
 
