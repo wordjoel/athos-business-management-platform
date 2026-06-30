@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
-import { Settings, Building2, Bell, Zap, Code, Save, CheckCircle, Eye, EyeOff } from 'lucide-react';
+import {
+  Settings, Building2, Bell, Zap, Code, Save, CheckCircle, Eye, EyeOff,
+  Smartphone, RefreshCw, HardDrive, Globe, Shield, Cloud, Download, Upload
+} from 'lucide-react';
 import { getLocalUsers, updatePassword } from '../lib/auth';
+import { logs as mockLogs } from '../data/mockData';
 
 const Configuracoes: React.FC = () => {
   const { darkMode, nomeEmpresa, setNomeEmpresa, dadosEmpresa, setDadosEmpresa } = useApp();
-  const [configTab, setConfigTab] = useState<'geral' | 'notificacoes' | 'integracoes' | 'api' | 'usuarios'>('geral');
+  const [configTab, setConfigTab] = useState<'geral' | 'notificacoes' | 'integracoes' | 'api' | 'usuarios' | 'pwa' | 'logs' | 'backup' | 'supabase'>('geral');
   const [salvo, setSalvo] = useState(false);
 
   const [form, setForm] = useState({
@@ -83,6 +87,10 @@ const Configuracoes: React.FC = () => {
             { id: 'integracoes' as const, label: 'Integrações', icon: Zap },
             { id: 'api' as const, label: 'API & Webhooks', icon: Code },
             { id: 'usuarios' as const, label: 'Usuários', icon: () => <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg> },
+            { id: 'pwa' as const, label: 'PWA', icon: Smartphone },
+            { id: 'logs' as const, label: 'Logs & Auditoria', icon: Shield },
+            { id: 'backup' as const, label: 'Backup', icon: HardDrive },
+            { id: 'supabase' as const, label: 'Supabase', icon: Cloud },
           ].map(t => (
             <button key={t.id} onClick={() => setConfigTab(t.id)} className={`flex items-center gap-2 px-5 py-3.5 text-sm font-medium whitespace-nowrap border-b-2 transition-all ${
               configTab === t.id ? 'border-athos-500 text-athos-400' : `border-transparent ${darkMode ? 'text-gray-500 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'}`
@@ -259,6 +267,252 @@ const Configuracoes: React.FC = () => {
                   {['GET /api/v1/financeiro', 'POST /api/v1/despesas', 'GET /api/v1/relatorios', 'GET /api/v1/setores', 'POST /api/v1/webhooks'].map((endpoint, i) => (
                     <div key={i} className={`px-3 py-2 rounded-lg font-mono text-xs ${darkMode ? 'bg-black/30 text-emerald-400' : 'bg-white text-emerald-600'}`}>{endpoint}</div>
                   ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {configTab === 'pwa' && (
+            <div className="space-y-4">
+              <h3 className={`text-sm font-semibold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>Gestão do Aplicativo Mobile (PWA)</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className={`p-5 rounded-xl border ${darkMode ? 'bg-white/5 border-white/5' : 'bg-gray-50 border-gray-200'}`}>
+                  <Smartphone size={20} className="text-cyan-400 mb-2" />
+                  <p className={`text-sm font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Status do PWA</p>
+                  <p className={`text-xs mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Aplicativo instalável</p>
+                  <span className="text-[10px] font-bold mt-2 inline-block px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400">
+                    {'✅'} Ativo
+                  </span>
+                </div>
+                <div className={`p-5 rounded-xl border ${darkMode ? 'bg-white/5 border-white/5' : 'bg-gray-50 border-gray-200'}`}>
+                  <Globe size={20} className="text-violet-400 mb-2" />
+                  <p className={`text-sm font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Manifest</p>
+                  <p className={`text-xs mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>/manifest.json</p>
+                  <button onClick={() => window.open('/manifest.json', '_blank')} className="text-[10px] font-medium mt-2 text-athos-400 hover:underline">Visualizar</button>
+                </div>
+                <div className={`p-5 rounded-xl border ${darkMode ? 'bg-white/5 border-white/5' : 'bg-gray-50 border-gray-200'}`}>
+                  <RefreshCw size={20} className="text-emerald-400 mb-2" />
+                  <p className={`text-sm font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Service Worker</p>
+                  <p className={`text-xs mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                    {navigator.serviceWorker?.controller ? 'Registrado' : 'Não registrado'}
+                  </p>
+                  <button onClick={() => { if (navigator.serviceWorker?.controller) navigator.serviceWorker.controller.postMessage({ type: 'CACHE_CLEAR' }); }} className="text-[10px] font-medium mt-2 text-amber-400 hover:underline">Limpar Cache</button>
+                </div>
+              </div>
+
+              <div className={`p-5 rounded-xl border ${darkMode ? 'bg-white/5 border-white/5' : 'bg-gray-50 border-gray-200'}`}>
+                <p className={`text-sm font-semibold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>Configurações do PWA</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {[
+                    { label: 'Nome do Aplicativo', value: 'ATHOS ERP', desc: 'Nome exibido na tela inicial' },
+                    { label: 'Tema (Theme Color)', value: '#00ffff', desc: 'Cor da barra de status' },
+                    { label: 'Versão', value: '1.0.0', desc: 'Versão atual do PWA' },
+                    { label: 'Background Color', value: '#030712', desc: 'Cor de fundo da splash screen' },
+                  ].map((item, i) => (
+                    <div key={i}>
+                      <label className={`text-xs font-medium ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{item.label}</label>
+                      <div className="flex items-center gap-2 mt-1">
+                        <input type="text" value={item.value} readOnly className={`w-full px-3 py-2 rounded-lg text-sm outline-none border ${darkMode ? 'bg-gray-800 border-gray-700 text-gray-300' : 'bg-white border-gray-200 text-gray-700'}`} />
+                        <div className="w-8 h-8 rounded-lg border border-white/10" style={{ backgroundColor: item.value.startsWith('#') ? item.value : '#030712' }} />
+                      </div>
+                      <p className={`text-[10px] mt-1 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>{item.desc}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className={`p-5 rounded-xl border ${darkMode ? 'bg-white/5 border-white/5' : 'bg-gray-50 border-gray-200'}`}>
+                <p className={`text-sm font-semibold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>Ícones do Aplicativo</p>
+                <div className="flex flex-wrap gap-4">
+                  {[
+                    { size: '192x192', file: '/logo.png' },
+                    { size: '512x512', file: '/logo.png' },
+                  ].map((icon, i) => (
+                    <div key={i} className="flex flex-col items-center gap-2">
+                      <div className="w-16 h-16 rounded-xl bg-gray-800 border border-white/10 flex items-center justify-center overflow-hidden">
+                        <img src={icon.file} alt={icon.size} className="w-full h-full object-contain" />
+                      </div>
+                      <span className="text-[10px] text-gray-500">{icon.size}</span>
+                    </div>
+                  ))}
+                </div>
+                <p className="text-[10px] mt-3 text-gray-500">ATENÇÃO: Ícones recomendados: 192x192 e 512x512 em PNG.</p>
+              </div>
+
+              <div className={`p-5 rounded-xl border ${darkMode ? 'bg-white/5 border-white/5' : 'bg-gray-50 border-gray-200'}`}>
+                <p className={`text-sm font-semibold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>Cache & Armazenamento</p>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Cache do Service Worker</p>
+                    <p className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>~1.5 MB</p>
+                  </div>
+                  <div>
+                    <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Dados Locais</p>
+                    <p className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>~2.3 MB</p>
+                  </div>
+                  <div>
+                    <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Total</p>
+                    <p className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>~3.8 MB</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className={`p-5 rounded-xl border ${darkMode ? 'bg-white/5 border-white/5' : 'bg-gray-50 border-gray-200'}`}>
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <p className={`text-sm font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Push Notifications</p>
+                    <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Notificações push para dispositivos móveis</p>
+                  </div>
+                  <button className="w-11 h-6 rounded-full bg-cyan-500 relative">
+                    <div className="absolute top-0.5 w-5 h-5 rounded-full bg-white left-5 transition-all" />
+                  </button>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className={`text-sm font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Offline First</p>
+                    <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Funcionamento offline com sincronização automática</p>
+                  </div>
+                  <button className="w-11 h-6 rounded-full bg-cyan-500 relative">
+                    <div className="absolute top-0.5 w-5 h-5 rounded-full bg-white left-5 transition-all" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {configTab === 'logs' && (
+            <div className="space-y-4">
+              <h3 className={`text-sm font-semibold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>Logs de Auditoria</h3>
+              <p className={`text-xs mb-4 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Registro de atividades do sistema.</p>
+              <div className="overflow-x-auto">
+                <table className="w-full text-xs">
+                  <thead>
+                    <tr className={`border-b ${darkMode ? 'border-white/5 text-gray-400' : 'border-gray-200 text-gray-500'}`}>
+                      <th className="text-left py-3 px-2 font-medium">Usuário</th>
+                      <th className="text-left py-3 px-2 font-medium">Ação</th>
+                      <th className="text-left py-3 px-2 font-medium">Módulo</th>
+                      <th className="text-left py-3 px-2 font-medium">Data</th>
+                      <th className="text-left py-3 px-2 font-medium">Detalhes</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {mockLogs.map(log => (
+                      <tr key={log.id} className={`border-b ${darkMode ? 'border-white/5 hover:bg-white/5' : 'border-gray-100 hover:bg-gray-50'}`}>
+                        <td className="py-3 px-2 font-medium text-white">{log.usuario}</td>
+                        <td className="py-3 px-2"><span className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${log.acao === 'login' ? 'bg-emerald-500/10 text-emerald-400' : log.acao === 'delete' ? 'bg-red-500/10 text-red-400' : log.acao === 'update' ? 'bg-amber-500/10 text-amber-400' : 'bg-blue-500/10 text-blue-400'}`}>{log.acao}</span></td>
+                        <td className="py-3 px-2 text-gray-400">{log.modulo}</td>
+                        <td className="py-3 px-2 text-gray-400">{log.data}</td>
+                        <td className="py-3 px-2 text-gray-500 max-w-[200px] truncate">{log.detalhes}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+
+          {configTab === 'backup' && (
+            <div className="space-y-4">
+              <h3 className={`text-sm font-semibold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>Backup & Restauração</h3>
+              <p className={`text-xs mb-4 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Exporte ou importe todos os dados do sistema (localStorage).</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className={`p-5 rounded-xl border ${darkMode ? 'bg-white/5 border-white/5' : 'bg-gray-50 border-gray-200'}`}>
+                  <Download size={24} className="text-emerald-400 mb-3" />
+                  <p className={`text-sm font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Exportar Dados</p>
+                  <p className={`text-xs mt-1 mb-4 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Baixe todos os dados em formato JSON.</p>
+                  <button onClick={() => {
+                    const keys = Object.keys(localStorage).filter(k => k.startsWith('athos_'));
+                    const data: Record<string, unknown> = {};
+                    keys.forEach(k => { try { data[k] = JSON.parse(localStorage.getItem(k) || 'null'); } catch { data[k] = localStorage.getItem(k); } });
+                    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a'); a.href = url; a.download = `athos-backup-${new Date().toISOString().split('T')[0]}.json`; a.click();
+                    URL.revokeObjectURL(url);
+                  }} className="px-4 py-2 bg-emerald-600 text-white text-xs font-medium rounded-lg hover:bg-emerald-500 transition-colors">
+                    <Download size={14} className="inline mr-1" /> Exportar Backup
+                  </button>
+                </div>
+                <div className={`p-5 rounded-xl border ${darkMode ? 'bg-white/5 border-white/5' : 'bg-gray-50 border-gray-200'}`}>
+                  <Upload size={24} className="text-cyan-400 mb-3" />
+                  <p className={`text-sm font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Importar Dados</p>
+                  <p className={`text-xs mt-1 mb-4 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Restaurar dados a partir de um arquivo JSON.</p>
+                  <label className="px-4 py-2 bg-cyan-600 text-white text-xs font-medium rounded-lg hover:bg-cyan-500 transition-colors cursor-pointer inline-flex items-center gap-1">
+                    <Upload size={14} /> Importar Backup
+                    <input type="file" accept=".json" className="hidden" onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      const reader = new FileReader();
+                      reader.onload = (ev) => {
+                        try {
+                          const data = JSON.parse(ev.target?.result as string);
+                          Object.entries(data).forEach(([key, value]) => localStorage.setItem(key, JSON.stringify(value)));
+                          alert('Dados restaurados com sucesso! Recarregue a página.');
+                        } catch { alert('Erro ao importar arquivo.'); }
+                      };
+                      reader.readAsText(file);
+                    }} />
+                  </label>
+                </div>
+              </div>
+              <div className={`p-5 rounded-xl border ${darkMode ? 'bg-white/5 border-white/5' : 'bg-gray-50 border-gray-200'}`}>
+                <div className="flex items-center gap-2 mb-3">
+                  <RefreshCw size={16} className="text-amber-400" />
+                  <p className={`text-sm font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Reiniciar Dados</p>
+                </div>
+                <p className={`text-xs mb-4 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Limpa todos os dados e recarrega os seeds padrão.</p>
+                <button onClick={() => {
+                  if (confirm('Tem certeza? Todos os dados serão perdidos!')) {
+                    const keys = Object.keys(localStorage).filter(k => k.startsWith('athos_'));
+                    keys.forEach(k => localStorage.removeItem(k));
+                    localStorage.removeItem('athos_auth_session');
+                    alert('Dados limpos. Recarregue a página.');
+                    window.location.reload();
+                  }
+                }} className="px-4 py-2 bg-red-600 text-white text-xs font-medium rounded-lg hover:bg-red-500 transition-colors">
+                  Resetar Sistema
+                </button>
+              </div>
+            </div>
+          )}
+
+          {configTab === 'supabase' && (
+            <div className="space-y-4">
+              <h3 className={`text-sm font-semibold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>Conexão Supabase</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className={`p-5 rounded-xl border ${darkMode ? 'bg-white/5 border-white/5' : 'bg-gray-50 border-gray-200'}`}>
+                  <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Status</p>
+                  <div className="flex items-center gap-2 mt-1">
+                    <div className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+                    <p className={`text-sm font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Modo Offline</p>
+                  </div>
+                  <p className={`text-[10px] mt-1 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>Usuários locais ativos</p>
+                </div>
+                <div className={`p-5 rounded-xl border ${darkMode ? 'bg-white/5 border-white/5' : 'bg-gray-50 border-gray-200'}`}>
+                  <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Projeto</p>
+                  <p className={`text-sm font-bold mt-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>{import.meta.env.VITE_SUPABASE_URL ? 'Configurado' : 'Não configurado'}</p>
+                </div>
+                <div className={`p-5 rounded-xl border ${darkMode ? 'bg-white/5 border-white/5' : 'bg-gray-50 border-gray-200'}`}>
+                  <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Autenticação</p>
+                  <p className={`text-sm font-bold mt-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>{import.meta.env.VITE_SUPABASE_ANON_KEY ? 'Key presente' : 'Sem key'}</p>
+                </div>
+              </div>
+              <div className={`p-5 rounded-xl border ${darkMode ? 'bg-white/5 border-white/5' : 'bg-gray-50 border-gray-200'}`}>
+                <p className={`text-sm font-semibold mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>Sincronização</p>
+                <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>O sistema alterna automaticamente entre autenticação local e cloud (Supabase) quando conectado à internet.</p>
+                <div className="mt-3 flex items-center gap-3">
+                  <span className="text-[10px] px-2 py-1 rounded-full bg-emerald-500/10 text-emerald-400">localStorage ativo</span>
+                  <span className="text-[10px] px-2 py-1 rounded-full bg-gray-500/10 text-gray-400">Supabase offline</span>
+                </div>
+              </div>
+              <div className={`p-5 rounded-xl border ${darkMode ? 'bg-white/5 border-white/5' : 'bg-gray-50 border-gray-200'}`}>
+                <p className={`text-sm font-semibold mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>Variáveis de Ambiente</p>
+                <div className="space-y-2">
+                  <div className={`px-3 py-2 rounded-lg font-mono text-xs ${darkMode ? 'bg-black/30 text-gray-400' : 'bg-white text-gray-600'}`}>
+                    VITE_SUPABASE_URL: {import.meta.env.VITE_SUPABASE_URL || 'não definida'}
+                  </div>
+                  <div className={`px-3 py-2 rounded-lg font-mono text-xs ${darkMode ? 'bg-black/30 text-gray-400' : 'bg-white text-gray-600'}`}>
+                    VITE_SUPABASE_ANON_KEY: {import.meta.env.VITE_SUPABASE_ANON_KEY ? 'definida' : 'não definida'}
+                  </div>
                 </div>
               </div>
             </div>

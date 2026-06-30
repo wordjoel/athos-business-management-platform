@@ -8,6 +8,7 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from './lib/queryClient';
 import { I18nextProvider } from 'react-i18next';
 import i18n from './lib/i18n';
+import { SystemInit } from './components/SystemInit';
 import './index.css';
 
 const AppLayout: React.FC = () => {
@@ -15,13 +16,15 @@ const AppLayout: React.FC = () => {
     <BrowserRouter>
       <AuthProvider>
         <AppProvider>
-          <ToastProvider>
-            <QueryClientProvider client={queryClient}>
-              <I18nextProvider i18n={i18n}>
-                <AppRoutes />
-              </I18nextProvider>
-            </QueryClientProvider>
-          </ToastProvider>
+          <SystemInit>
+            <ToastProvider>
+              <QueryClientProvider client={queryClient}>
+                <I18nextProvider i18n={i18n}>
+                  <AppRoutes />
+                </I18nextProvider>
+              </QueryClientProvider>
+            </ToastProvider>
+          </SystemInit>
         </AppProvider>
       </AuthProvider>
     </BrowserRouter>

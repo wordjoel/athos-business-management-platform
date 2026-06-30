@@ -1,4 +1,5 @@
 import { DataService } from './dataService';
+import { api } from './api';
 
 export interface Lancamento {
   id: string;
@@ -23,8 +24,10 @@ function uuid() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 9);
 }
 
+import { receitas as mockReceitas, despesas as mockDespesas } from '../data/mockData';
+
 function migrar(): void {
-  if (localStorage.getItem('athos_migracao_feita')) return;
+  if (localStorage.getItem('athos_migracao_feita_v2')) return;
 
   const oldPagar = localStorage.getItem(OLD_PAGAR_KEY);
   const oldReceber = localStorage.getItem(OLD_RECEBER_KEY);
@@ -70,6 +73,38 @@ function migrar(): void {
     } catch {}
   }
 
+  if (novos.length === 0) {
+    // If no old data to migrate, seed with mock data so the dashboard is not empty
+    mockDespesas.forEach(d => {
+      novos.push({
+        id: d.id,
+        tipo: 'despesa',
+        descricao: d.descricao,
+        valor: d.valor,
+        vencimento: d.vencimento,
+        data: d.dataPagamento || d.vencimento,
+        status: d.pago ? 'pago' : 'pendente',
+        categoria: d.categoria,
+        contraparte: d.fornecedor,
+        criadaEm: new Date().toISOString().slice(0, 10),
+      });
+    });
+    mockReceitas.forEach(r => {
+      novos.push({
+        id: r.id,
+        tipo: 'receita',
+        descricao: r.descricao,
+        valor: r.valor,
+        vencimento: r.vencimento,
+        data: r.dataRecebimento || r.vencimento,
+        status: r.recebido ? 'recebido' : 'pendente',
+        categoria: r.categoria,
+        contraparte: r.cliente,
+        criadaEm: new Date().toISOString().slice(0, 10),
+      });
+    });
+  }
+
   if (novos.length > 0) {
     const existentes = lancamentoService.getAll();
     if (existentes.length === 0) {
@@ -77,7 +112,7 @@ function migrar(): void {
     }
   }
 
-  localStorage.setItem('athos_migracao_feita', '1');
+  localStorage.setItem('athos_migracao_feita_v2', '1');
 }
 
 export function getLancamentos(): Lancamento[] {
@@ -96,15 +131,20 @@ export function getReceitas(): Lancamento[] {
 export function criarLancamento(data: Omit<Lancamento, 'id' | 'criadaEm'>): Lancamento {
   const completo: Lancamento = { ...data, id: uuid(), criadaEm: new Date().toISOString().slice(0, 10) };
   lancamentoService.create(completo);
+  api.notifyChange('create', STORAGE_KEY, completo.id, completo);
   return completo;
 }
 
 export function atualizarLancamento(id: string, data: Partial<Lancamento>): Lancamento | undefined {
-  return lancamentoService.update(id, data);
+  const result = lancamentoService.update(id, data);
+  if (result) api.notifyChange('update', STORAGE_KEY, id, data);
+  return result;
 }
 
 export function excluirLancamento(id: string): boolean {
-  return lancamentoService.delete(id);
+  const result = lancamentoService.delete(id);
+  if (result) api.notifyChange('delete', STORAGE_KEY, id);
+  return result;
 }
 
 export function getFluxoCaixaMensal(): { mes: string; receita: number; despesa: number; saldo: number }[] {

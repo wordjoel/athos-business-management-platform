@@ -13,8 +13,8 @@ const Header: React.FC = () => {
   const [showUserMenu, setShowUserMenu] = useState(false);
 
   return (
-    <header className={`h-14 px-5 flex items-center justify-between border-b ${
-      darkMode ? 'bg-gray-900/50 border-white/5' : 'bg-white/50 border-gray-200'
+    <header className={`h-14 px-5 flex items-center justify-between border-b backdrop-blur-xl ${
+      darkMode ? 'bg-gray-900/40 border-white/5' : 'bg-white/70 border-gray-200'
     }`}>
       {/* Left: Search */}
       <div className="flex items-center gap-4">
@@ -109,9 +109,11 @@ const Header: React.FC = () => {
                 <button onClick={() => { navigate('/perfil'); setShowUserMenu(false); }} className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors ${darkMode ? 'text-gray-300 hover:bg-white/5' : 'text-gray-600 hover:bg-gray-50'}`}>
                   <User size={14} /> Meu Perfil
                 </button>
-                <button onClick={() => { navigate('/configuracoes'); setShowUserMenu(false); }} className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors ${darkMode ? 'text-gray-300 hover:bg-white/5' : 'text-gray-600 hover:bg-gray-50'}`}>
-                  <Settings size={14} /> Configurações
-                </button>
+                {user?.role === 'admin' && (
+                  <button onClick={() => { navigate('/configuracoes'); setShowUserMenu(false); }} className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors ${darkMode ? 'text-gray-300 hover:bg-white/5' : 'text-gray-600 hover:bg-gray-50'}`}>
+                    <Settings size={14} /> Configurações
+                  </button>
+                )}
                 <hr className={`my-1 ${darkMode ? 'border-white/5' : 'border-gray-100'}`} />
                 <button onClick={async () => { await logout(); navigate('/login'); }} className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors text-red-400 hover:bg-red-500/10`}>
                   <LogOut size={14} /> Sair

@@ -9,6 +9,18 @@ interface Tarefa {
   status: 'pendente' | 'em_andamento' | 'concluida' | 'bloqueada';
   prioridade: 'critica' | 'alta' | 'media' | 'baixa';
   prazo: string;
+  tipo?: 'epic' | 'story' | 'bug' | 'task';
+  pontos?: number;
+  epicId?: string;
+  sprint?: string;
+}
+
+interface Sprint {
+  id: string;
+  nome: string;
+  dataInicio: string;
+  dataFim: string;
+  status: 'planejamento' | 'em_andamento' | 'concluido';
 }
 
 interface Projeto {
@@ -22,6 +34,8 @@ interface Projeto {
   dataFim: string;
   tarefas: Tarefa[];
   equipe: string[];
+  sprints?: Sprint[];
+  roadmap?: string;
 }
 
 const ATHOSProjects: React.FC = () => {
@@ -67,16 +81,18 @@ const ATHOSProjects: React.FC = () => {
     if (confirm('Excluir este projeto?')) setProjetos(projetos.filter(p => p.id !== id));
   };
 
-  const adicionarTarefa = (projetoId: string) => {
+  const adicionarTarefa = (projetoId: string, tipo: 'task' | 'epic' | 'story' | 'bug' = 'task') => {
     const projeto = projetos.find(p => p.id === projetoId);
     if (!projeto) return;
     const novaTarefa: Tarefa = {
       id: Date.now().toString(),
-      titulo: 'Nova tarefa',
+      titulo: tipo === 'epic' ? 'Novo Epic' : tipo === 'story' ? 'Nova Story' : tipo === 'bug' ? 'Novo Bug' : 'Nova tarefa',
       responsavel: usuarioLogado?.nome || '',
       status: 'pendente',
-      prioridade: 'media',
+      prioridade: tipo === 'bug' ? 'alta' : 'media',
       prazo: '',
+      tipo,
+      pontos: tipo === 'story' ? 3 : undefined,
     };
     atualizarProjeto(projetoId, 'tarefas', [...projeto.tarefas, novaTarefa]);
   };
@@ -92,10 +108,18 @@ const ATHOSProjects: React.FC = () => {
 
   const projetosFiltrados = filtroStatus === 'todos' ? projetos : projetos.filter(p => p.status === filtroStatus);
 
+  const totalTarefas = projetos.reduce((s, p) => s + p.tarefas.length, 0);
+  const epics = projetos.flatMap(p => p.tarefas.filter(t => t.tipo === 'epic'));
+  const stories = projetos.flatMap(p => p.tarefas.filter(t => t.tipo === 'story'));
+  const bugs = projetos.flatMap(p => p.tarefas.filter(t => t.tipo === 'bug'));
+  const pontosTotal = projetos.flatMap(p => p.tarefas).reduce((s, t) => s + (t.pontos || 0), 0);
+
   const stats = [
-    { title: 'Total', value: projetos.length, icon: Kanban, color: 'cyan' },
-    { title: 'Em Andamento', value: projetos.filter(p => p.status === 'em_andamento').length, icon: Play, color: 'blue' },
-    { title: 'Problemas', value: projetos.filter(p => p.status === 'problemas').length, icon: AlertTriangle, color: 'red' },
+    { title: 'Projetos', value: projetos.length, icon: Kanban, color: 'cyan' },
+    { title: 'Epics', value: epics.length, icon: Target, color: 'violet' },
+    { title: 'Stories', value: stories.length, icon: CheckSquare, color: 'blue' },
+    { title: 'Bugs', value: bugs.length, icon: AlertTriangle, color: 'red' },
+    { title: 'Story Points', value: pontosTotal, icon: TrendingUp, color: 'amber' },
     { title: 'Concluídos', value: projetos.filter(p => p.status === 'concluido').length, icon: CheckCircle, color: 'emerald' },
   ];
 
@@ -126,7 +150,7 @@ const ATHOSProjects: React.FC = () => {
         <button onClick={() => setFiltroStatus('todos')} className={`px-3 py-1 rounded-full text-xs font-medium ${filtroStatus === 'todos' ? 'bg-cyan-500 text-white' : 'bg-gray-800 text-gray-400'}`}>Todos</button>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
         {stats.map((stat, i) => (
           <div key={i} className="bg-gray-800/40 p-3 rounded-xl border border-white/5">
             <stat.icon size={16} className={`text-${stat.color}-400 mb-1`} />

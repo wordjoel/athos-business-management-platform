@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useApp } from '../../context/AppContext';
 import { useToast } from '../../components/Toast';
-import { MessageCircle, Send, Phone, Video, MoreVertical, Search, Paperclip, Image, Sticker, Archive, Settings, Users, MessageSquare, Bot, Webhook, Check, CheckCheck, Clock, Circle, Plus, X, Link, Key, Zap, Bell, Gift, DollarSign, Calendar, FileText, Save, RefreshCw, PhoneCall, MessageFilled } from 'lucide-react';
+import { MessageCircle, Send, Phone, Video, MoreVertical, Search, Paperclip, Image, Sticker, Archive, Settings, Users, MessageSquare, Bot, Webhook, Check, CheckCheck, Clock, Circle, Plus, X, Link, Key, Zap, Bell, Gift, DollarSign, Calendar, FileText, Save, RefreshCw, PhoneCall } from 'lucide-react';
 
 interface Contato {
   id: string;
@@ -203,13 +203,13 @@ const WhatsAppIntegration: React.FC = () => {
         body: JSON.stringify({ value: webhookUrl }),
       });
       if (res.ok) {
-        addToast('Webhook Z-API configurado com sucesso!', 'success');
+        addToast({ title: 'Webhook Z-API configurado com sucesso!', type: 'success' });
       } else {
         const errText = await res.text();
-        addToast('Erro ao configurar webhook: ' + errText, 'error');
+        addToast({ title: 'Erro ao configurar webhook: ' + errText, type: 'error' });
       }
     } catch {
-      addToast('Erro de conexão com Z-API', 'error');
+      addToast({ title: 'Erro de conexão com Z-API', type: 'error' });
     }
   };
 

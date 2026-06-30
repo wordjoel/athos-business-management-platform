@@ -23,7 +23,7 @@ const UsuariosPage: React.FC = () => {
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [form, setForm] = useState({ name: '', email: '', role: 'user' as const, sector: '' });
+  const [form, setForm] = useState<{ name: string; email: string; role: 'admin' | 'user' | 'manager' | 'viewer'; sector: string }>({ name: '', email: '', role: 'user', sector: '' });
 
   useEffect(() => { localStorage.setItem('athos_usuarios', JSON.stringify(usuarios)); }, [usuarios]);
 

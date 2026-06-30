@@ -7,7 +7,7 @@ interface ValidationRule<T> {
 
 interface UseFormValidationProps<T extends Record<string, unknown>> {
   initialValues: T;
-  validationRules?: Partial<Record<keyof T, ValidationRule<unknown>[]>>;
+  validationRules?: Partial<Record<keyof T, ValidationRule<any>[]>>;
   onSubmit: (values: T) => Promise<void> | void;
 }
 

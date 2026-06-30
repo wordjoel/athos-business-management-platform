@@ -102,7 +102,7 @@ describe('useFormValidation hook', () => {
 
     // Submit form
     await act(async () => {
-      await result.current.handleSubmit({ preventDefault: vi.fn() } as React.FormEvent);
+      await result.current.handleSubmit({ preventDefault: vi.fn() } as unknown as React.FormEvent);
     });
 
     expect(onSubmit).toHaveBeenCalledWith({ email: 'test@test.com' });

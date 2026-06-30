@@ -23,7 +23,7 @@ const ATHOSFlow: React.FC = () => {
   });
 
   const [showForm, setShowForm] = useState(false);
-  const [formData, setFormData] = useState({ nome: '', email: '', telefone: '', empresa: '', valor: '', etapa: 'novo', responsavel: 'Luiz Victor' });
+  const [formData, setFormData] = useState({ nome: '', email: '', telefone: '', empresa: '', valor: '', etapa: 'novo', responsavel: 'Kleber Duarte' });
 
   useEffect(() => { localStorage.setItem('athos_leads', JSON.stringify(leads)); }, [leads]);
 
@@ -36,7 +36,7 @@ const ATHOSFlow: React.FC = () => {
       ultimoContato: new Date().toLocaleDateString('pt-BR'),
     };
     setLeads([novo, ...leads]);
-    setFormData({ nome: '', email: '', telefone: '', empresa: '', valor: '', etapa: 'novo', responsavel: 'Luiz Victor' });
+    setFormData({ nome: '', email: '', telefone: '', empresa: '', valor: '', etapa: 'novo', responsavel: 'Kleber Duarte' });
     setShowForm(false);
   };
 
@@ -59,7 +59,7 @@ const ATHOSFlow: React.FC = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gradient">ATHOS Flow</h1>
-          <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>CRM Inteligente - Dir. Comercial: Luiz Victor</p>
+          <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>CRM Inteligente - Gestão de Vendas</p>
         </div>
         <div className="flex items-center gap-2 px-3 py-1.5 bg-pink-500/10 rounded-lg">
           <BrainCircuit size={16} className="text-pink-400" />
@@ -114,9 +114,9 @@ const ATHOSFlow: React.FC = () => {
               <div>
                 <label className="text-sm">Responsável</label>
                 <select value={formData.responsavel} onChange={e => setFormData({ ...formData, responsavel: e.target.value })} className="w-full mt-1 p-2 rounded-lg bg-gray-800 border border-gray-700">
-                  <option value="Luiz Victor">Luiz Victor - Comercial</option>
-                  <option value="Joel Oliveira">Joel Oliveira - Adm/Financeiro</option>
-                  <option value="Kleber Duarte">Kleber Duarte - CEO</option>
+                  <option value="Kleber Duarte">Kleber Duarte - Sócio</option>
+                  <option value="Joel Oliveira">Joel Oliveira - Sócio</option>
+                  <option value="Oscar Carvalho">Oscar Carvalho - Sócio</option>
                 </select>
               </div>
               <button onClick={salvarLead} className="w-full py-2 bg-pink-500 rounded-lg font-medium hover:bg-pink-600 flex items-center justify-center gap-2">

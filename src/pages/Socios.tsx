@@ -8,7 +8,7 @@ const SociosPage: React.FC = () => {
   const socios = [
     {
       nome: 'Kleber Duarte',
-      cargo: 'CEO - Chief Executive Officer',
+      cargo: 'Sócio',
       funcao: 'Tecnologia, Inovação e Desenvolvimento',
       descricao: 'Responsável pela liderança estratégica da ATHOS, arquitetura tecnológica, inovação, desenvolvimento de soluções digitais e direcionamento técnico da empresa.',
       avatar: 'KD',
@@ -16,7 +16,7 @@ const SociosPage: React.FC = () => {
     },
     {
       nome: 'Joel Oliveira',
-      cargo: 'Diretor Administrativo e Financeiro',
+      cargo: 'Sócio',
       funcao: 'Gestão Administrativa e Financeira',
       descricao: 'Responsável pela gestão administrativa, organização operacional, planejamento financeiro, estrutura corporativa e suporte estratégico ao crescimento da ATHOS.',
       avatar: 'JO',
@@ -24,27 +24,11 @@ const SociosPage: React.FC = () => {
     },
     {
       nome: 'Oscar Carvalho',
-      cargo: 'Diretor de Qualidade e Desenvolvimento',
+      cargo: 'Sócio',
       funcao: 'Qualidade e Melhoria Contínua',
       descricao: 'Responsável pelo controle de qualidade, validação operacional, melhoria contínua, testes técnicos e excelência das entregas desenvolvidas pela empresa.',
       avatar: 'OC',
       cor: 'violet',
-    },
-    {
-      nome: 'Mauricio Baro',
-      cargo: 'Diretor de Produtos',
-      funcao: 'Produto e Estratégia',
-      descricao: 'Responsável pela visão estratégica dos produtos, definição de funcionalidades, evolução das soluções e alinhamento das demandas de mercado.',
-      avatar: 'MB',
-      cor: 'amber',
-    },
-    {
-      nome: 'Luiz Victor',
-      cargo: 'Diretor Comercial e Expansão',
-      funcao: 'Comercial e Crescimento',
-      descricao: 'Responsável pela área comercial, desenvolvimento de oportunidades estratégicas, expansão empresarial, relacionamento corporativo e apoio operacional ao desenvolvimento tecnológico.',
-      avatar: 'LV',
-      cor: 'cyan',
     },
   ];
 

@@ -44,11 +44,16 @@ interface AppContextType extends AppState {
   setNomeEmpresa: (nome: string) => void;
   setDadosEmpresa: (dados: Partial<DadosEmpresa>) => void;
   unreadAlertCount: number;
+  isOnline: boolean;
+  setOnlineStatus: (online: boolean) => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const setOnlineStatus = useCallback((online: boolean) => setIsOnline(online), []);
+
   const [state, setState] = useState<AppState>(() => {
     const savedNome = localStorage.getItem('athos_nome_empresa');
     const savedDados = localStorage.getItem('athos_dados_empresa');
@@ -131,6 +136,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       setNomeEmpresa,
       setDadosEmpresa,
       unreadAlertCount,
+      isOnline,
+      setOnlineStatus,
     }}>
       {children}
     </AppContext.Provider>

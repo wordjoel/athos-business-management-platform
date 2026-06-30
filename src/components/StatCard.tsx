@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 import { LucideIcon, TrendingUp, TrendingDown } from 'lucide-react';
 
 interface StatCardProps {
@@ -10,9 +11,10 @@ interface StatCardProps {
   color: string;
   darkMode: boolean;
   subtitle?: string;
+  index?: number;
 }
 
-const StatCard: React.FC<StatCardProps> = ({ title, value, change, changeType = 'neutral', icon: Icon, color, darkMode, subtitle }) => {
+const StatCard: React.FC<StatCardProps> = ({ title, value, change, changeType = 'neutral', icon: Icon, color, darkMode, subtitle, index = 0 }) => {
   const colorMap: Record<string, { bg: string; bgDark: string; icon: string; text: string }> = {
     purple: { bg: 'bg-athos-50', bgDark: 'bg-athos-500/10', icon: 'text-athos-500', text: 'text-athos-400' },
     green: { bg: 'bg-emerald-50', bgDark: 'bg-emerald-500/10', icon: 'text-emerald-500', text: 'text-emerald-400' },
@@ -26,11 +28,17 @@ const StatCard: React.FC<StatCardProps> = ({ title, value, change, changeType = 
   const colors = colorMap[color] || colorMap.purple;
 
   return (
-    <div className={`rounded-2xl p-5 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg ${
-      darkMode
-        ? 'bg-gray-900/80 border border-white/5 hover:border-white/10'
-        : 'bg-white border border-gray-200 shadow-sm hover:shadow-md'
-    }`}>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, delay: index * 0.1 }}
+      whileHover={{ scale: 1.02, y: -2 }}
+      className={`rounded-2xl p-5 transition-all duration-300 ${
+        darkMode
+          ? 'bg-gray-900/80 border border-white/5 hover:border-white/10'
+          : 'bg-white border border-gray-200 shadow-sm hover:shadow-md'
+      }`}
+    >
       <div className="flex items-start justify-between">
         <div className="flex-1">
           <p className={`text-xs font-medium tracking-wide uppercase ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>{title}</p>
@@ -55,7 +63,7 @@ const StatCard: React.FC<StatCardProps> = ({ title, value, change, changeType = 
           <Icon size={22} className={darkMode ? colors.text : colors.icon} />
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

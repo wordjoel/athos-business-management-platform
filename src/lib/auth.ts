@@ -1,17 +1,14 @@
 import { createClient, User, Session } from '@supabase/supabase-js';
-import { useApp } from '../context/AppContext';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
-if (!supabaseUrl || !supabaseAnonKey) {
-  console.error('⚠️ Variáveis de ambiente do Supabase ausentes!');
-}
 
 export const supabase = createClient(
   supabaseUrl || 'https://placeholder.supabase.co',
   supabaseAnonKey || 'placeholder-key'
 );
+
+export type UserRole = 'master' | 'admin' | 'gerente' | 'supervisor' | 'operador' | 'financeiro' | 'rh' | 'comercial' | 'juridico' | 'cliente' | 'visualizador';
 
 export interface AuthUser {
   id: string;
@@ -19,21 +16,84 @@ export interface AuthUser {
   nome: string;
   avatar: string;
   telefone?: string;
-  role: 'admin' | 'manager' | 'user';
+  role: UserRole;
   permissions: string[];
 }
+
+export const ROLE_HIERARCHY: Record<UserRole, number> = {
+  master: 10,
+  admin: 9,
+  gerente: 8,
+  supervisor: 7,
+  operador: 6,
+  financeiro: 6,
+  rh: 6,
+  comercial: 6,
+  juridico: 6,
+  cliente: 3,
+  visualizador: 1,
+};
+
+export const ROLE_LABELS: Record<UserRole, string> = {
+  master: 'Master',
+  admin: 'Administrador',
+  gerente: 'Gerente',
+  supervisor: 'Supervisor',
+  operador: 'Operador',
+  financeiro: 'Financeiro',
+  rh: 'Recursos Humanos',
+  comercial: 'Comercial',
+  juridico: 'Jurídico',
+  cliente: 'Cliente',
+  visualizador: 'Visualizador',
+};
+
+export const ROLE_COLORS: Record<UserRole, string> = {
+  master: 'bg-gradient-to-r from-yellow-500 to-amber-600',
+  admin: 'bg-gradient-to-r from-red-500 to-rose-600',
+  gerente: 'bg-gradient-to-r from-blue-500 to-indigo-600',
+  supervisor: 'bg-gradient-to-r from-purple-500 to-violet-600',
+  operador: 'bg-gradient-to-r from-cyan-500 to-teal-600',
+  financeiro: 'bg-gradient-to-r from-green-500 to-emerald-600',
+  rh: 'bg-gradient-to-r from-pink-500 to-rose-500',
+  comercial: 'bg-gradient-to-r from-orange-500 to-amber-500',
+  juridico: 'bg-gradient-to-r from-slate-500 to-gray-600',
+  cliente: 'bg-gradient-to-r from-sky-500 to-blue-500',
+  visualizador: 'bg-gradient-to-r from-gray-400 to-gray-500',
+};
+
+export const ROLE_PERMISSIONS: Record<UserRole, string[]> = {
+  master: ['all'],
+  admin: ['all'],
+  gerente: ['read', 'write', 'manage_team', 'reports', 'approve'],
+  supervisor: ['read', 'write', 'manage_team', 'reports'],
+  operador: ['read', 'write'],
+  financeiro: ['read', 'write', 'finance', 'reports'],
+  rh: ['read', 'write', 'people', 'reports'],
+  comercial: ['read', 'write', 'crm', 'reports'],
+  juridico: ['read', 'write', 'legal', 'contracts'],
+  cliente: ['read', 'portal'],
+  visualizador: ['read'],
+};
 
 export const AUTH_CONFIG = {
   STORAGE_KEY: 'athos_auth_session',
   SESSION_TIMEOUT: 24 * 60 * 60 * 1000,
 } as const;
 
-const LOCAL_USERS: Array<{ email: string; nome: string; avatar: string; cargo: string; role: 'admin' | 'manager' | 'user'; permissions: string[]; defaultPassword: string }> = [
-  { email: 'kleber@athos.com', nome: 'Kleber Duarte', avatar: 'KD', cargo: 'CEO - Chief Executive Officer', role: 'admin', permissions: ['all'], defaultPassword: 'kleber' },
-  { email: 'joel@athos.com', nome: 'Joel Oliveira', avatar: 'JO', cargo: 'Diretor Administrativo e Financeiro', role: 'admin', permissions: ['all'], defaultPassword: 'joel123' },
-  { email: 'oscar@athos.com', nome: 'Oscar Carvalho', avatar: 'OC', cargo: 'Diretor de Qualidade e Desenvolvimento', role: 'admin', permissions: ['all'], defaultPassword: 'oscar123' },
-  { email: 'mauricio@athos.com', nome: 'Mauricio Baro', avatar: 'MB', cargo: 'Diretor de Produtos', role: 'admin', permissions: ['all'], defaultPassword: 'mauricio' },
-  { email: 'luiz@athos.com', nome: 'Luiz Victor', avatar: 'LV', cargo: 'Diretor Comercial e Expansão', role: 'admin', permissions: ['all'], defaultPassword: 'luiz123' },
+const LOCAL_USERS: Array<{
+  email: string;
+  nome: string;
+  avatar: string;
+  cargo: string;
+  role: UserRole;
+  permissions: string[];
+  defaultPassword: string;
+}> = [
+  { email: 'admin@atos.com.br', nome: 'Administrador', avatar: 'AD', cargo: 'Master do Sistema', role: 'master', permissions: ['all'], defaultPassword: 'admin123' },
+  { email: 'joel@atos.com', nome: 'Joel Oliveira', avatar: 'JO', cargo: 'Sócio', role: 'admin', permissions: ['all'], defaultPassword: 'joel123' },
+  { email: 'kleber@atos.com', nome: 'Kleber Duarte', avatar: 'KD', cargo: 'Sócio', role: 'admin', permissions: ['all'], defaultPassword: 'kleber123' },
+  { email: 'oscar@atos.com', nome: 'Oscar Carvalho', avatar: 'OC', cargo: 'Sócio', role: 'admin', permissions: ['all'], defaultPassword: 'oscar123' },
 ];
 
 function getPassword(email: string, defaultPwd: string): string {
@@ -93,10 +153,12 @@ function buildLocalUserSession(user: AuthUser): Session {
 }
 
 export async function signIn(email: string, password: string): Promise<{ user: AuthUser | null; error: string | null }> {
-  // Check all local users (works offline, no Supabase needed)
-  const localUser = LOCAL_USERS.find(u => u.email === email);
+  const localUser = LOCAL_USERS.find(u => u.email === email)
+    || LOCAL_USERS.find(u => u.email.startsWith(email))
+    || LOCAL_USERS.find(u => u.email.split('@')[0] === email);
+
   if (localUser) {
-    const expectedPwd = getPassword(email, localUser.defaultPassword);
+    const expectedPwd = getPassword(localUser.email, localUser.defaultPassword);
     if (password !== expectedPwd) {
       return { user: null, error: 'E-mail ou senha inválidos' };
     }
@@ -113,20 +175,10 @@ export async function signIn(email: string, password: string): Promise<{ user: A
     return { user, error: null };
   }
 
-  // Fallback to Supabase authentication
   try {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-
-    if (error) {
-      return { user: null, error: error.message };
-    }
-
-    if (!data.user) {
-      return { user: null, error: 'Usuário não encontrado' };
-    }
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) return { user: null, error: error.message };
+    if (!data.user) return { user: null, error: 'Usuário não encontrado' };
 
     const user: AuthUser = {
       id: data.user.id,
@@ -134,14 +186,11 @@ export async function signIn(email: string, password: string): Promise<{ user: A
       nome: data.user.user_metadata?.nome || email.split('@')[0],
       avatar: data.user.user_metadata?.avatar || 'US',
       telefone: data.user.user_metadata?.telefone || '',
-      role: data.user.user_metadata?.role || 'user',
+      role: data.user.user_metadata?.role || 'visualizador',
       permissions: data.user.user_metadata?.permissions || ['read'],
     };
 
-    if (data.session) {
-      supabase.auth.setSession(data.session);
-    }
-
+    if (data.session) supabase.auth.setSession(data.session);
     await saveSession(data.session);
     return { user, error: null };
   } catch (err) {
@@ -150,39 +199,16 @@ export async function signIn(email: string, password: string): Promise<{ user: A
   }
 }
 
-export async function signUp(
-  email: string,
-  password: string,
-  nome: string,
-  telefone?: string
-): Promise<{ user: AuthUser | null; error: string | null }> {
+export async function signUp(email: string, password: string, nome: string, telefone?: string): Promise<{ user: AuthUser | null; error: string | null }> {
   try {
     const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          nome,
-          telefone,
-          avatar: nome.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2),
-          role: 'user',
-          permissions: ['read'],
-        },
-      },
+      email, password,
+      options: { data: { nome, telefone, avatar: nome.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2), role: 'visualizador', permissions: ['read'] } },
     });
-
-    if (error) {
-      return { user: null, error: error.message };
-    }
-
-    if (!data.user) {
-      return { user: null, error: 'Falha ao criar usuário' };
-    }
-
-    // Note: signUp does not immediately return a session, it sends a confirmation email
-    // We don't set session here because the user needs to confirm email first
+    if (error) return { user: null, error: error.message };
+    if (!data.user) return { user: null, error: 'Falha ao criar usuário' };
     return { user: null, error: null };
-  } catch (err) {
+  } catch {
     return { user: null, error: 'Erro ao criar conta' };
   }
 }
@@ -191,16 +217,9 @@ export async function signOut(): Promise<void> {
   const savedSession = localStorage.getItem(AUTH_CONFIG.STORAGE_KEY);
   const sessionData = savedSession ? JSON.parse(savedSession) : null;
   const isLocal = sessionData?.isLocal === true;
-
   if (!isLocal) {
-    try {
-      await supabase.auth.signOut();
-      supabase.auth.setSession(null);
-    } catch {
-      // Ignore Supabase errors on logout
-    }
+    try { await supabase.auth.signOut(); supabase.auth.setSession(null); } catch {}
   }
-
   clearSession();
 }
 
@@ -222,25 +241,12 @@ export function onAuthStateChange(callback: (event: string, session: Session | n
 }
 
 async function saveSession(session: Session): Promise<void> {
-  const sessionData = {
-    access_token: session.access_token,
-    refresh_token: session.refresh_token,
-    expires_at: session.expires_at,
-    user: session.user,
-    isLocal: false,
-  };
+  const sessionData = { access_token: session.access_token, refresh_token: session.refresh_token, expires_at: session.expires_at, user: session.user, isLocal: false };
   localStorage.setItem(AUTH_CONFIG.STORAGE_KEY, JSON.stringify(sessionData));
 }
 
 async function saveLocalSession(session: Session, email: string): Promise<void> {
-  const sessionData = {
-    access_token: session.access_token,
-    refresh_token: session.refresh_token,
-    expires_at: session.expires_at,
-    user: session.user,
-    isLocal: true,
-    email,
-  };
+  const sessionData = { access_token: session.access_token, refresh_token: session.refresh_token, expires_at: session.expires_at, user: session.user, isLocal: true, email };
   localStorage.setItem(AUTH_CONFIG.STORAGE_KEY, JSON.stringify(sessionData));
 }
 
@@ -250,8 +256,19 @@ function clearSession(): void {
 
 export function hasPermission(user: AuthUser | null, permission: string): boolean {
   if (!user) return false;
-  if (user.role === 'admin') return true;
+  if (user.permissions.includes('all')) return true;
   return user.permissions.includes(permission);
+}
+
+export function hasMinimumRole(user: AuthUser | null, minRole: UserRole): boolean {
+  if (!user) return false;
+  return (ROLE_HIERARCHY[user.role] || 0) >= (ROLE_HIERARCHY[minRole] || 0);
+}
+
+export function canAccess(user: AuthUser | null, requiredRoles: UserRole[]): boolean {
+  if (!user) return false;
+  if (user.role === 'master' || user.role === 'admin') return true;
+  return requiredRoles.includes(user.role);
 }
 
 export function isTokenExpired(expiresAt: number): boolean {

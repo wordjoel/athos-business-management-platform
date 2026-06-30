@@ -50,7 +50,7 @@ const ATHOSSign: React.FC = () => {
   const [showRecibo, setShowRecibo] = useState(false);
   const [contratoRecibo, setContratoRecibo] = useState<Contrato | null>(null);
   const [aba, setAba] = useState<'contratos' | 'modelos' | 'assinaturas' | 'recibos' | 'lembretes'>('contratos');
-  const [formData, setFormData] = useState({ titulo: '', parte: '', cnpj: '', telefone: '', endereco: '', valor: '', tipo: 'servico', categoria: 'Serviços', inicio: '', fim: '', enviarPara: 'Joel Oliveira', lembrar: '15' });
+  const [formData, setFormData] = useState({ titulo: '', parte: '', cnpj: '', telefone: '', endereco: '', valor: '', tipo: 'servico' as 'servico' | 'licenca' | 'parceria' | 'fornecimento' | 'outro', categoria: 'Serviços', inicio: '', fim: '', enviarPara: 'Joel Oliveira', lembrar: '15' });
   const [formRecibo, setFormRecibo] = useState({ nomeFuncionario: '', cpf: '', valor: '', descricao: '' });
 
   useEffect(() => { localStorage.setItem('athos_contratos', JSON.stringify(contratos)); }, [contratos]);
@@ -60,10 +60,12 @@ const ATHOSSign: React.FC = () => {
 
   const salvarContrato = () => {
     if (!formData.titulo || !formData.parte) return;
+    const { lembrar, ...restForm } = formData;
     const novo: Contrato = {
       id: Date.now().toString(),
-      ...formData,
+      ...restForm,
       valor: parseFloat(formData.valor) || 0,
+      lembrar: parseInt(lembrar) || 15,
       status: 'rascunho',
       modificadoPor: usuarioAtual,
       ultimaModificacao: new Date().toLocaleDateString('pt-BR'),
@@ -303,8 +305,9 @@ const ATHOSSign: React.FC = () => {
                 <input type="date" value={formData.fim} onChange={e => setFormData({ ...formData, fim: e.target.value })} className="px-3 py-2 bg-gray-700/50 rounded-lg border border-white/10 text-white text-sm" />
               </div>
               <select value={formData.enviarPara} onChange={e => setFormData({ ...formData, enviarPara: e.target.value })} className="w-full px-3 py-2 bg-gray-700/50 rounded-lg border border-white/10 text-white text-sm">
-                <option value="Joel Oliveira">Joel Oliveira (Financeiro)</option>
-                <option value="Luiz Victor">Luiz Victor (Comercial)</option>
+                <option value="Joel Oliveira">Joel Oliveira (Sócio)</option>
+                <option value="Kleber Duarte">Kleber Duarte (Sócio)</option>
+                <option value="Oscar Carvalho">Oscar Carvalho (Sócio)</option>
               </select>
               <div className="flex items-center gap-2">
                 <input type="number" value={formData.lembrar} onChange={e => setFormData({ ...formData, lembrar: e.target.value })} className="w-20 px-3 py-2 bg-gray-700/50 rounded-lg border border-white/10 text-white text-sm" />

@@ -51,19 +51,19 @@ const DRE: React.FC = () => {
           <span className="text-xs text-gray-400">Valores calculados automaticamente dos lançamentos</span>
         </div>
         <div className="space-y-1">
-          <DreLinha label="Receita Bruta de Vendas" valor={valores.receitaBruta} darkMode={darkMode} />
-          <DreLinha label="(-) Deduções de Vendas" valor={valores.deducoes} negative darkMode={darkMode} />
-          <DreLinha label="= Receita Líquida" valor={valores.receitaLiquida} isAuto isTotal darkMode={darkMode} />
+          <DreLinha label="Receita Bruta de Vendas" valor={valores.receitaBruta} />
+          <DreLinha label="(-) Deduções de Vendas" valor={valores.deducoes} negative />
+          <DreLinha label="= Receita Líquida" valor={valores.receitaLiquida} isAuto isTotal />
           <div className={`border-t my-2 ${darkMode ? 'border-gray-700' : 'border-gray-200'}`} />
-          <DreLinha label="(-) Custo de Mercadorias (CPV)" valor={valores.cpv} negative darkMode={darkMode} />
-          <DreLinha label="= Lucro Bruto" valor={valores.lucroBruto} isAuto isTotal darkMode={darkMode} />
+          <DreLinha label="(-) Custo de Mercadorias (CPV)" valor={valores.cpv} negative />
+          <DreLinha label="= Lucro Bruto" valor={valores.lucroBruto} isAuto isTotal />
           <div className={`border-t my-2 ${darkMode ? 'border-gray-700' : 'border-gray-200'}`} />
-          <DreLinha label="(-) Despesas Operacionais" valor={valores.despesasOperacionais} negative darkMode={darkMode} />
-          <DreLinha label="(-) Despesas Financeiras" valor={valores.despesasFinanceiras} negative darkMode={darkMode} />
-          <DreLinha label="= Lucro Operacional (EBIT)" valor={valores.ebit} isAuto isTotal darkMode={darkMode} />
+          <DreLinha label="(-) Despesas Operacionais" valor={valores.despesasOperacionais} negative />
+          <DreLinha label="(-) Despesas Financeiras" valor={valores.despesasFinanceiras} negative />
+          <DreLinha label="= Lucro Operacional (EBIT)" valor={valores.ebit} isAuto isTotal />
           <div className={`border-t my-2 ${darkMode ? 'border-gray-700' : 'border-gray-200'}`} />
-          <DreLinha label="(-) IR e Contribuição Social" valor={valores.irContribuicoes} negative darkMode={darkMode} />
-          <DreLinha label="= Lucro Líquido" valor={valores.lucroLiquido} isAuto isTotal isDestaque={valores.lucroLiquido > 0} darkMode={darkMode} />
+          <DreLinha label="(-) IR e Contribuição Social" valor={valores.irContribuicoes} negative />
+          <DreLinha label="= Lucro Líquido" valor={valores.lucroLiquido} isAuto isTotal isDestaque={valores.lucroLiquido > 0} />
         </div>
       </div>
 
