@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Home, BarChart3, Users, DollarSign, Sparkles, Grid, X, Bell,
   FolderKanban, CheckSquare, Clock, HardDrive, MessageCircle,
-  LifeBuoy, LogOut, ChevronLeft, CreditCard, FileText, Zap, ChevronRight, Menu
+  LifeBuoy, LogOut, ChevronLeft, CreditCard, FileText, Zap, ChevronRight, Menu, Sun, Moon
 } from 'lucide-react';
 import AIAssistant from './AIAssistant';
 
@@ -24,7 +24,7 @@ const MAIS_ITEMS = [
 
 const MobileLayout: React.FC = () => {
   const { user, logout } = useAuth();
-  const { darkMode, aiPanelOpen, toggleAIPanel } = useApp();
+  const { darkMode, aiPanelOpen, toggleAIPanel, toggleDarkMode } = useApp();
   const navigate = useNavigate();
   const location = useLocation();
   
@@ -65,7 +65,7 @@ const MobileLayout: React.FC = () => {
   const isFinanceActive = location.pathname === '/finance' || location.pathname === '/m/finance';
 
   return (
-    <div className={`min-h-screen flex flex-col ${darkMode ? 'bg-gray-950 text-white' : 'bg-gray-50 text-gray-900'}`}>
+    <div className={`min-h-screen flex flex-col ${darkMode ? 'bg-gray-950 text-white' : 'bg-gray-50 text-gray-900 light'}`}>
       
       {/* Top Header */}
       <header className={`sticky top-0 z-40 flex items-center justify-between px-4 py-3.5 ${
@@ -123,7 +123,19 @@ const MobileLayout: React.FC = () => {
                 <p className="text-[10px] font-bold text-cyan-400 mt-0.5">Sócio • Admin</p>
               </div>
             </div>
-            <div className="border-t border-white/5 pt-3">
+            <div className="border-t border-white/5 pt-3 space-y-3">
+              <div className="flex items-center justify-between">
+                <span className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Tema do Sistema</span>
+                <button
+                  onClick={() => { toggleDarkMode(); }}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+                    darkMode ? 'bg-gray-800 text-amber-400 border border-white/5' : 'bg-gray-100 text-indigo-600 border border-gray-200'
+                  }`}
+                >
+                  {darkMode ? <Sun size={14} /> : <Moon size={14} />}
+                  {darkMode ? 'Modo Claro' : 'Modo Escuro'}
+                </button>
+              </div>
               <button
                 onClick={() => { logout(); navigate('/login'); }}
                 className="w-full py-2.5 rounded-xl text-xs font-bold bg-red-500/10 text-red-400 flex items-center justify-center gap-2 hover:bg-red-500/20 transition-all"
