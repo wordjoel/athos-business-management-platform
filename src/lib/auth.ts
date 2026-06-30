@@ -153,9 +153,14 @@ function buildLocalUserSession(user: AuthUser): Session {
 }
 
 export async function signIn(email: string, password: string): Promise<{ user: AuthUser | null; error: string | null }> {
-  const localUser = LOCAL_USERS.find(u => u.email === email)
-    || LOCAL_USERS.find(u => u.email.startsWith(email))
-    || LOCAL_USERS.find(u => u.email.split('@')[0] === email);
+  const cleanEmail = email.trim().toLowerCase();
+  const emailPrefix = cleanEmail.split('@')[0];
+
+  const localUser = LOCAL_USERS.find(u => {
+    const uEmail = u.email.toLowerCase();
+    const uPrefix = uEmail.split('@')[0];
+    return uEmail === cleanEmail || uPrefix === emailPrefix;
+  });
 
   if (localUser) {
     const expectedPwd = getPassword(localUser.email, localUser.defaultPassword);
