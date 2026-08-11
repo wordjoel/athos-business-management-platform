@@ -88,9 +88,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setState(prev => ({ ...prev, currentPage: page }));
   }, []);
 
-  const toggleDarkMode = useCallback(() => {
-    setState(prev => ({ ...prev, darkMode: !prev.darkMode }));
-  }, []);
+  // Terminal CLI design system is dark-only by spec — the toggle stays wired
+  // (so it doesn't crash any existing caller) but no longer switches modes.
+  const toggleDarkMode = useCallback(() => {}, []);
 
   const toggleSidebar = useCallback(() => {
     setState(prev => ({ ...prev, sidebarCollapsed: !prev.sidebarCollapsed }));

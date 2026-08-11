@@ -5,7 +5,7 @@ import { getLancamentos, Lancamento } from '../services/lancamentoService';
 import { fornecedores, contratos } from '../data/mockData';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RTooltip, ResponsiveContainer, Cell } from 'recharts';
 
-const COLORS = ['#22C55E', '#EF4444', '#6366F1', '#F59E0B', '#06B6D4', '#EC4899', '#8B5CF6', '#FB923C'];
+const COLORS = ['#33ff00', '#ffb000', '#5ecf7f', '#8fe6a8', '#1f9900', '#3f9e5c', '#ff3333', '#c9f7d6'];
 
 const Financeiro: React.FC = () => {
   const { darkMode } = useApp();
@@ -178,7 +178,7 @@ const Financeiro: React.FC = () => {
                         <span className={`text-xs font-medium ${over ? 'text-red-400' : darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{pct.toFixed(0)}%</span>
                       </div>
                       <div className={`w-full h-2 rounded-full ${darkMode ? 'bg-white/5' : 'bg-gray-100'}`}>
-                        <div className="h-2 rounded-full transition-all" style={{ width: `${pct}%`, backgroundColor: over ? '#EF4444' : cat.cor }} />
+                        <div className="h-2 rounded-full transition-all" style={{ width: `${pct}%`, backgroundColor: over ? '#ff3333' : cat.cor }} />
                       </div>
                       <div className="flex justify-between mt-1">
                         <span className={`text-[11px] ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>{fmt(cat.gasto)} gasto</span>

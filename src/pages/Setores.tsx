@@ -76,7 +76,7 @@ const SetoresPage: React.FC = () => {
                     <span className={`text-xs font-bold ${over ? 'text-red-400' : darkMode ? 'text-white' : 'text-gray-900'}`}>{pctOrc}%</span>
                   </div>
                   <div className={`w-full h-2 rounded-full ${darkMode ? 'bg-white/10' : 'bg-gray-200'}`}>
-                    <div className="h-2 rounded-full transition-all" style={{ width: `${Math.min(parseFloat(pctOrc), 100)}%`, backgroundColor: over ? '#EF4444' : setor.cor }} />
+                    <div className="h-2 rounded-full transition-all" style={{ width: `${Math.min(parseFloat(pctOrc), 100)}%`, backgroundColor: over ? '#ff3333' : setor.cor }} />
                   </div>
                   <div className="flex justify-between mt-2">
                     <span className={`text-[11px] ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>{fmt(setor.gastos)} gasto</span>
@@ -114,9 +114,9 @@ const SetoresPage: React.FC = () => {
               <PolarGrid stroke={darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'} />
               <PolarAngleAxis dataKey="name" tick={{ fill: darkMode ? '#9CA3AF' : '#6B7280', fontSize: 11 }} />
               <PolarRadiusAxis angle={30} domain={[0, 100]} tick={{ fill: darkMode ? '#6B7280' : '#9CA3AF', fontSize: 10 }} />
-              <Radar name="Eficiência" dataKey="eficiencia" stroke="#6366F1" fill="#6366F1" fillOpacity={0.2} />
-              <Radar name="Produtividade" dataKey="produtividade" stroke="#22C55E" fill="#22C55E" fillOpacity={0.2} />
-              <Radar name="Satisfação" dataKey="satisfacao" stroke="#F59E0B" fill="#F59E0B" fillOpacity={0.2} />
+              <Radar name="Eficiência" dataKey="eficiencia" stroke="#33ff00" fill="#33ff00" fillOpacity={0.2} />
+              <Radar name="Produtividade" dataKey="produtividade" stroke="#ffb000" fill="#ffb000" fillOpacity={0.2} />
+              <Radar name="Satisfação" dataKey="satisfacao" stroke="#5ecf7f" fill="#5ecf7f" fillOpacity={0.2} />
               <Legend />
             </RadarChart>
           </ResponsiveContainer>
@@ -134,8 +134,8 @@ const SetoresPage: React.FC = () => {
               <XAxis dataKey="name" tick={{ fill: darkMode ? '#6B7280' : '#9CA3AF', fontSize: 11 }} />
               <YAxis tick={{ fill: darkMode ? '#6B7280' : '#9CA3AF', fontSize: 10 }} tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`} />
               <RTooltip formatter={tooltipFmt} contentStyle={{ background: darkMode ? '#111827' : '#fff', border: `1px solid ${darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'}`, borderRadius: '8px', fontSize: '12px' }} />
-              <Bar dataKey="orcamento" name="Orçamento" fill="#6366F1" radius={[4, 4, 0, 0]} opacity={0.4} />
-              <Bar dataKey="gastos" name="Gastos" fill="#22C55E" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="orcamento" name="Orçamento" fill="#5ecf7f" opacity={0.4} />
+              <Bar dataKey="gastos" name="Gastos" fill="#33ff00" />
             </BarChart>
           </ResponsiveContainer>
         </div>

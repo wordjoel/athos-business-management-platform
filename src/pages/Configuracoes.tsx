@@ -305,7 +305,7 @@ const Configuracoes: React.FC = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {[
                     { label: 'Nome do Aplicativo', value: 'ATHOS ERP', desc: 'Nome exibido na tela inicial' },
-                    { label: 'Tema (Theme Color)', value: '#00ffff', desc: 'Cor da barra de status' },
+                    { label: 'Tema (Theme Color)', value: '#33ff00', desc: 'Cor da barra de status' },
                     { label: 'Versão', value: '1.0.0', desc: 'Versão atual do PWA' },
                     { label: 'Background Color', value: '#030712', desc: 'Cor de fundo da splash screen' },
                   ].map((item, i) => (

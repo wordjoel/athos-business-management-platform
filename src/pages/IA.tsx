@@ -95,15 +95,15 @@ const IAPage: React.FC = () => {
             <AreaChart data={fluxoCaixa}>
               <defs>
                 <linearGradient id="colorSaldo" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#6366F1" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="#6366F1" stopOpacity={0} />
+                  <stop offset="5%" stopColor="#33ff00" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="#33ff00" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke={darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'} />
               <XAxis dataKey="mes" tick={{ fill: darkMode ? '#6B7280' : '#9CA3AF', fontSize: 12 }} />
               <YAxis tick={{ fill: darkMode ? '#6B7280' : '#9CA3AF', fontSize: 11 }} tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`} />
               <RTooltip formatter={tooltipFmt} contentStyle={{ background: darkMode ? '#111827' : '#fff', border: `1px solid ${darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'}`, borderRadius: '12px', fontSize: '12px' }} />
-              <Area type="monotone" dataKey="saldo" name="Saldo" stroke="#6366F1" fillOpacity={1} fill="url(#colorSaldo)" strokeWidth={2} dot={{ fill: '#6366F1', r: 4 }} />
+              <Area type="monotone" dataKey="saldo" name="Saldo" stroke="#33ff00" fillOpacity={1} fill="url(#colorSaldo)" strokeWidth={2} dot={{ fill: '#33ff00', r: 4 }} />
             </AreaChart>
           </ResponsiveContainer>
         </div>
