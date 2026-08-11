@@ -15,6 +15,7 @@ import {
 } from 'recharts';
 import { getLancamentos, getFluxoCaixaMensal, refreshLancamentos, Lancamento } from '../services/lancamentoService';
 import { alertas as mockAlertas, insightsIA, contratos, setores } from '../data/mockData';
+import Pane from '../components/TerminalPane';
 
 const COLORS = ['#33ff00', '#ffb000', '#5ecf7f', '#8fe6a8', '#1f9900', '#3f9e5c', '#ff3333', '#c9f7d6'];
 const TOOLTIP_STYLE = { background: '#0a0a0a', border: '1px solid #1f521f', borderRadius: 0, fontSize: '12px', color: '#33ff00' };
@@ -30,19 +31,6 @@ const itemVariants = {
   hidden: { opacity: 0, y: 12 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.3 } },
 };
-
-const Pane: React.FC<{ title: string; icon: React.ReactNode; className?: string; children: React.ReactNode; right?: React.ReactNode }> = ({ title, icon, className, children, right }) => (
-  <motion.div variants={itemVariants} className={`border border-[#1f521f] bg-[#0a0a0a] ${className || ''}`}>
-    <div className="px-5 py-3 border-b border-[#1f521f] flex items-center justify-between">
-      <div className="flex items-center gap-2">
-        {icon}
-        <h3 className="text-xs font-bold uppercase tracking-widest text-[#33ff00]">+--- {title} ---+</h3>
-      </div>
-      {right}
-    </div>
-    <div className="p-5">{children}</div>
-  </motion.div>
-);
 
 const Dashboard: React.FC = () => {
   const { toggleAIPanel } = useApp();
