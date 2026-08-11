@@ -55,6 +55,7 @@ const Boletos = lazy(() => import('../pages/modules/Boletos'));
 const Cartoes = lazy(() => import('../pages/modules/Cartoes'));
 
 const MobileLayout = lazy(() => import('../components/MobileLayout'));
+const MobileApp = lazy(() => import('../pages/mobile/MobileApp'));
 
 const PageLoader: React.FC = () => (
   <div className="flex items-center justify-center h-full min-h-[400px]">
@@ -105,6 +106,14 @@ const MobileLayoutWrapper: React.FC = () => (
   </ProtectedRoute>
 );
 
+const MobileAppWrapper: React.FC = () => (
+  <ProtectedRoute>
+    <LazyWrapper>
+      <MobileApp />
+    </LazyWrapper>
+  </ProtectedRoute>
+);
+
 export const AppRoutes: React.FC = () => {
   const isMobileDomain = 
     window.location.hostname.startsWith('m.') || 
@@ -118,22 +127,22 @@ export const AppRoutes: React.FC = () => {
       <Routes>
         <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
         
-        {/* Mobile PWA Specific Root routes */}
-        <Route element={<MobileLayoutWrapper />}>
-          <Route path="/" element={<MobileHome />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/finance" element={<ATHOSFinance />} />
-          <Route path="/flow" element={<ATHOSFlow />} />
-          <Route path="/ai" element={<ATHOSAI />} />
-          <Route path="/projects" element={<ATHOSProjects />} />
-          <Route path="/support" element={<ATHOSSupport />} />
-          <Route path="/tarefas" element={<Tarefas />} />
-          <Route path="/ponto" element={<PontoDigital />} />
-          <Route path="/drive" element={<ATHOSDrive />} />
-          <Route path="/whatsapp" element={<WhatsApp />} />
-          <Route path="/pix" element={<Pix />} />
-          <Route path="/boletos" element={<Boletos />} />
-          <Route path="/cartoes" element={<Cartoes />} />
+        {/* Mobile PWA - New App */}
+        <Route element={<MobileAppWrapper />}>
+          <Route path="/" element={<MobileApp />} />
+          <Route path="/dashboard" element={<MobileApp />} />
+          <Route path="/finance" element={<MobileApp />} />
+          <Route path="/flow" element={<MobileApp />} />
+          <Route path="/ai" element={<MobileApp />} />
+          <Route path="/projects" element={<MobileApp />} />
+          <Route path="/support" element={<MobileApp />} />
+          <Route path="/tarefas" element={<MobileApp />} />
+          <Route path="/ponto" element={<MobileApp />} />
+          <Route path="/drive" element={<MobileApp />} />
+          <Route path="/whatsapp" element={<MobileApp />} />
+          <Route path="/pix" element={<MobileApp />} />
+          <Route path="/boletos" element={<MobileApp />} />
+          <Route path="/cartoes" element={<MobileApp />} />
           
           {/* Redirects to normalize any desktop /m/... subpaths */}
           <Route path="/m" element={<Navigate to="/" replace />} />
@@ -324,20 +333,20 @@ export const AppRoutes: React.FC = () => {
       </Route>
 
       <Route element={<MobileLayoutWrapper />}>
-        <Route path="/m" element={<MobileHome />} />
-        <Route path="/m/dashboard" element={<Dashboard />} />
-        <Route path="/m/finance" element={<ATHOSFinance />} />
-        <Route path="/m/flow" element={<ATHOSFlow />} />
-        <Route path="/m/ai" element={<ATHOSAI />} />
-        <Route path="/m/projects" element={<ATHOSProjects />} />
-        <Route path="/m/support" element={<ATHOSSupport />} />
-        <Route path="/m/tarefas" element={<Tarefas />} />
-        <Route path="/m/ponto" element={<PontoDigital />} />
-        <Route path="/m/drive" element={<ATHOSDrive />} />
-        <Route path="/m/whatsapp" element={<WhatsApp />} />
-        <Route path="/m/pix" element={<Pix />} />
-        <Route path="/m/boletos" element={<Boletos />} />
-        <Route path="/m/cartoes" element={<Cartoes />} />
+        <Route path="/m" element={<MobileApp />} />
+        <Route path="/m/dashboard" element={<MobileApp />} />
+        <Route path="/m/finance" element={<MobileApp />} />
+        <Route path="/m/flow" element={<MobileApp />} />
+        <Route path="/m/ai" element={<MobileApp />} />
+        <Route path="/m/projects" element={<MobileApp />} />
+        <Route path="/m/support" element={<MobileApp />} />
+        <Route path="/m/tarefas" element={<MobileApp />} />
+        <Route path="/m/ponto" element={<MobileApp />} />
+        <Route path="/m/drive" element={<MobileApp />} />
+        <Route path="/m/whatsapp" element={<MobileApp />} />
+        <Route path="/m/pix" element={<MobileApp />} />
+        <Route path="/m/boletos" element={<MobileApp />} />
+        <Route path="/m/cartoes" element={<MobileApp />} />
       </Route>
 
       <Route path="*" element={<Navigate to="/dashboard" replace />} />
