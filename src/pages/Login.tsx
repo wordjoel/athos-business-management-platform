@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useToast } from '../components/Toast';
 import { useFormValidation, validationRules } from '../hooks/useFormValidation';
 import { useTranslation } from 'react-i18next';
-import { Zap, Lock, Mail, Eye, EyeOff } from 'lucide-react';
+import { Lock, Mail, Eye, EyeOff } from 'lucide-react';
 
 interface LoginFormValues extends Record<string, unknown> {
   email: string;
@@ -26,16 +26,14 @@ const LoginPage: React.FC = () => {
     validationRules: {
       email: [
         validationRules.required(t('auth.email_required')),
-        validationRules.email(t('auth.invalid_email')),
       ],
       password: [
         validationRules.required(t('auth.password_required')),
-        validationRules.minLength(6, t('auth.min_length', { count: 6 })),
       ],
     },
     onSubmit: async (formValues) => {
       const success = await login(formValues.email, formValues.password);
-      
+
       if (success) {
         addToast({
           type: 'success',
@@ -53,138 +51,98 @@ const LoginPage: React.FC = () => {
     },
   });
 
+  const busy = isSubmitting || loading;
+
   return (
-    <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-gray-950">
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-1/4 -left-1/4 w-[600px] h-[600px] rounded-full animate-morph" style={{
-          background: 'radial-gradient(circle at center, rgba(0,255,255,0.12) 0%, rgba(0,204,204,0.04) 40%, transparent 70%)',
-          filter: 'blur(60px)',
-          animationDuration: '20s',
-        }} />
-        <div className="absolute top-1/3 right-0 w-[500px] h-[500px] rounded-full animate-morph" style={{
-          background: 'radial-gradient(circle at center, rgba(0,255,255,0.08) 0%, rgba(0,204,204,0.03) 40%, transparent 70%)',
-          filter: 'blur(60px)',
-          animationDuration: '25s',
-          animationDelay: '-7s',
-        }} />
-        <div className="absolute bottom-0 left-1/3 w-[400px] h-[400px] rounded-full animate-morph" style={{
-          background: 'radial-gradient(circle at center, rgba(0,255,255,0.06) 0%, rgba(0,204,204,0.02) 40%, transparent 70%)',
-          filter: 'blur(60px)',
-          animationDuration: '18s',
-          animationDelay: '-14s',
-        }} />
-      </div>
-
-      <div className="absolute inset-0 bg-grid-teal opacity-50" />
-
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {Array.from({ length: 10 }, (_, i) => (
-          <div key={i} className="absolute rounded-full animate-drift" style={{
-            width: 2 + (i % 3) * 2,
-            height: 2 + (i % 3) * 2,
-            left: `${(i * 7 + 3) % 100}%`,
-            top: `${(i * 13 + 7) % 100}%`,
-            background: `rgba(0, 255, 255, ${0.1 + (i % 3) * 0.08})`,
-            boxShadow: `0 0 ${(2 + (i % 3) * 2) * 2}px rgba(0, 255, 255, 0.15)`,
-            animationDelay: `${i * 0.7}s`,
-            animationDuration: `${8 + (i % 5) * 2}s`,
-          }} />
-        ))}
-      </div>
+    <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-[#0a0a0a]">
+      <div className="absolute inset-0 bg-grid-teal opacity-60" />
 
       <div className="relative z-10 w-full max-w-md px-6">
         <div className="flex justify-center mb-6">
-          <div className="w-28 h-28 animate-float">
-            <img src="/logo.png" alt="ATHOS Logo" className="w-full h-full object-contain opacity-90 drop-shadow-[0_0_20px_rgba(0,255,255,0.3)]" />
-          </div>
+          <img src="/logo.png" alt="ATHOS Logo" className="w-24 h-24 object-contain" />
         </div>
 
-        <div className="relative group">
-          <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500/20 to-teal-500/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-          <div className="relative glass-card rounded-2xl p-6">
-            <div className="text-center mb-6">
-              <h2 className="text-lg font-semibold text-white">{t('app.welcome')}</h2>
-              <p className="text-xs text-gray-500 mt-1">{t('auth.enter_credentials')}</p>
+        <div className="bg-[#0a0a0a] border border-[#1f521f]">
+          <div className="px-4 py-2 border-b border-[#1f521f] flex items-center justify-between">
+            <span className="text-xs text-[#33ff00] font-bold tracking-widest">+--- LOGIN ---+</span>
+            <span className="text-[10px] text-[#1f521f]">v2.4.0</span>
+          </div>
+
+          <div className="p-6">
+            <div className="mb-6">
+              <p className="text-sm text-[#33ff00]">{t('app.welcome')}</p>
+              <p className="text-xs text-[#3f9e5c] mt-1">{t('auth.enter_credentials')}</p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <div className="relative">
-                  <Mail size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
-                  <input
-                    type="email"
-                    value={values.email}
-                    onChange={handleChange('email')}
-                    onBlur={handleBlur('email')}
-                    className={`w-full pl-10 pr-4 py-3 bg-white/5 border rounded-xl text-white placeholder-gray-600 text-sm focus:outline-none transition-all duration-300 ${
-                      touched.email && errors.email 
-                        ? 'border-red-500/50 focus:border-red-500 focus:ring-1 focus:ring-red-500/20' 
-                        : 'border-white/10 focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/20'
-                    }`}
-                    placeholder={t('auth.email')}
-                    disabled={isSubmitting || loading}
-                  />
-                </div>
+                <label className="flex items-center gap-2 text-xs text-[#33ff00] mb-1">
+                  <Mail size={13} className="text-[#3f9e5c]" />
+                  user@athos:~$
+                </label>
+                <input
+                  type="email"
+                  value={values.email}
+                  onChange={handleChange('email')}
+                  onBlur={handleBlur('email')}
+                  className={`w-full py-2 bg-transparent border-0 border-b text-[#33ff00] placeholder-[#1f521f] text-sm focus:outline-none transition-colors ${
+                    touched.email && errors.email ? 'border-[#ff3333]' : 'border-[#1f521f] focus:border-[#33ff00]'
+                  }`}
+                  placeholder={t('auth.email')}
+                  disabled={busy}
+                />
                 {touched.email && errors.email && (
-                  <p className="text-red-400 text-xs mt-1.5 ml-1 animate-fade-in">{errors.email}</p>
+                  <p className="text-[#ff3333] text-xs mt-1.5 animate-fade-in">[ERR] {errors.email}</p>
                 )}
               </div>
 
               <div>
+                <label className="flex items-center gap-2 text-xs text-[#33ff00] mb-1">
+                  <Lock size={13} className="text-[#3f9e5c]" />
+                  passwd:~$
+                </label>
                 <div className="relative">
-                  <Lock size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
                   <input
                     type={showPassword ? 'text' : 'password'}
                     value={values.password}
                     onChange={handleChange('password')}
                     onBlur={handleBlur('password')}
-                    className={`w-full pl-10 pr-12 py-3 bg-white/5 border rounded-xl text-white placeholder-gray-600 text-sm focus:outline-none transition-all duration-300 ${
-                      touched.password && errors.password 
-                        ? 'border-red-500/50 focus:border-red-500 focus:ring-1 focus:ring-red-500/20' 
-                        : 'border-white/10 focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/20'
+                    className={`w-full py-2 pr-10 bg-transparent border-0 border-b text-[#33ff00] placeholder-[#1f521f] text-sm focus:outline-none transition-colors ${
+                      touched.password && errors.password ? 'border-[#ff3333]' : 'border-[#1f521f] focus:border-[#33ff00]'
                     }`}
                     placeholder={t('auth.password')}
-                    disabled={isSubmitting || loading}
+                    disabled={busy}
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-cyan-400 transition-colors"
+                    className="absolute right-0 top-1/2 -translate-y-1/2 text-[#3f9e5c] hover:text-[#33ff00] transition-colors"
                   >
                     {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                   </button>
                 </div>
                 {touched.password && errors.password && (
-                  <p className="text-red-400 text-xs mt-1.5 ml-1 animate-fade-in">{errors.password}</p>
+                  <p className="text-[#ff3333] text-xs mt-1.5 animate-fade-in">[ERR] {errors.password}</p>
                 )}
               </div>
 
               <button
                 type="submit"
-                disabled={isSubmitting || loading}
-                className="w-full py-3 bg-gradient-to-r from-cyan-600 to-teal-600 hover:from-cyan-500 hover:to-teal-500 disabled:from-cyan-600/50 disabled:to-teal-600/50 disabled:cursor-not-allowed text-white font-semibold rounded-xl text-sm transition-all duration-300 flex items-center justify-center gap-2 shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/40"
+                disabled={busy}
+                className="w-full py-3 border border-[#33ff00] text-[#33ff00] font-bold text-sm tracking-widest transition-all duration-150 flex items-center justify-center gap-2 hover:bg-[#33ff00] hover:text-[#0a0a0a] disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-[#33ff00]"
               >
-                {isSubmitting || loading ? (
-                  <>
-                    <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                    </svg>
-                    {t('auth.sign_in')}
-                  </>
+                {busy ? (
+                  <span className="animate-blink">CONECTANDO...</span>
                 ) : (
-                  <>
-                    <Zap size={18} />
-                    {t('auth.sign_in')}
-                  </>
+                  <span>[ INITIATE ]</span>
                 )}
               </button>
             </form>
           </div>
         </div>
 
-        <p className="text-center text-gray-600 text-xs mt-6">
-          © 2026 ATHOS Platform
+        <p className="text-center text-[#1f521f] text-xs mt-6">
+          © 2026 ATHOS Platform <span className="animate-blink">_</span>
         </p>
       </div>
     </div>

@@ -1,145 +1,300 @@
 @import "tailwindcss";
 
+/* ============================================
+   TERMINAL CLI DESIGN SYSTEM
+   Monospace supremacy. Brutally functional.
+   ============================================ */
+
 @theme {
-  --color-athos-50: #f0f4ff;
-  --color-athos-100: #d9e4ff;
-  --color-athos-200: #b3caff;
-  --color-athos-300: #80a5ff;
-  --color-athos-400: #4d80ff;
-  --color-athos-500: #1e63ff; /* Azul ATHOS Premium */
-  --color-athos-600: #0045db;
-  --color-athos-700: #0035a8;
-  --color-athos-800: #002575;
-  --color-athos-900: #001747;
-  --color-athos-950: #050a1a;
-  --color-teal-glow: rgba(30, 99, 255, 0.08);
+  /* Legacy custom "athos" color scale, remapped to terminal green so
+     every existing usage of it re-themes for free. */
+  --color-athos-50: #eafff0;
+  --color-athos-100: #c9f7d6;
+  --color-athos-200: #8fe6a8;
+  --color-athos-300: #5ecf7f;
+  --color-athos-400: #33ff00;
+  --color-athos-500: #33ff00;
+  --color-athos-600: #29cc00;
+  --color-athos-700: #1f9900;
+  --color-athos-800: #163a17;
+  --color-athos-900: #0d1a0d;
+  --color-athos-950: #0a0a0a;
+  --color-teal-glow: rgba(51, 255, 0, 0.08);
+
+  /* Base palette */
+  --color-term-bg: #0a0a0a;
+  --color-term-primary: #33ff00;
+  --color-term-secondary: #ffb000;
+  --color-term-muted: #1f521f;
+  --color-term-error: #ff3333;
+  --color-term-border: #1f521f;
+
+  /* Fonts: monospace everywhere, headers and body alike */
+  --font-sans: 'JetBrains Mono', 'Fira Code', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  --font-display: 'JetBrains Mono', 'Fira Code', ui-monospace, monospace;
+  --font-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, monospace;
+
+  /* Radius: zero, always. No rounded corners in a terminal. */
+  --radius-none: 0px;
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+  --radius-xl: 0px;
+  --radius-2xl: 0px;
+  --radius-3xl: 0px;
+  --radius-full: 0px;
+
+  /* Remap the neutral scale used pervasively (bg-slate-900, border-gray-800, etc.)
+     toward black / dim-green-black so existing markup re-themes for free. */
+  --color-slate-50:  #eafff0;
+  --color-slate-100: #c9f7d6;
+  --color-slate-200: #8fe6a8;
+  --color-slate-300: #5ecf7f;
+  --color-slate-400: #3f9e5c;
+  --color-slate-500: #2c7a44;
+  --color-slate-600: #1f521f;
+  --color-slate-700: #163a17;
+  --color-slate-800: #0f2610;
+  --color-slate-900: #0d1a0d;
+  --color-slate-950: #0a0a0a;
+
+  --color-gray-50:  #eafff0;
+  --color-gray-100: #c9f7d6;
+  --color-gray-200: #8fe6a8;
+  --color-gray-300: #5ecf7f;
+  --color-gray-400: #3f9e5c;
+  --color-gray-500: #2c7a44;
+  --color-gray-600: #1f521f;
+  --color-gray-700: #163a17;
+  --color-gray-800: #0f2610;
+  --color-gray-900: #0d1a0d;
+  --color-gray-950: #0a0a0a;
+
+  --color-zinc-50:  #eafff0;
+  --color-zinc-100: #c9f7d6;
+  --color-zinc-800: #0f2610;
+  --color-zinc-900: #0d1a0d;
+  --color-zinc-950: #0a0a0a;
+
+  /* Remap accent scales (blue/cyan/emerald/indigo/violet/purple) toward terminal green.
+     Keep amber as the secondary/warning accent, red as error. */
+  --color-blue-400: #5cff33;
+  --color-blue-500: #33ff00;
+  --color-blue-600: #29cc00;
+  --color-blue-700: #1f9900;
+
+  --color-cyan-400: #5cff33;
+  --color-cyan-500: #33ff00;
+
+  --color-emerald-400: #5cff33;
+  --color-emerald-500: #33ff00;
+  --color-emerald-600: #29cc00;
+
+  --color-green-400: #5cff33;
+  --color-green-500: #33ff00;
+
+  --color-indigo-400: #33ff00;
+  --color-indigo-500: #29cc00;
+  --color-indigo-600: #1f9900;
+
+  --color-violet-400: #33ff00;
+  --color-violet-500: #29cc00;
+
+  --color-purple-400: #ffb000;
+  --color-purple-500: #ffb000;
+  --color-purple-600: #cc8d00;
+
+  --color-amber-400: #ffb000;
+  --color-amber-500: #ffb000;
+  --color-yellow-400: #ffb000;
+  --color-yellow-500: #ffb000;
+
+  --color-red-400: #ff3333;
+  --color-red-500: #ff3333;
+  --color-red-600: #cc2929;
+  --color-rose-400: #ff3333;
+  --color-rose-500: #ff3333;
+
+  --color-pink-400: #ffb000;
+  --color-pink-500: #ffb000;
+  --color-orange-400: #ffb000;
+  --color-orange-500: #ffb000;
 }
 
 @layer base {
   * {
     scrollbar-width: thin;
-    scrollbar-color: #1e63ff transparent;
+    scrollbar-color: #1f521f transparent;
+  }
+  html {
+    background: #0a0a0a;
   }
   body {
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-family: var(--font-mono);
+    background: #0a0a0a;
+    color: #33ff00;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    position: relative;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+  }
+  ::selection {
+    background: #33ff00;
+    color: #0a0a0a;
   }
 }
 
 @layer utilities {
-  .glass {
-    background: rgba(22, 27, 34, 0.4);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+  /* Global kill-switch: no blur, no gradients, anywhere in the app —
+     covers every page/component without needing a per-file rewrite. */
+  [class*="backdrop-blur"] {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
   }
-  .glass-dark {
-    background: rgba(13, 17, 23, 0.7);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
-    border: 1px solid rgba(30, 99, 255, 0.08);
+  [class*="bg-gradient-to"] {
+    background-image: none !important;
   }
-  .glass-card {
-    background: rgba(22, 27, 34, 0.6);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  [class*="blur-"] {
+    filter: none !important;
   }
-  .glass-card:hover {
-    border-color: rgba(30, 99, 255, 0.2);
-    box-shadow: 0 8px 40px rgba(30, 99, 255, 0.1);
-  }
-  .glass-light {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(0, 0, 0, 0.05);
-  }
-  .gradient-athos {
-    background: linear-gradient(135deg, #1e63ff 0%, #8b5cf6 100%);
-  }
-  .gradient-card {
-    background: linear-gradient(135deg, rgba(30, 99, 255, 0.08) 0%, rgba(139, 92, 246, 0.03) 100%);
-  }
-  .gradient-orb {
-    background: radial-gradient(circle at center, rgba(30, 99, 255, 0.12) 0%, rgba(139, 92, 246, 0.04) 45%, transparent 70%);
-  }
-  .text-gradient {
-    background: linear-gradient(135deg, #ffffff 30%, #a5b4fc 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-  .shadow-glow {
-    box-shadow: 0 0 45px rgba(30, 99, 255, 0.15);
-  }
-  .bg-grid-teal {
-    background-image:
-      linear-gradient(rgba(30, 99, 255, 0.02) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(30, 99, 255, 0.02) 1px, transparent 1px);
-    background-size: 60px 60px;
-  }
-  .bg-grid-subtle {
-    background-image:
-      linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
-    background-size: 40px 40px;
+  [class*="shadow-"] {
+    box-shadow: none !important;
   }
 
-  .animate-float {
-    animation: float 6s ease-in-out infinite;
+  /* CRT scanline overlay — fixed, subtle, never blocks interaction */
+  .crt-scanlines {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9999;
+    background: repeating-linear-gradient(
+      to bottom,
+      rgba(51, 255, 0, 0.025) 0px,
+      rgba(51, 255, 0, 0.025) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+    mix-blend-mode: overlay;
   }
-  .animate-float-delayed {
-    animation: float 8s ease-in-out infinite;
-    animation-delay: -3s;
+
+  /* Panes replace "glass" — flat black box, 1px green border, no blur, no shadow */
+  .glass,
+  .glass-dark,
+  .glass-card,
+  .glass-light {
+    background: #0a0a0a;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border: 1px solid #1f521f;
+    box-shadow: none;
   }
-  .animate-float-slow {
-    animation: float 10s ease-in-out infinite;
-    animation-delay: -5s;
+  .glass-card:hover {
+    border-color: #33ff00;
+    box-shadow: none;
+  }
+
+  .gradient-athos {
+    background: #0a0a0a;
+    border: 1px solid #33ff00;
+  }
+  .gradient-card {
+    background: #0a0a0a;
+  }
+  .gradient-orb {
+    background: none;
+  }
+  .text-gradient {
+    background: none;
+    -webkit-text-fill-color: unset;
+    color: #33ff00;
+    text-shadow: 0 0 5px rgba(51, 255, 0, 0.5);
+  }
+  .shadow-glow {
+    box-shadow: none;
+    text-shadow: 0 0 6px rgba(51, 255, 0, 0.4);
+  }
+  .shadow-glow-blue {
+    box-shadow: none;
+    text-shadow: 0 0 6px rgba(51, 255, 0, 0.4);
+  }
+  .bg-grid-teal,
+  .bg-grid-subtle {
+    background-image:
+      linear-gradient(rgba(51, 255, 0, 0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(51, 255, 0, 0.04) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+
+  /* Terminal-specific utilities */
+  .term-glow {
+    text-shadow: 0 0 5px rgba(51, 255, 0, 0.5);
+  }
+  .term-pane {
+    background: #0a0a0a;
+    border: 1px solid #1f521f;
+  }
+  .term-cursor::after {
+    content: '_';
+    animation: blink 1s step-end infinite;
+  }
+  .animate-blink {
+    animation: blink 1s step-end infinite;
+  }
+  .animate-glitch:hover {
+    animation: glitch 0.2s steps(2, end) 2;
+  }
+  .animate-typing {
+    overflow: hidden;
+    white-space: nowrap;
+    animation: typing 1.5s steps(30, end);
+  }
+
+  .animate-float,
+  .animate-float-delayed,
+  .animate-float-slow,
+  .animate-drift,
+  .animate-drift-reverse,
+  .animate-morph {
+    animation: none;
   }
   .animate-pulse-slow {
     animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
   .animate-slide-up {
-    animation: slideUp 0.5s ease-out;
+    animation: slideUp 0.3s ease-out;
   }
   .animate-fade-in {
-    animation: fadeIn 0.3s ease-out;
+    animation: fadeIn 0.2s ease-out;
   }
   .animate-slide-right {
-    animation: slideRight 0.3s ease-out;
-  }
-  .animate-drift {
-    animation: drift 12s ease-in-out infinite;
-  }
-  .animate-drift-reverse {
-    animation: drift 15s ease-in-out infinite reverse;
+    animation: slideRight 0.2s ease-out;
   }
   .animate-shimmer {
-    background: linear-gradient(
-      90deg,
-      transparent 0%,
-      rgba(0, 255, 255, 0.03) 50%,
-      transparent 100%
-    );
-    background-size: 200% 100%;
-    animation: shimmer 4s ease-in-out infinite;
+    animation: none;
+    background: none;
   }
   .animate-pulse-glow {
-    animation: pulseGlow 3s ease-in-out infinite;
-  }
-  .animate-morph {
-    animation: morph 20s ease-in-out infinite;
+    animation: pulseGlow 2s ease-in-out infinite;
   }
 
-  @keyframes float {
-    0%, 100% { transform: translateY(0px) scale(1); }
-    50% { transform: translateY(-12px) scale(1.02); }
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+  @keyframes glitch {
+    0% { transform: translate(0, 0); }
+    50% { transform: translate(-1px, 1px); }
+    100% { transform: translate(0, 0); }
+  }
+  @keyframes typing {
+    from { width: 0; }
+    to { width: 100%; }
   }
   @keyframes slideUp {
-    from { opacity: 0; transform: translateY(20px); }
+    from { opacity: 0; transform: translateY(8px); }
     to { opacity: 1; transform: translateY(0); }
   }
   @keyframes fadeIn {
@@ -147,50 +302,32 @@
     to { opacity: 1; }
   }
   @keyframes slideRight {
-    from { opacity: 0; transform: translateX(-20px); }
+    from { opacity: 0; transform: translateX(-8px); }
     to { opacity: 1; transform: translateX(0); }
-  }
-  @keyframes drift {
-    0%, 100% { transform: translate(0, 0) rotate(0deg); }
-    25% { transform: translate(20px, -15px) rotate(2deg); }
-    50% { transform: translate(-10px, 20px) rotate(-1deg); }
-    75% { transform: translate(15px, 10px) rotate(1deg); }
-  }
-  @keyframes shimmer {
-    0% { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
   }
   @keyframes pulseGlow {
     0%, 100% { opacity: 0.6; }
     50% { opacity: 1; }
   }
-  @keyframes morph {
-    0%, 100% { border-radius: 60% 40% 30% 70%/60% 30% 70% 40%; }
-    50% { border-radius: 30% 60% 70% 40%/50% 60% 30% 60%; }
-  }
 
-  .light .glass-card {
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(16px);
-    border: 1px solid rgba(0, 0, 0, 0.08);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
-  }
-  .light .glass-card:hover {
-    border-color: rgba(0, 200, 200, 0.2);
-    box-shadow: 0 8px 40px rgba(0, 200, 200, 0.08);
-  }
-  .light .glass {
-    background: rgba(255, 255, 255, 0.7);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(0, 0, 0, 0.06);
+  /* Light mode: the terminal design system is dark-only (per spec) —
+     .light overrides intentionally collapse back to the same palette
+     so the existing theme toggle stays harmless instead of breaking. */
+  .light .glass-card,
+  .light .glass,
+  .light body {
+    background: #0a0a0a;
+    color: #33ff00;
+    border-color: #1f521f;
   }
   .light .shadow-glow {
-    box-shadow: 0 0 40px rgba(0, 200, 200, 0.1);
+    box-shadow: none;
+    text-shadow: 0 0 6px rgba(51, 255, 0, 0.4);
   }
   .light .bg-grid-teal {
     background-image:
-      linear-gradient(rgba(0, 180, 180, 0.04) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(0, 180, 180, 0.04) 1px, transparent 1px);
-    background-size: 60px 60px;
+      linear-gradient(rgba(51, 255, 0, 0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(51, 255, 0, 0.04) 1px, transparent 1px);
+    background-size: 24px 24px;
   }
 }

@@ -21,7 +21,7 @@ import {
   Laptop,
   Plus
 } from 'lucide-react';
-import { Transaction, BankAccount } from '../types';
+import { Transaction, BankAccount, UserProfile } from '../types';
 import { motion } from 'motion/react';
 
 // Icon Map helper to safely display icons by string key
@@ -48,18 +48,28 @@ export const getIconComponent = (iconName: string, className = "w-5 h-5") => {
 interface DashboardScreenProps {
   accounts: BankAccount[];
   transactions: Transaction[];
+  profile: UserProfile;
   onNavigate: (screen: any) => void;
   onOpenFAB: () => void;
   unreadNotificationsCount: number;
 }
 
-export default function DashboardScreen({ 
-  accounts, 
-  transactions, 
-  onNavigate, 
+export default function DashboardScreen({
+  accounts,
+  transactions,
+  profile,
+  onNavigate,
   onOpenFAB,
-  unreadNotificationsCount 
+  unreadNotificationsCount
 }: DashboardScreenProps) {
+  const initials = profile.name
+    .split(' ')
+    .filter(Boolean)
+    .map(n => n[0])
+    .join('')
+    .slice(0, 2)
+    .toUpperCase() || 'US';
+  const firstName = profile.name.split(' ')[0] || 'Usuário';
   const [showBalance, setShowBalance] = useState(true);
 
   // Calculate overall metrics from transactions
@@ -85,7 +95,7 @@ export default function DashboardScreen({
         <div>
           <div className="flex items-center gap-1.5">
             <h1 className="text-xl font-bold font-display tracking-tight text-white">
-              Olá, Guerreiro! 👋
+              Olá, {firstName}! 👋
             </h1>
           </div>
           <p className="text-xs text-slate-400 font-medium mt-0.5">Athos Tecnologia Ltda.</p>
@@ -102,11 +112,12 @@ export default function DashboardScreen({
             )}
           </button>
           
-          <button 
+          <button
             onClick={() => onNavigate('profile')}
+            title={profile.name}
             className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-cyan-500 flex items-center justify-center text-white font-bold text-sm shadow-md hover:opacity-90 active:scale-95 transition"
           >
-            GM
+            {initials}
           </button>
         </div>
       </div>

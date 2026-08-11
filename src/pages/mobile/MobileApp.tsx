@@ -225,6 +225,7 @@ export default function MobileApp() {
           <DashboardScreen
             accounts={accounts}
             transactions={transactions}
+            profile={profile}
             onNavigate={(scr) => {
               if (scr === 'notifications') navigateTo('notifications');
               else if (scr === 'profile') navigateTo('profile');
@@ -331,7 +332,10 @@ export default function MobileApp() {
       </div>
 
       {/* Bottom Navigation Tab Bar */}
-      <div className="absolute bottom-0 inset-x-0 bg-slate-950/95 border-t border-slate-900 px-3 py-2 flex items-center justify-between z-40 select-none">
+      <div
+        className="absolute bottom-0 inset-x-0 bg-slate-950/95 border-t border-slate-900 px-3 pt-2 flex items-center justify-between z-40 select-none"
+        style={{ paddingBottom: 'max(0.5rem, env(safe-area-inset-bottom))' }}
+      >
         <button
           onClick={() => {
             setActiveTab('home');

@@ -14,53 +14,36 @@ interface StatCardProps {
   index?: number;
 }
 
-const StatCard: React.FC<StatCardProps> = ({ title, value, change, changeType = 'neutral', icon: Icon, color, darkMode, subtitle, index = 0 }) => {
-  const colorMap: Record<string, { bg: string; bgDark: string; icon: string; text: string }> = {
-    purple: { bg: 'bg-athos-50', bgDark: 'bg-athos-500/10', icon: 'text-athos-500', text: 'text-athos-400' },
-    green: { bg: 'bg-emerald-50', bgDark: 'bg-emerald-500/10', icon: 'text-emerald-500', text: 'text-emerald-400' },
-    blue: { bg: 'bg-blue-50', bgDark: 'bg-blue-500/10', icon: 'text-blue-500', text: 'text-blue-400' },
-    amber: { bg: 'bg-amber-50', bgDark: 'bg-amber-500/10', icon: 'text-amber-500', text: 'text-amber-400' },
-    red: { bg: 'bg-red-50', bgDark: 'bg-red-500/10', icon: 'text-red-500', text: 'text-red-400' },
-    pink: { bg: 'bg-pink-50', bgDark: 'bg-pink-500/10', icon: 'text-pink-500', text: 'text-pink-400' },
-    cyan: { bg: 'bg-cyan-50', bgDark: 'bg-cyan-500/10', icon: 'text-cyan-500', text: 'text-cyan-400' },
-  };
-
-  const colors = colorMap[color] || colorMap.purple;
-
+const StatCard: React.FC<StatCardProps> = ({ title, value, change, changeType = 'neutral', icon: Icon, subtitle, index = 0 }) => {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, delay: index * 0.1 }}
-      whileHover={{ scale: 1.02, y: -2 }}
-      className={`rounded-2xl p-5 transition-all duration-300 ${
-        darkMode
-          ? 'bg-gray-900/80 border border-white/5 hover:border-white/10'
-          : 'bg-white border border-gray-200 shadow-sm hover:shadow-md'
-      }`}
+      transition={{ duration: 0.3, delay: index * 0.06 }}
+      className="p-5 border border-[#1f521f] hover:border-[#33ff00] transition-all duration-150 bg-[#0a0a0a]"
     >
       <div className="flex items-start justify-between">
         <div className="flex-1">
-          <p className={`text-xs font-medium tracking-wide uppercase ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>{title}</p>
-          <p className={`text-2xl font-bold mt-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>{value}</p>
-          {subtitle && <p className={`text-xs mt-1 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>{subtitle}</p>}
+          <p className="text-xs font-medium tracking-wide uppercase text-[#3f9e5c]">{title}</p>
+          <p className="text-2xl font-bold mt-2 text-[#33ff00] term-glow">{value}</p>
+          {subtitle && <p className="text-xs mt-1 text-[#3f9e5c]"># {subtitle}</p>}
           {change && (
             <div className="flex items-center gap-1.5 mt-2">
               {changeType === 'up' ? (
-                <TrendingUp size={14} className="text-emerald-400" />
+                <TrendingUp size={14} className="text-[#33ff00]" />
               ) : changeType === 'down' ? (
-                <TrendingDown size={14} className="text-red-400" />
+                <TrendingDown size={14} className="text-[#ff3333]" />
               ) : null}
               <span className={`text-xs font-medium ${
-                changeType === 'up' ? 'text-emerald-400' : changeType === 'down' ? 'text-red-400' : darkMode ? 'text-gray-500' : 'text-gray-400'
+                changeType === 'up' ? 'text-[#33ff00]' : changeType === 'down' ? 'text-[#ff3333]' : 'text-[#3f9e5c]'
               }`}>
                 {change}
               </span>
             </div>
           )}
         </div>
-        <div className={`p-3 rounded-xl ${darkMode ? colors.bgDark : colors.bg}`}>
-          <Icon size={22} className={darkMode ? colors.text : colors.icon} />
+        <div className="p-3 border border-[#1f521f]">
+          <Icon size={22} className="text-[#33ff00]" />
         </div>
       </div>
     </motion.div>

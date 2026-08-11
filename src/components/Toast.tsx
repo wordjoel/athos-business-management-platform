@@ -62,33 +62,40 @@ const ToastContainer: React.FC<{ toasts: Toast[]; removeToast: (id: string) => v
 
 const ToastItem: React.FC<{ toast: Toast; onClose: () => void }> = ({ toast, onClose }) => {
   const icons = {
-    success: <CheckCircle className="text-emerald-400" size={20} />,
-    error: <XCircle className="text-red-400" size={20} />,
-    warning: <AlertCircle className="text-amber-400" size={20} />,
-    info: <Info className="text-cyan-400" size={20} />,
+    success: <CheckCircle className="text-[#33ff00]" size={20} />,
+    error: <XCircle className="text-[#ff3333]" size={20} />,
+    warning: <AlertCircle className="text-[#ffb000]" size={20} />,
+    info: <Info className="text-[#33ff00]" size={20} />,
+  };
+
+  const labels = {
+    success: '[OK]',
+    error: '[ERR]',
+    warning: '[WARN]',
+    info: '[INFO]',
   };
 
   const colors = {
-    success: 'border-emerald-500/50 bg-emerald-500/10',
-    error: 'border-red-500/50 bg-red-500/10',
-    warning: 'border-amber-500/50 bg-amber-500/10',
-    info: 'border-cyan-500/50 bg-cyan-500/10',
+    success: 'border-[#33ff00]',
+    error: 'border-[#ff3333]',
+    warning: 'border-[#ffb000]',
+    info: 'border-[#33ff00]',
   };
 
   return (
     <div
-      className={`flex items-start gap-3 p-4 rounded-lg border ${colors[toast.type]} backdrop-blur-lg animate-slide-up shadow-lg`}
+      className={`flex items-start gap-3 p-4 border bg-[#0a0a0a] ${colors[toast.type]} animate-slide-up`}
     >
       {icons[toast.type]}
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-white">{toast.title}</p>
+        <p className="text-sm font-medium text-[#33ff00]">{labels[toast.type]} {toast.title}</p>
         {toast.message && (
-          <p className="text-xs text-gray-400 mt-1 line-clamp-2">{toast.message}</p>
+          <p className="text-xs text-[#3f9e5c] mt-1 line-clamp-2">{toast.message}</p>
         )}
       </div>
       <button
         onClick={onClose}
-        className="text-gray-500 hover:text-white transition-colors"
+        className="text-[#3f9e5c] hover:text-[#33ff00] transition-colors"
       >
         <X size={16} />
       </button>

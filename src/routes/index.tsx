@@ -54,7 +54,6 @@ const Pix = lazy(() => import('../pages/modules/Pix'));
 const Boletos = lazy(() => import('../pages/modules/Boletos'));
 const Cartoes = lazy(() => import('../pages/modules/Cartoes'));
 
-const MobileLayout = lazy(() => import('../components/MobileLayout'));
 const MobileApp = lazy(() => import('../pages/mobile/MobileApp'));
 
 const PageLoader: React.FC = () => (
@@ -95,14 +94,6 @@ const RoleRoute: React.FC<{ roles: UserRole[]; children: React.ReactNode }> = ({
 const ProtectedLayout: React.FC = () => (
   <ProtectedRoute>
     <AppLayout />
-  </ProtectedRoute>
-);
-
-const MobileLayoutWrapper: React.FC = () => (
-  <ProtectedRoute>
-    <LazyWrapper>
-      <MobileLayout />
-    </LazyWrapper>
   </ProtectedRoute>
 );
 
@@ -332,22 +323,24 @@ export const AppRoutes: React.FC = () => {
         <Route path="/sharepoints" element={<CambomSharePoints />} />
       </Route>
 
-      <Route element={<MobileLayoutWrapper />}>
-        <Route path="/m" element={<MobileApp />} />
-        <Route path="/m/dashboard" element={<MobileApp />} />
-        <Route path="/m/finance" element={<MobileApp />} />
-        <Route path="/m/flow" element={<MobileApp />} />
-        <Route path="/m/ai" element={<MobileApp />} />
-        <Route path="/m/projects" element={<MobileApp />} />
-        <Route path="/m/support" element={<MobileApp />} />
-        <Route path="/m/tarefas" element={<MobileApp />} />
-        <Route path="/m/ponto" element={<MobileApp />} />
-        <Route path="/m/drive" element={<MobileApp />} />
-        <Route path="/m/whatsapp" element={<MobileApp />} />
-        <Route path="/m/pix" element={<MobileApp />} />
-        <Route path="/m/boletos" element={<MobileApp />} />
-        <Route path="/m/cartoes" element={<MobileApp />} />
-      </Route>
+      {/* /m/* on the desktop domain: redirect into the self-contained MobileApp
+          (?pwa=true branch above) instead of nesting it inside MobileLayout —
+          MobileApp already renders its own header/bottom-nav, so wrapping it in
+          MobileLayout produced two bottom navigation bars stacked on screen. */}
+      <Route path="/m" element={<Navigate to="/?pwa=true" replace />} />
+      <Route path="/m/dashboard" element={<Navigate to="/dashboard?pwa=true" replace />} />
+      <Route path="/m/finance" element={<Navigate to="/finance?pwa=true" replace />} />
+      <Route path="/m/flow" element={<Navigate to="/flow?pwa=true" replace />} />
+      <Route path="/m/ai" element={<Navigate to="/ai?pwa=true" replace />} />
+      <Route path="/m/projects" element={<Navigate to="/projects?pwa=true" replace />} />
+      <Route path="/m/support" element={<Navigate to="/support?pwa=true" replace />} />
+      <Route path="/m/tarefas" element={<Navigate to="/tarefas?pwa=true" replace />} />
+      <Route path="/m/ponto" element={<Navigate to="/ponto?pwa=true" replace />} />
+      <Route path="/m/drive" element={<Navigate to="/drive?pwa=true" replace />} />
+      <Route path="/m/whatsapp" element={<Navigate to="/whatsapp?pwa=true" replace />} />
+      <Route path="/m/pix" element={<Navigate to="/pix?pwa=true" replace />} />
+      <Route path="/m/boletos" element={<Navigate to="/boletos?pwa=true" replace />} />
+      <Route path="/m/cartoes" element={<Navigate to="/cartoes?pwa=true" replace />} />
 
       <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>
