@@ -23,8 +23,8 @@ const PROVIDERS: Record<AIProvider, AIProviderConfig> = {
     name: 'OpenRouter',
     apiUrl: 'https://openrouter.ai/api/v1/chat/completions',
     apiKey: import.meta.env.VITE_OPENROUTER_API_KEY || '',
-    models: ['anthropic/claude-3.5-sonnet', 'openai/gpt-4o', 'google/gemini-pro-1.5', 'meta-llama/llama-3.1-70b-instruct'],
-    defaultModel: 'anthropic/claude-3.5-sonnet',
+    models: ['openai/gpt-4o-mini', 'meta-llama/llama-3.1-8b-instruct', 'meta-llama/llama-3.1-70b-instruct'],
+    defaultModel: 'openai/gpt-4o-mini',
   },
   openai: {
     id: 'openai',
@@ -68,7 +68,9 @@ const PROVIDERS: Record<AIProvider, AIProviderConfig> = {
   },
 };
 
-let activeProvider: AIProvider = 'nvidia';
+const envProvider = import.meta.env.VITE_AI_PROVIDER as AIProvider | undefined;
+const validProviders = Object.keys(PROVIDERS) as AIProvider[];
+let activeProvider: AIProvider = envProvider && validProviders.includes(envProvider) ? envProvider : 'nvidia';
 let activeModel: string = '';
 
 export function setActiveProvider(provider: AIProvider): void {

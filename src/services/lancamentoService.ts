@@ -1,5 +1,5 @@
 import { DataService } from './dataService';
-import { api } from './api';
+import { lancamentosService as lancamentosDb } from './supabaseService';
 
 export interface Lancamento {
   id: string;
@@ -18,14 +18,47 @@ const STORAGE_KEY = 'athos_lancamentos';
 const OLD_PAGAR_KEY = 'athos_contas_pagar';
 const OLD_RECEBER_KEY = 'athos_contas_receber';
 
+// Cache local (leitura síncrona). O Supabase é a fonte de verdade;
+// isto existe só para a UI ter dado disponível antes do primeiro refresh
+// e para funcionar offline. Nunca é gravado aqui sem o Supabase confirmar antes.
 export const lancamentoService = new DataService<Lancamento>(STORAGE_KEY);
 
 function uuid() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 9);
 }
 
-import { receitas as mockReceitas, despesas as mockDespesas } from '../data/mockData';
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+function isUuid(id: string): boolean {
+  return UUID_RE.test(id);
+}
 
+function fromDb(row: {
+  id: string;
+  tipo: 'receita' | 'despesa';
+  descricao: string;
+  contraparte?: string | null;
+  valor: number | string;
+  vencimento: string;
+  data: string;
+  status: Lancamento['status'];
+  categoria: string;
+  criado_em: string;
+}): Lancamento {
+  return {
+    id: row.id,
+    tipo: row.tipo,
+    descricao: row.descricao,
+    contraparte: row.contraparte || '',
+    valor: Number(row.valor),
+    vencimento: row.vencimento,
+    data: row.data,
+    status: row.status,
+    categoria: row.categoria,
+    criadaEm: row.criado_em ? row.criado_em.slice(0, 10) : new Date().toISOString().slice(0, 10),
+  };
+}
+
+/** Migra chaves antigas de localStorage (pré-unificação). Não injeta dados fictícios. */
 function migrar(): void {
   if (localStorage.getItem('athos_migracao_feita_v2')) return;
 
@@ -73,38 +106,6 @@ function migrar(): void {
     } catch {}
   }
 
-  if (novos.length === 0) {
-    // If no old data to migrate, seed with mock data so the dashboard is not empty
-    mockDespesas.forEach(d => {
-      novos.push({
-        id: d.id,
-        tipo: 'despesa',
-        descricao: d.descricao,
-        valor: d.valor,
-        vencimento: d.vencimento,
-        data: d.dataPagamento || d.vencimento,
-        status: d.pago ? 'pago' : 'pendente',
-        categoria: d.categoria,
-        contraparte: d.fornecedor,
-        criadaEm: new Date().toISOString().slice(0, 10),
-      });
-    });
-    mockReceitas.forEach(r => {
-      novos.push({
-        id: r.id,
-        tipo: 'receita',
-        descricao: r.descricao,
-        valor: r.valor,
-        vencimento: r.vencimento,
-        data: r.dataRecebimento || r.vencimento,
-        status: r.recebido ? 'recebido' : 'pendente',
-        categoria: r.categoria,
-        contraparte: r.cliente,
-        criadaEm: new Date().toISOString().slice(0, 10),
-      });
-    });
-  }
-
   if (novos.length > 0) {
     const existentes = lancamentoService.getAll();
     if (existentes.length === 0) {
@@ -115,6 +116,15 @@ function migrar(): void {
   localStorage.setItem('athos_migracao_feita_v2', '1');
 }
 
+/** Busca a lista completa no Supabase e atualiza o cache local. Fonte de verdade. */
+export async function refreshLancamentos(): Promise<Lancamento[]> {
+  const rows = await lancamentosDb.getAll();
+  const lancamentos = rows.map(fromDb);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(lancamentos));
+  return lancamentos;
+}
+
+/** Leitura síncrona do cache local (pode estar desatualizada até o próximo refreshLancamentos). */
 export function getLancamentos(): Lancamento[] {
   migrar();
   return lancamentoService.getAll();
@@ -128,23 +138,59 @@ export function getReceitas(): Lancamento[] {
   return getLancamentos().filter(l => l.tipo === 'receita');
 }
 
-export function criarLancamento(data: Omit<Lancamento, 'id' | 'criadaEm'>): Lancamento {
-  const completo: Lancamento = { ...data, id: uuid(), criadaEm: new Date().toISOString().slice(0, 10) };
+export async function criarLancamento(data: Omit<Lancamento, 'id' | 'criadaEm'>): Promise<Lancamento> {
+  const created = await lancamentosDb.create({
+    tipo: data.tipo,
+    descricao: data.descricao,
+    contraparte: data.contraparte,
+    valor: data.valor,
+    vencimento: data.vencimento,
+    data: data.data,
+    status: data.status,
+    categoria: data.categoria,
+  } as any);
+
+  if (!created) {
+    throw new Error('Não foi possível salvar o lançamento no Supabase.');
+  }
+
+  const completo = fromDb(created as any);
   lancamentoService.create(completo);
-  api.notifyChange('create', STORAGE_KEY, completo.id, completo);
   return completo;
 }
 
-export function atualizarLancamento(id: string, data: Partial<Lancamento>): Lancamento | undefined {
-  const result = lancamentoService.update(id, data);
-  if (result) api.notifyChange('update', STORAGE_KEY, id, data);
-  return result;
+export async function atualizarLancamento(id: string, data: Partial<Lancamento>): Promise<Lancamento | undefined> {
+  if (!isUuid(id)) {
+    // Registro legado, criado antes da unificação com o Supabase (nunca existiu lá).
+    console.warn(`Lançamento ${id} não tem UUID válido — não sincroniza com o Supabase. Atualizado só localmente.`);
+    return lancamentoService.update(id, data);
+  }
+
+  const { id: _omit, criadaEm: _omit2, ...updates } = data as Partial<Lancamento> & { id?: string };
+  const updated = await lancamentosDb.update(id, updates as any);
+
+  if (!updated) {
+    throw new Error('Não foi possível atualizar o lançamento no Supabase.');
+  }
+
+  const completo = fromDb(updated as any);
+  lancamentoService.update(id, completo);
+  return completo;
 }
 
-export function excluirLancamento(id: string): boolean {
-  const result = lancamentoService.delete(id);
-  if (result) api.notifyChange('delete', STORAGE_KEY, id);
-  return result;
+export async function excluirLancamento(id: string): Promise<boolean> {
+  if (!isUuid(id)) {
+    console.warn(`Lançamento ${id} não tem UUID válido — não existe no Supabase. Removido só localmente.`);
+    return lancamentoService.delete(id);
+  }
+
+  const ok = await lancamentosDb.delete(id);
+  if (!ok) {
+    throw new Error('Não foi possível excluir o lançamento no Supabase.');
+  }
+
+  lancamentoService.delete(id);
+  return true;
 }
 
 export function getFluxoCaixaMensal(): { mes: string; receita: number; despesa: number; saldo: number }[] {

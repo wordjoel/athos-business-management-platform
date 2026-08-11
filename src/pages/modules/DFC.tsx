@@ -1,11 +1,17 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { getLancamentos } from '../../services/lancamentoService';
+import { getLancamentos, refreshLancamentos } from '../../services/lancamentoService';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { Activity, ArrowDown, ArrowUp, TrendingUp, TrendingDown, DollarSign } from 'lucide-react';
 
 const DFC: React.FC = () => {
-  const lancamentos = getLancamentos();
+  const [lancamentos, setLancamentos] = useState(getLancamentos());
+
+  useEffect(() => {
+    refreshLancamentos()
+      .catch(err => console.error('Falha ao buscar lançamentos no Supabase:', err))
+      .finally(() => setLancamentos(getLancamentos()));
+  }, []);
 
   const receitas = lancamentos.filter(l => l.tipo === 'receita');
   const despesas = lancamentos.filter(l => l.tipo === 'despesa');

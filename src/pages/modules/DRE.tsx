@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
 import { Plus, X, Calculator, TrendingUp, TrendingDown } from 'lucide-react';
-import { getDREValores, getLancamentos, Lancamento } from '../../services/lancamentoService';
+import { getDREValores, getLancamentos, refreshLancamentos, Lancamento } from '../../services/lancamentoService';
 
 const DRE: React.FC = () => {
   const { darkMode } = useApp();
@@ -9,7 +9,12 @@ const DRE: React.FC = () => {
   const [lancamentos, setLancamentos] = useState<Lancamento[]>([]);
   const [exibirDetalhes, setExibirDetalhes] = useState(false);
 
-  const carregar = () => {
+  const carregar = async () => {
+    try {
+      await refreshLancamentos();
+    } catch (err) {
+      console.error('Falha ao buscar lançamentos no Supabase:', err);
+    }
     setValores(getDREValores());
     setLancamentos(getLancamentos());
   };

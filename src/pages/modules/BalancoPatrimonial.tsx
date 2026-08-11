@@ -1,10 +1,16 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { getLancamentos } from '../../services/lancamentoService';
+import { getLancamentos, refreshLancamentos } from '../../services/lancamentoService';
 import { Scale, TrendingUp, TrendingDown, Minus } from 'lucide-react';
 
 const BalancoPatrimonial: React.FC = () => {
-  const lancamentos = getLancamentos();
+  const [lancamentos, setLancamentos] = useState(getLancamentos());
+
+  useEffect(() => {
+    refreshLancamentos()
+      .catch(err => console.error('Falha ao buscar lançamentos no Supabase:', err))
+      .finally(() => setLancamentos(getLancamentos()));
+  }, []);
   const receitas = lancamentos.filter(l => l.tipo === 'receita');
   const despesas = lancamentos.filter(l => l.tipo === 'despesa');
 

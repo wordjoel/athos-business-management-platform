@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
 import { TrendingUp, ArrowUpRight, ArrowDownRight, Calendar, Plus, Trash2, X, Table2 } from 'lucide-react';
-import { getFluxoCaixaMensal, getLancamentos, criarLancamento, excluirLancamento, Lancamento } from '../../services/lancamentoService';
+import { getFluxoCaixaMensal, getLancamentos, criarLancamento, excluirLancamento, refreshLancamentos, Lancamento } from '../../services/lancamentoService';
+import { useToast } from '../../components/Toast';
 
 const FluxoCaixa: React.FC = () => {
   const { darkMode } = useApp();
+  const { addToast } = useToast();
   const [meses, setMeses] = useState<ReturnType<typeof getFluxoCaixaMensal>>([]);
   const [todasTransacoes, setTodasTransacoes] = useState<Lancamento[]>([]);
   const [filtro, setFiltro] = useState<'todos' | 'receitas' | 'despesas'>('todos');
@@ -12,9 +14,19 @@ const FluxoCaixa: React.FC = () => {
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({ descricao: '', valor: '', tipo: 'despesa' as 'receita' | 'despesa', contraparte: '' });
 
-  const carregar = () => {
+  const carregarLocal = () => {
     setMeses(getFluxoCaixaMensal());
     setTodasTransacoes(getLancamentos());
+  };
+
+  const carregar = async () => {
+    try {
+      await refreshLancamentos();
+    } catch (err) {
+      console.error('Falha ao buscar lançamentos no Supabase:', err);
+      addToast({ type: 'error', title: 'Sem conexão com o servidor', message: 'Mostrando os últimos dados salvos localmente.' });
+    }
+    carregarLocal();
   };
   useEffect(() => { carregar(); }, []);
 
@@ -34,29 +46,41 @@ const FluxoCaixa: React.FC = () => {
   const totalSaldo = sorted.reduce((s, m) => s + m.saldo, 0);
   const maxValor = Math.max(...filtered.map(m => Math.max(m.receita, m.despesa, 1)), 150000);
 
-  const quickAdd = (e: React.FormEvent) => {
+  const quickAdd = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.descricao || !formData.valor) return;
     const mes = new Date().getMonth() + 1;
-    criarLancamento({
-      tipo: formData.tipo,
-      descricao: formData.descricao,
-      contraparte: formData.contraparte,
-      valor: parseFloat(formData.valor),
-      vencimento: `${mes.toString().padStart(2, '0')}/${new Date().getFullYear()}`,
-      data: `${mes.toString().padStart(2, '0')}/${new Date().getFullYear()}`,
-      status: formData.tipo === 'receita' ? 'recebido' : 'pago',
-      categoria: 'Geral',
-    });
-    carregar();
-    setFormData({ descricao: '', valor: '', tipo: 'despesa', contraparte: '' });
-    setShowForm(false);
+    try {
+      await criarLancamento({
+        tipo: formData.tipo,
+        descricao: formData.descricao,
+        contraparte: formData.contraparte,
+        valor: parseFloat(formData.valor),
+        vencimento: `${mes.toString().padStart(2, '0')}/${new Date().getFullYear()}`,
+        data: `${mes.toString().padStart(2, '0')}/${new Date().getFullYear()}`,
+        status: formData.tipo === 'receita' ? 'recebido' : 'pago',
+        categoria: 'Geral',
+      });
+      await carregar();
+      addToast({ type: 'success', title: 'Lançamento criado' });
+      setFormData({ descricao: '', valor: '', tipo: 'despesa', contraparte: '' });
+      setShowForm(false);
+    } catch (err) {
+      console.error('Falha ao criar lançamento:', err);
+      addToast({ type: 'error', title: 'Não foi possível salvar o lançamento' });
+    }
   };
 
-  const excluirTransacao = (id: string) => {
+  const excluirTransacao = async (id: string) => {
     if (!confirm('Excluir este lançamento?')) return;
-    excluirLancamento(id);
-    carregar();
+    try {
+      await excluirLancamento(id);
+      await carregar();
+      addToast({ type: 'success', title: 'Lançamento excluído' });
+    } catch (err) {
+      console.error('Falha ao excluir lançamento:', err);
+      addToast({ type: 'error', title: 'Não foi possível excluir o lançamento' });
+    }
   };
 
   return (

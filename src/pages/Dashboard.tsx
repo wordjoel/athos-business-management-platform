@@ -14,7 +14,7 @@ import {
   ResponsiveContainer, PieChart as RePieChart, Pie, Cell, Legend,
   RadarChart as ReRadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar as ReRadar
 } from 'recharts';
-import { getLancamentos, getFluxoCaixaMensal, getDREValores, Lancamento } from '../services/lancamentoService';
+import { getLancamentos, getFluxoCaixaMensal, getDREValores, refreshLancamentos, Lancamento } from '../services/lancamentoService';
 import { alertas as mockAlertas, insightsIA, contratos, setores } from '../data/mockData';
 
 const COLORS = ['#22C55E', '#EF4444', '#6366F1', '#F59E0B', '#06B6D4', '#EC4899', '#8B5CF6', '#FB923C'];
@@ -35,7 +35,12 @@ const Dashboard: React.FC = () => {
   const [lancamentos, setLancamentos] = useState<Lancamento[]>([]);
   const [fluxoMensal, setFluxoMensal] = useState<ReturnType<typeof getFluxoCaixaMensal>>([]);
 
-  const carregar = () => {
+  const carregar = async () => {
+    try {
+      await refreshLancamentos();
+    } catch (err) {
+      console.error('Falha ao buscar lançamentos no Supabase:', err);
+    }
     setLancamentos(getLancamentos());
     setFluxoMensal(getFluxoCaixaMensal());
   };

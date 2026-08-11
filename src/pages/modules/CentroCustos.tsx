@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useApp } from '../../context/AppContext';
-import { getLancamentos } from '../../services/lancamentoService';
+import { getLancamentos, refreshLancamentos } from '../../services/lancamentoService';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 import { Building2, Plus, TrendingDown, TrendingUp, Search, Filter } from 'lucide-react';
 
@@ -19,7 +19,13 @@ const CATEGORIAS_DEFAULT = [
 const CentroCustos: React.FC = () => {
   const { darkMode } = useApp();
   const [searchTerm, setSearchTerm] = useState('');
-  const lancamentos = getLancamentos();
+  const [lancamentos, setLancamentos] = useState(getLancamentos());
+
+  useEffect(() => {
+    refreshLancamentos()
+      .catch(err => console.error('Falha ao buscar lançamentos no Supabase:', err))
+      .finally(() => setLancamentos(getLancamentos()));
+  }, []);
 
   const dados = CATEGORIAS_DEFAULT.map(cat => {
     const gastos = lancamentos

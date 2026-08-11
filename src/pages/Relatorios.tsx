@@ -2,13 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import { FileText, Download, Eye, FileBarChart, FilePieChart, FileSpreadsheet, Bot, CheckCircle, Clock } from 'lucide-react';
 import { relatorios } from '../data/mockData';
-import { getLancamentos } from '../services/lancamentoService';
+import { getLancamentos, refreshLancamentos } from '../services/lancamentoService';
 
 const Relatorios: React.FC = () => {
   const { darkMode, toggleAIPanel } = useApp();
   const [generating, setGenerating] = useState<string | null>(null);
   const [lancamentos, setLancamentos] = useState<ReturnType<typeof getLancamentos>>([]);
-  useEffect(() => { setLancamentos(getLancamentos()); }, []);
+  useEffect(() => { refreshLancamentos().catch(err => console.error('Falha ao buscar lançamentos no Supabase:', err)).finally(() => setLancamentos(getLancamentos())); }, []);
 
   const receitas = lancamentos.filter(l => l.tipo === 'receita');
   const despesas = lancamentos.filter(l => l.tipo === 'despesa');

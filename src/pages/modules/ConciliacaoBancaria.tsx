@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
 import { ArrowDownLeft, ArrowUpRight, Check, X, Plus, Search, Filter, Building2, RefreshCw } from 'lucide-react';
 import { getExtratos, criarExtrato, conciliarExtrato, excluirExtrato, getExtratosNaoConciliados, getContas, seedContasPadrao, ExtratoBancario } from '../../services/conciliacaoService';
-import { getLancamentos, Lancamento } from '../../services/lancamentoService';
+import { getLancamentos, refreshLancamentos, Lancamento } from '../../services/lancamentoService';
 
 const ConciliacaoBancaria: React.FC = () => {
   const { darkMode } = useApp();
@@ -18,9 +18,14 @@ const ConciliacaoBancaria: React.FC = () => {
     categoria: 'Geral', banco: '001', agencia: '1234-5', conta: '67890-1', data: new Date().toISOString().slice(0, 10),
   });
 
-  const carregar = () => {
+  const carregar = async () => {
     seedContasPadrao();
     setExtratos(getExtratos());
+    try {
+      await refreshLancamentos();
+    } catch (err) {
+      console.error('Falha ao buscar lançamentos no Supabase:', err);
+    }
     setLancamentos(getLancamentos());
     setContas(getContas());
   };

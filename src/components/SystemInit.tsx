@@ -1,9 +1,8 @@
 import { useEffect } from 'react';
 import { useApp } from '../context/AppContext';
-import { api } from '../services/api';
 import { automations } from '../services/automations';
-import { lancamentoService } from '../services/lancamentoService';
 import { seedAllData } from '../services/seedData';
+import { refreshLancamentos } from '../services/lancamentoService';
 
 export const SystemInit: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { setOnlineStatus } = useApp();
@@ -11,8 +10,7 @@ export const SystemInit: React.FC<{ children: React.ReactNode }> = ({ children }
   useEffect(() => {
     seedAllData();
     automations.setupDefaultRules();
-    api.useExisting('athos_lancamentos', lancamentoService);
-    api.syncToSupabase();
+    refreshLancamentos().catch(err => console.error('Falha ao carregar lançamentos do Supabase:', err));
   }, []);
 
   useEffect(() => {

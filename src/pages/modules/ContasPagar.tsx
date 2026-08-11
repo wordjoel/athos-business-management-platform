@@ -1,19 +1,32 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
 import { Plus, Search, X, Trash2, Pencil, AlertTriangle } from 'lucide-react';
-import { getLancamentos, criarLancamento, atualizarLancamento, excluirLancamento, Lancamento } from '../../services/lancamentoService';
+import { getLancamentos, criarLancamento, atualizarLancamento, excluirLancamento, refreshLancamentos, Lancamento } from '../../services/lancamentoService';
+import { useToast } from '../../components/Toast';
 
 const CATEGORIAS_DESPESA = ['Geral', 'Aluguel', 'Utilidades', 'Pessoal', 'Operacional', 'Marketing', 'CPV', 'Deduções', 'Financeiro', 'IR', 'Outros'];
 
 const ContasPagar: React.FC = () => {
   const { darkMode } = useApp();
+  const { addToast } = useToast();
   const [lancamentos, setLancamentos] = useState<Lancamento[]>([]);
   const [search, setSearch] = useState('');
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [salvando, setSalvando] = useState(false);
   const [formData, setFormData] = useState({ descricao: '', contraparte: '', valor: '', vencimento: '', categoria: 'Geral' });
 
-  const carregar = () => setLancamentos(getLancamentos().filter(l => l.tipo === 'despesa'));
+  const carregarLocal = () => setLancamentos(getLancamentos().filter(l => l.tipo === 'despesa'));
+
+  const carregar = async () => {
+    try {
+      await refreshLancamentos();
+    } catch (err) {
+      console.error('Falha ao buscar despesas no Supabase:', err);
+      addToast({ type: 'error', title: 'Sem conexão com o servidor', message: 'Mostrando os últimos dados salvos localmente.' });
+    }
+    carregarLocal();
+  };
   useEffect(() => { carregar(); }, []);
 
   const filtered = lancamentos.filter(l => l.descricao.toLowerCase().includes(search.toLowerCase()) || l.contraparte.toLowerCase().includes(search.toLowerCase()));
@@ -30,46 +43,66 @@ const ContasPagar: React.FC = () => {
     setShowForm(true);
   };
 
-  const salvar = (e: React.FormEvent) => {
+  const salvar = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.descricao || !formData.valor || !formData.vencimento) return;
 
-    if (editingId) {
-      atualizarLancamento(editingId, {
-        descricao: formData.descricao,
-        contraparte: formData.contraparte,
-        valor: parseFloat(formData.valor),
-        vencimento: formData.vencimento,
-        categoria: formData.categoria,
-      });
-    } else {
-      criarLancamento({
-        tipo: 'despesa',
-        descricao: formData.descricao,
-        contraparte: formData.contraparte,
-        valor: parseFloat(formData.valor),
-        vencimento: formData.vencimento,
-        data: formData.vencimento,
-        status: 'pendente',
-        categoria: formData.categoria,
-      });
+    setSalvando(true);
+    try {
+      if (editingId) {
+        await atualizarLancamento(editingId, {
+          descricao: formData.descricao,
+          contraparte: formData.contraparte,
+          valor: parseFloat(formData.valor),
+          vencimento: formData.vencimento,
+          categoria: formData.categoria,
+        });
+      } else {
+        await criarLancamento({
+          tipo: 'despesa',
+          descricao: formData.descricao,
+          contraparte: formData.contraparte,
+          valor: parseFloat(formData.valor),
+          vencimento: formData.vencimento,
+          data: formData.vencimento,
+          status: 'pendente',
+          categoria: formData.categoria,
+        });
+      }
+      await carregar();
+      addToast({ type: 'success', title: editingId ? 'Despesa atualizada' : 'Despesa criada' });
+      setShowForm(false);
+      setEditingId(null);
+    } catch (err) {
+      console.error('Falha ao salvar despesa:', err);
+      addToast({ type: 'error', title: 'Não foi possível salvar a despesa', message: 'Tente novamente em instantes.' });
+    } finally {
+      setSalvando(false);
     }
-    carregar();
-    setShowForm(false);
-    setEditingId(null);
   };
 
-  const excluir = (id: string) => {
-    excluirLancamento(id);
-    carregar();
+  const excluir = async (id: string) => {
+    try {
+      await excluirLancamento(id);
+      await carregar();
+      addToast({ type: 'success', title: 'Despesa excluída' });
+    } catch (err) {
+      console.error('Falha ao excluir despesa:', err);
+      addToast({ type: 'error', title: 'Não foi possível excluir a despesa' });
+    }
   };
 
-  const toggleStatus = (id: string) => {
+  const toggleStatus = async (id: string) => {
     const l = lancamentos.find(x => x.id === id);
     if (!l) return;
     const novoStatus = l.status === 'pendente' ? 'pago' : l.status === 'pago' ? 'pendente' : 'pendente';
-    atualizarLancamento(id, { status: novoStatus as Lancamento['status'] });
-    carregar();
+    try {
+      await atualizarLancamento(id, { status: novoStatus as Lancamento['status'] });
+      await carregar();
+    } catch (err) {
+      console.error('Falha ao atualizar status da despesa:', err);
+      addToast({ type: 'error', title: 'Não foi possível atualizar o status' });
+    }
   };
 
   const totalPendente = lancamentos.filter(l => l.status !== 'pago').reduce((s, l) => s + l.valor, 0);
@@ -180,7 +213,7 @@ const ContasPagar: React.FC = () => {
               </select>
               <input value={formData.valor} onChange={e => setFormData({ ...formData, valor: e.target.value })} type="number" step="0.01" placeholder="Valor" className="w-full px-3 py-2.5 bg-gray-700/50 rounded-lg border border-white/10 text-white text-sm outline-none" required />
               <input value={formData.vencimento} onChange={e => setFormData({ ...formData, vencimento: e.target.value })} placeholder="Vencimento (DD/MM)" className="w-full px-3 py-2.5 bg-gray-700/50 rounded-lg border border-white/10 text-white text-sm outline-none" required />
-              <button type="submit" className="w-full py-2.5 bg-emerald-600 rounded-lg text-white text-sm font-medium hover:bg-emerald-500 transition-all">{editingId ? 'Salvar Alterações' : 'Adicionar Despesa'}</button>
+              <button type="submit" disabled={salvando} className="w-full py-2.5 bg-emerald-600 rounded-lg text-white text-sm font-medium hover:bg-emerald-500 transition-all disabled:opacity-50">{salvando ? 'Salvando...' : editingId ? 'Salvar Alterações' : 'Adicionar Despesa'}</button>
             </form>
           </div>
         </div>
