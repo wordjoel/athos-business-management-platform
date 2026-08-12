@@ -1,12 +1,7 @@
-import { createClient, User, Session } from '@supabase/supabase-js';
+import { User, Session } from '@supabase/supabase-js';
+import { supabase } from './supabase';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
-export const supabase = createClient(
-  supabaseUrl || 'https://placeholder.supabase.co',
-  supabaseAnonKey || 'placeholder-key'
-);
+export { supabase };
 
 export type UserRole = 'master' | 'admin' | 'gerente' | 'supervisor' | 'operador' | 'financeiro' | 'rh' | 'comercial' | 'juridico' | 'cliente' | 'visualizador';
 
@@ -223,7 +218,7 @@ export async function signOut(): Promise<void> {
   const sessionData = savedSession ? JSON.parse(savedSession) : null;
   const isLocal = sessionData?.isLocal === true;
   if (!isLocal) {
-    try { await supabase.auth.signOut(); supabase.auth.setSession(null); } catch {}
+    try { await supabase.auth.signOut(); } catch {}
   }
   clearSession();
 }
