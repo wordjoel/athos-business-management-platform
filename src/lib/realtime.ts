@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { supabase } from './auth';
+import { useAuth } from '../context/AuthContext';
 
 interface RealtimeOptions<T> {
   table: string;
@@ -119,7 +120,7 @@ export function useUserRealtime<T extends Record<string, any> = Record<string, a
   eventType = '*',
   callback
 }: Omit<RealtimeOptions<T>, 'filter'> & { userIdColumn?: string }) {
-  const { user } = useApp(); // Assuming we have access to auth context
+  const { user } = useAuth();
   const userIdColumn = 'user_id'; // Default column name for user ID
 
   return useRealtime<T>({

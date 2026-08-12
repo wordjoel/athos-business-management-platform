@@ -210,9 +210,9 @@ export function seedAllData(): void {
   ]);
 
   funcionariosService.seed([
-    { id: uuid(), nome: 'Kleber Duarte', cargo: 'Sócio', departamento: 'Diretoria', email: 'kleber@athos.com', telefone: '(11) 99999-0001', dataAdmissao: '02/01/2020', status: 'ativo', salario: 45000 },
-    { id: uuid(), nome: 'Joel Oliveira', cargo: 'Sócio', departamento: 'Financeiro', email: 'joel@athos.com', telefone: '(11) 99999-0002', dataAdmissao: '02/01/2020', status: 'ativo', salario: 35000 },
-    { id: uuid(), nome: 'Oscar Carvalho', cargo: 'Sócio', departamento: 'Qualidade', email: 'oscar@athos.com', telefone: '(11) 99999-0003', dataAdmissao: '02/01/2020', status: 'ativo', salario: 32000 },
+    { id: uuid(), nome: 'Kleber Duarte', cargo: 'CEO - Chief Executive Officer', departamento: 'Diretoria', email: 'kleber@athos.com', telefone: '(11) 99999-0001', dataAdmissao: '02/01/2020', status: 'ativo', salario: 45000 },
+    { id: uuid(), nome: 'Joel Oliveira', cargo: 'Diretor Administrativo e Financeiro', departamento: 'Financeiro', email: 'joel@athos.com', telefone: '(11) 99999-0002', dataAdmissao: '02/01/2020', status: 'ativo', salario: 35000 },
+    { id: uuid(), nome: 'Oscar Carvalho', cargo: 'Diretor de Qualidade e Desenvolvimento', departamento: 'Qualidade', email: 'oscar@athos.com', telefone: '(11) 99999-0003', dataAdmissao: '02/01/2020', status: 'ativo', salario: 32000 },
   ]);
 
   pontoService.seed([
@@ -231,9 +231,9 @@ export function seedAllData(): void {
       const filtered = list.filter((f: any) =>
         f.nome === 'Kleber Duarte' || f.nome === 'Joel Oliveira' || f.nome === 'Oscar Carvalho'
       ).map((f: any) => {
-        if (f.nome === 'Kleber Duarte') f.cargo = 'Sócio';
-        if (f.nome === 'Joel Oliveira') f.cargo = 'Sócio';
-        if (f.nome === 'Oscar Carvalho') f.cargo = 'Sócio';
+        if (f.nome === 'Kleber Duarte') f.cargo = 'CEO - Chief Executive Officer';
+        if (f.nome === 'Joel Oliveira') f.cargo = 'Diretor Administrativo e Financeiro';
+        if (f.nome === 'Oscar Carvalho') f.cargo = 'Diretor de Qualidade e Desenvolvimento';
         return f;
       });
       localStorage.setItem('athos_funcionarios', JSON.stringify(filtered));

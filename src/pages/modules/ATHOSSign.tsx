@@ -305,9 +305,9 @@ const ATHOSSign: React.FC = () => {
                 <input type="date" value={formData.fim} onChange={e => setFormData({ ...formData, fim: e.target.value })} className="px-3 py-2 bg-gray-700/50 rounded-lg border border-white/10 text-white text-sm" />
               </div>
               <select value={formData.enviarPara} onChange={e => setFormData({ ...formData, enviarPara: e.target.value })} className="w-full px-3 py-2 bg-gray-700/50 rounded-lg border border-white/10 text-white text-sm">
-                <option value="Joel Oliveira">Joel Oliveira (Sócio)</option>
-                <option value="Kleber Duarte">Kleber Duarte (Sócio)</option>
-                <option value="Oscar Carvalho">Oscar Carvalho (Sócio)</option>
+                <option value="Joel Oliveira">Joel Oliveira (Diretor Administrativo e Financeiro)</option>
+                <option value="Kleber Duarte">Kleber Duarte (CEO)</option>
+                <option value="Oscar Carvalho">Oscar Carvalho (Diretor de Qualidade e Desenvolvimento)</option>
               </select>
               <div className="flex items-center gap-2">
                 <input type="number" value={formData.lembrar} onChange={e => setFormData({ ...formData, lembrar: e.target.value })} className="w-20 px-3 py-2 bg-gray-700/50 rounded-lg border border-white/10 text-white text-sm" />

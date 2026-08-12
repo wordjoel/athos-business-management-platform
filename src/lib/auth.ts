@@ -91,9 +91,12 @@ const LOCAL_USERS: Array<{
   defaultPassword: string;
 }> = [
   { email: 'admin@atos.com.br', nome: 'Administrador', avatar: 'AD', cargo: 'Master do Sistema', role: 'master', permissions: ['all'], defaultPassword: 'admin123' },
-  { email: 'joel@atos.com', nome: 'Joel Oliveira', avatar: 'JO', cargo: 'Sócio', role: 'admin', permissions: ['all'], defaultPassword: 'joel123' },
-  { email: 'kleber@atos.com', nome: 'Kleber Duarte', avatar: 'KD', cargo: 'Sócio', role: 'admin', permissions: ['all'], defaultPassword: 'kleber123' },
-  { email: 'oscar@atos.com', nome: 'Oscar Carvalho', avatar: 'OC', cargo: 'Sócio', role: 'admin', permissions: ['all'], defaultPassword: 'oscar123' },
+  { email: 'joel@atos.com', nome: 'Joel Oliveira', avatar: 'JO', cargo: 'Diretor Administrativo e Financeiro', role: 'admin', permissions: ['all'], defaultPassword: 'joel123' },
+  { email: 'kleber@atos.com', nome: 'Kleber Duarte', avatar: 'KD', cargo: 'CEO - Chief Executive Officer', role: 'admin', permissions: ['all'], defaultPassword: 'kleber123' },
+  { email: 'oscar@atos.com', nome: 'Oscar Carvalho', avatar: 'OC', cargo: 'Diretor de Qualidade e Desenvolvimento', role: 'gerente', permissions: ['read', 'write', 'manage_team', 'reports', 'approve'], defaultPassword: 'oscar123' },
+  { email: 'mauricio@atos.com', nome: 'Mauricio Silva', avatar: 'MS', cargo: 'Gerente', role: 'gerente', permissions: ['read', 'write', 'manage_team', 'reports', 'approve'], defaultPassword: 'mauricio' },
+  { email: 'luiz@atos.com', nome: 'Luiz Santos', avatar: 'LS', cargo: 'Comercial', role: 'comercial', permissions: ['read', 'write', 'crm', 'reports'], defaultPassword: 'luiz123' },
+  { email: 'carlos@atos.com', nome: 'Carlos Atos', avatar: 'CA', cargo: 'Diretor', role: 'admin', permissions: ['all'], defaultPassword: 'atos2025' },
 ];
 
 function getPassword(email: string, defaultPwd: string): string {

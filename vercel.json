@@ -2,12 +2,5 @@
   "framework": "vite",
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
-  "installCommand": "npm install",
-  "experimentalServices": {
-    "whatsapp-bridge": {
-      "entrypoint": "whatsapp-bridge",
-      "routePrefix": "/",
-      "buildCommand": "npm install"
-    }
-  }
+  "installCommand": "npm install"
 }

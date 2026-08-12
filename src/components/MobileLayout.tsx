@@ -65,7 +65,10 @@ const MobileLayout: React.FC = () => {
   const isFinanceActive = location.pathname === '/finance' || location.pathname === '/m/finance';
 
   return (
-    <div className={`min-h-screen flex flex-col ${darkMode ? 'bg-gray-950 text-white' : 'bg-gray-50 text-gray-900 light'}`}>
+    <div className={`min-h-screen flex flex-col relative ${darkMode ? 'bg-gray-950 text-white' : 'bg-gray-50 text-gray-900 light'}`}>
+      <div className="absolute inset-0 flex items-center justify-center opacity-[0.08] pointer-events-none">
+        <img src="/logo.png" alt="" className="w-[600px] h-[600px] object-contain" />
+      </div>
       
       {/* Top Header */}
       <header className={`sticky top-0 z-40 flex items-center justify-between px-4 py-3.5 ${

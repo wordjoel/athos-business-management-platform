@@ -114,9 +114,9 @@ const ATHOSFlow: React.FC = () => {
               <div>
                 <label className="text-sm">Responsável</label>
                 <select value={formData.responsavel} onChange={e => setFormData({ ...formData, responsavel: e.target.value })} className="w-full mt-1 p-2 rounded-lg bg-gray-800 border border-gray-700">
-                  <option value="Kleber Duarte">Kleber Duarte - Sócio</option>
-                  <option value="Joel Oliveira">Joel Oliveira - Sócio</option>
-                  <option value="Oscar Carvalho">Oscar Carvalho - Sócio</option>
+                  <option value="Kleber Duarte">Kleber Duarte - CEO</option>
+                  <option value="Joel Oliveira">Joel Oliveira - Diretor Administrativo e Financeiro</option>
+                  <option value="Oscar Carvalho">Oscar Carvalho - Diretor de Qualidade e Desenvolvimento</option>
                 </select>
               </div>
               <button onClick={salvarLead} className="w-full py-2 bg-pink-500 rounded-lg font-medium hover:bg-pink-600 flex items-center justify-center gap-2">

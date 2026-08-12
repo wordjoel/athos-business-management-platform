@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../components/Toast';
-import { User, Mail, Phone, Shield, Key, Save, CheckCircle, Eye, EyeOff } from 'lucide-react';
+import { User, Mail, Phone, Key, Save, CheckCircle, Eye, EyeOff } from 'lucide-react';
 
 const Perfil: React.FC = () => {
   const { user } = useAuth();
@@ -17,12 +17,6 @@ const Perfil: React.FC = () => {
   const [confirmarSenha, setConfirmarSenha] = useState('');
   const [salvo, setSalvo] = useState(false);
   const [senhaSalva, setSenhaSalva] = useState(false);
-
-  const roleLabel: Record<string, string> = {
-    admin: 'Administrador',
-    manager: 'Gerente',
-    user: 'Usuário',
-  };
 
   const handleSalvarPerfil = () => {
     const usuarioLogado = JSON.parse(localStorage.getItem('athos_usuario_logado') || '{}');
@@ -82,10 +76,6 @@ const Perfil: React.FC = () => {
             </div>
             <h2 className="text-lg font-bold text-white">{user?.nome}</h2>
             <p className="text-sm text-gray-400">{user?.email}</p>
-            <div className="mt-3 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-cyan-500/10 text-cyan-400 text-xs font-medium">
-              <Shield size={12} />
-              {roleLabel[user?.role || 'user']}
-            </div>
           </div>
         </div>
 

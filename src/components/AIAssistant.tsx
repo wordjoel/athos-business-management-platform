@@ -1,6 +1,5 @@
-import React, { useState, useRef, useEffect, useMemo } from 'react';
-import { useApp } from '../context/AppContext';
-import { X, Send, Bot, User, Sparkles, Loader } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { X, Send, Bot, User, Sparkles, Loader2, BrainCircuit } from 'lucide-react';
 import { generateText, generateAutomationSuggestions } from '../services/nvidia';
 import { getLancamentos, getFluxoCaixaMensal, getDREValores } from '../services/lancamentoService';
 
@@ -151,7 +150,11 @@ const AIAssistant: React.FC<{ darkMode: boolean; onClose: () => void }> = ({ dar
           <span className={`text-xs font-semibold ${textSub}`}>INSIGHTS ATIVOS</span>
         </div>
         <div className="flex gap-2 overflow-x-auto pb-1">
-          {insightsIA.slice(0, 3).map(insight => (
+          {[
+            { id: '1', titulo: 'Receitas acima da meta', impacto: 'alto' },
+            { id: '2', titulo: 'Custos operacionais em queda', impacto: 'medio' },
+            { id: '3', titulo: 'Fluxo de caixa positivo', impacto: 'baixo' },
+          ].slice(0, 3).map((insight: { id: string; titulo: string; impacto: string }) => (
             <div key={insight.id} className={`flex-shrink-0 px-3 py-2 rounded-xl text-xs border max-w-[200px] ${
               insight.impacto === 'alto'
                 ? darkMode ? 'bg-red-500/10 border-red-500/20 text-red-300' : 'bg-red-50 border-red-200 text-red-600'
