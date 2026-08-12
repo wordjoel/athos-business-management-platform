@@ -1,33 +1,43 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
 import { ArrowDownLeft, ArrowUpRight, Check, X, Plus, Search, Filter, Building2, RefreshCw } from 'lucide-react';
-import { getExtratos, criarExtrato, conciliarExtrato, excluirExtrato, getExtratosNaoConciliados, getContas, seedContasPadrao, ExtratoBancario } from '../../services/conciliacaoService';
+import { getExtratos, criarExtrato, conciliarExtrato, excluirExtrato, getExtratosNaoConciliados, getContas, criarConta, refreshExtratos, refreshContas, ExtratoBancario, ContaBancaria } from '../../services/conciliacaoService';
 import { getLancamentos, refreshLancamentos, Lancamento } from '../../services/lancamentoService';
+import { useToast } from '../../components/Toast';
 
 const ConciliacaoBancaria: React.FC = () => {
   const { darkMode } = useApp();
+  const { addToast } = useToast();
   const [extratos, setExtratos] = useState<ExtratoBancario[]>([]);
   const [lancamentos, setLancamentos] = useState<Lancamento[]>([]);
-  const [contas, setContas] = useState<any[]>([]);
+  const [contas, setContas] = useState<ContaBancaria[]>([]);
   const [aba, setAba] = useState<'extrato' | 'conciliar' | 'contas'>('extrato');
   const [showForm, setShowForm] = useState(false);
+  const [showFormConta, setShowFormConta] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState<'todos' | 'conciliado' | 'pendente'>('todos');
   const [formData, setFormData] = useState({
     descricao: '', valor: '', tipo: 'credito' as 'credito' | 'debito',
-    categoria: 'Geral', banco: '001', agencia: '1234-5', conta: '67890-1', data: new Date().toISOString().slice(0, 10),
+    categoria: 'Geral', banco: '', agencia: '', conta: '', data: new Date().toISOString().slice(0, 10),
+  });
+  const [formConta, setFormConta] = useState({
+    nome: '', banco: '', agencia: '', conta: '', tipo: 'corrente' as ContaBancaria['tipo'], saldoInicial: '',
   });
 
-  const carregar = async () => {
-    seedContasPadrao();
+  const carregarLocal = () => {
     setExtratos(getExtratos());
-    try {
-      await refreshLancamentos();
-    } catch (err) {
-      console.error('Falha ao buscar lançamentos no Supabase:', err);
-    }
     setLancamentos(getLancamentos());
     setContas(getContas());
+  };
+
+  const carregar = async () => {
+    try {
+      await Promise.all([refreshExtratos(), refreshContas(), refreshLancamentos()]);
+    } catch (err) {
+      console.error('Falha ao buscar dados da conciliação no Supabase:', err);
+      addToast({ type: 'error', title: 'Sem conexão com o servidor', message: 'Mostrando os últimos dados salvos localmente.' });
+    }
+    carregarLocal();
   };
 
   useEffect(() => { carregar(); }, []);
@@ -42,32 +52,74 @@ const ConciliacaoBancaria: React.FC = () => {
   const totalCredito = extratos.filter(e => e.tipo === 'credito').reduce((s, e) => s + e.valor, 0);
   const totalDebito = extratos.filter(e => e.tipo === 'debito').reduce((s, e) => s + e.valor, 0);
 
-  const salvarExtrato = () => {
+  const salvarExtrato = async () => {
     if (!formData.descricao || !formData.valor) return;
-    criarExtrato({
-      data: formData.data,
-      descricao: formData.descricao,
-      valor: parseFloat(formData.valor),
-      tipo: formData.tipo,
-      categoria: formData.categoria,
-      banco: formData.banco,
-      agencia: formData.agencia,
-      conta: formData.conta,
-    });
-    carregar();
-    setFormData({ descricao: '', valor: '', tipo: 'credito', categoria: 'Geral', banco: '001', agencia: '1234-5', conta: '67890-1', data: new Date().toISOString().slice(0, 10) });
-    setShowForm(false);
+    try {
+      await criarExtrato({
+        data: formData.data,
+        descricao: formData.descricao,
+        valor: parseFloat(formData.valor),
+        tipo: formData.tipo,
+        categoria: formData.categoria,
+        banco: formData.banco,
+        agencia: formData.agencia,
+        conta: formData.conta,
+      });
+      await carregar();
+      addToast({ type: 'success', title: 'Extrato registrado' });
+      setFormData({ descricao: '', valor: '', tipo: 'credito', categoria: 'Geral', banco: '', agencia: '', conta: '', data: new Date().toISOString().slice(0, 10) });
+      setShowForm(false);
+    } catch (err) {
+      console.error('Falha ao registrar extrato:', err);
+      addToast({ type: 'error', title: 'Não foi possível registrar o extrato', message: 'Tente novamente em instantes.' });
+    }
   };
 
-  const conciliar = (extratoId: string, lancamentoId: string) => {
-    conciliarExtrato(extratoId, lancamentoId);
-    carregar();
+  const selecionarContaExtrato = (contaId: string) => {
+    const conta = contas.find(c => c.id === contaId);
+    if (conta) setFormData({ ...formData, banco: conta.banco, agencia: conta.agencia, conta: conta.conta });
   };
 
-  const excluir = (id: string) => {
-    if (confirm('Excluir este registro do extrato?')) {
-      excluirExtrato(id);
-      carregar();
+  const salvarConta = async () => {
+    if (!formConta.nome || !formConta.banco || !formConta.saldoInicial) return;
+    try {
+      await criarConta({
+        nome: formConta.nome,
+        banco: formConta.banco,
+        agencia: formConta.agencia,
+        conta: formConta.conta,
+        tipo: formConta.tipo,
+        saldoInicial: parseFloat(formConta.saldoInicial),
+        ativa: true,
+      });
+      await carregar();
+      addToast({ type: 'success', title: 'Conta bancária cadastrada' });
+      setFormConta({ nome: '', banco: '', agencia: '', conta: '', tipo: 'corrente', saldoInicial: '' });
+      setShowFormConta(false);
+    } catch (err) {
+      console.error('Falha ao cadastrar conta bancária:', err);
+      addToast({ type: 'error', title: 'Não foi possível cadastrar a conta', message: 'Tente novamente em instantes.' });
+    }
+  };
+
+  const conciliar = async (extratoId: string, lancamentoId: string) => {
+    try {
+      await conciliarExtrato(extratoId, lancamentoId);
+      await carregar();
+    } catch (err) {
+      console.error('Falha ao conciliar extrato:', err);
+      addToast({ type: 'error', title: 'Não foi possível conciliar o extrato' });
+    }
+  };
+
+  const excluir = async (id: string) => {
+    if (!confirm('Excluir este registro do extrato?')) return;
+    try {
+      await excluirExtrato(id);
+      await carregar();
+    } catch (err) {
+      console.error('Falha ao excluir extrato:', err);
+      addToast({ type: 'error', title: 'Não foi possível excluir o extrato' });
     }
   };
 
@@ -203,8 +255,12 @@ const ConciliacaoBancaria: React.FC = () => {
 
       {aba === 'contas' && (
         <div className={`p-4 rounded-xl border ${darkMode ? 'bg-gray-800/40 border-white/5' : 'bg-white border-gray-200'}`}>
-          <h3 className={`text-sm font-medium mb-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>Contas Bancárias</h3>
+          <div className="flex justify-between items-center mb-3">
+            <h3 className={`text-sm font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>Contas Bancárias</h3>
+            <button onClick={() => setShowFormConta(true)} className="px-3 py-1.5 bg-cyan-600 rounded text-xs text-white">+ Nova Conta</button>
+          </div>
           <div className="space-y-2">
+            {contas.length === 0 && <p className={`text-sm text-center py-8 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>Nenhuma conta cadastrada.</p>}
             {contas.map(c => (
               <div key={c.id} className={`flex items-center justify-between p-3 rounded-lg ${darkMode ? 'bg-gray-800/30' : 'bg-gray-50'}`}>
                 <div className="flex items-center gap-3">
@@ -244,10 +300,38 @@ const ConciliacaoBancaria: React.FC = () => {
               <select value={formData.categoria} onChange={e => setFormData({ ...formData, categoria: e.target.value })} className="w-full px-3 py-2 bg-gray-700/50 rounded-lg border border-white/10 text-white text-sm outline-none">
                 <option>Geral</option><option>Salário</option><option>Aluguel</option><option>Impostos</option><option>Marketing</option><option>Operacional</option><option>Financeiro</option>
               </select>
-              <select value={formData.banco} onChange={e => setFormData({ ...formData, banco: e.target.value })} className="w-full px-3 py-2 bg-gray-700/50 rounded-lg border border-white/10 text-white text-sm outline-none">
-                {contas.map(c => <option key={c.id} value={c.banco}>{c.nome} ({c.banco})</option>)}
+              <select onChange={e => selecionarContaExtrato(e.target.value)} className="w-full px-3 py-2 bg-gray-700/50 rounded-lg border border-white/10 text-white text-sm outline-none">
+                <option value="">Selecione a conta</option>
+                {contas.map(c => <option key={c.id} value={c.id}>{c.nome} ({c.banco})</option>)}
               </select>
+              {contas.length === 0 && (
+                <p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>Cadastre uma conta bancária na aba "Contas" antes de lançar um extrato.</p>
+              )}
               <button onClick={salvarExtrato} className="w-full py-2 bg-cyan-600 rounded-lg text-white text-sm hover:bg-cyan-500">Salvar</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showFormConta && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className={`p-5 rounded-xl w-full max-w-md border ${darkMode ? 'bg-gray-800 border-white/10' : 'bg-white border-gray-200'}`}>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className={`text-lg font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Nova Conta Bancária</h2>
+              <button onClick={() => setShowFormConta(false)}><X size={18} className="text-gray-400" /></button>
+            </div>
+            <div className="space-y-3">
+              <input type="text" value={formConta.nome} onChange={e => setFormConta({ ...formConta, nome: e.target.value })} placeholder="Nome do banco (ex: Banco do Brasil)" className="w-full px-3 py-2 bg-gray-700/50 rounded-lg border border-white/10 text-white text-sm outline-none" />
+              <input type="text" value={formConta.banco} onChange={e => setFormConta({ ...formConta, banco: e.target.value })} placeholder="Código do banco (ex: 001)" className="w-full px-3 py-2 bg-gray-700/50 rounded-lg border border-white/10 text-white text-sm outline-none" />
+              <input type="text" value={formConta.agencia} onChange={e => setFormConta({ ...formConta, agencia: e.target.value })} placeholder="Agência" className="w-full px-3 py-2 bg-gray-700/50 rounded-lg border border-white/10 text-white text-sm outline-none" />
+              <input type="text" value={formConta.conta} onChange={e => setFormConta({ ...formConta, conta: e.target.value })} placeholder="Conta" className="w-full px-3 py-2 bg-gray-700/50 rounded-lg border border-white/10 text-white text-sm outline-none" />
+              <select value={formConta.tipo} onChange={e => setFormConta({ ...formConta, tipo: e.target.value as ContaBancaria['tipo'] })} className="w-full px-3 py-2 bg-gray-700/50 rounded-lg border border-white/10 text-white text-sm outline-none">
+                <option value="corrente">Conta Corrente</option>
+                <option value="poupanca">Poupança</option>
+                <option value="investimento">Investimento</option>
+              </select>
+              <input type="number" value={formConta.saldoInicial} onChange={e => setFormConta({ ...formConta, saldoInicial: e.target.value })} placeholder="Saldo inicial (R$)" className="w-full px-3 py-2 bg-gray-700/50 rounded-lg border border-white/10 text-white text-sm outline-none" />
+              <button onClick={salvarConta} className="w-full py-2 bg-cyan-600 rounded-lg text-white text-sm hover:bg-cyan-500">Cadastrar Conta</button>
             </div>
           </div>
         </div>

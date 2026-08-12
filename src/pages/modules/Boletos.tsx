@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
 import { FileText, Plus, Search, Check, X, Trash2, Copy, Clock, AlertTriangle, CheckCircle, Building2 } from 'lucide-react';
-import { getBoletos, criarBoleto, baixarBoleto, cancelarBoleto, excluirBoleto, verificarVencidos, getCedentePadrao, Boleto } from '../../services/boletoService';
+import { getBoletos, criarBoleto, baixarBoleto, cancelarBoleto, excluirBoleto, refreshBoletos, verificarVencidos, getCedentePadrao, Boleto } from '../../services/boletoService';
+import { useToast } from '../../components/Toast';
 
 const Boletos: React.FC = () => {
   const { darkMode } = useApp();
+  const { addToast } = useToast();
   const [boletos, setBoletos] = useState<Boleto[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [showDetalhes, setShowDetalhes] = useState<string | null>(null);
@@ -15,7 +17,16 @@ const Boletos: React.FC = () => {
   });
 
   const cedente = getCedentePadrao();
-  const carregar = () => { setBoletos(getBoletos()); };
+  const carregarLocal = () => setBoletos(getBoletos());
+  const carregar = async () => {
+    try {
+      await refreshBoletos();
+    } catch (err) {
+      console.error('Falha ao buscar boletos no Supabase:', err);
+      addToast({ type: 'error', title: 'Sem conexão com o servidor', message: 'Mostrando os últimos dados salvos localmente.' });
+    }
+    carregarLocal();
+  };
   useEffect(() => { carregar(); }, []);
 
   const boletosFiltrados = boletos.filter(b => {
@@ -28,41 +39,59 @@ const Boletos: React.FC = () => {
   const totalPendente = boletos.filter(b => b.status === 'pendente').reduce((s, b) => s + b.valor, 0);
   const totalPago = boletos.filter(b => b.status === 'pago').reduce((s, b) => s + b.valor, 0);
 
-  const salvar = () => {
+  const salvar = async () => {
     if (!formData.sacado || !formData.valor || !formData.vencimento) return;
-    criarBoleto({
-      sacado: formData.sacado,
-      cpfCnpj: formData.cpfCnpj,
-      sacadoEndereco: formData.sacadoEndereco,
-      valor: parseFloat(formData.valor),
-      vencimento: formData.vencimento,
-      dataEmissao: new Date().toLocaleDateString('pt-BR'),
-      observacao: formData.observacao,
-    });
-    carregar();
-    setFormData({ sacado: '', cpfCnpj: '', sacadoEndereco: '', valor: '', vencimento: '', observacao: '' });
-    setShowForm(false);
-  };
-
-  const baixar = (id: string) => {
-    if (confirm('Marcar boleto como pago?')) {
-      baixarBoleto(id);
-      carregar();
+    try {
+      await criarBoleto({
+        sacado: formData.sacado,
+        cpfCnpj: formData.cpfCnpj,
+        sacadoEndereco: formData.sacadoEndereco,
+        valor: parseFloat(formData.valor),
+        vencimento: formData.vencimento,
+        dataEmissao: new Date().toLocaleDateString('pt-BR'),
+        observacao: formData.observacao,
+      });
+      await carregar();
+      addToast({ type: 'success', title: 'Boleto emitido' });
+      setFormData({ sacado: '', cpfCnpj: '', sacadoEndereco: '', valor: '', vencimento: '', observacao: '' });
+      setShowForm(false);
+    } catch (err) {
+      console.error('Falha ao emitir boleto:', err);
+      addToast({ type: 'error', title: 'Não foi possível emitir o boleto', message: 'Tente novamente em instantes.' });
     }
   };
 
-  const cancelar = (id: string) => {
-    if (confirm('Cancelar este boleto?')) {
-      cancelarBoleto(id);
-      carregar();
+  const baixar = async (id: string) => {
+    if (!confirm('Marcar boleto como pago?')) return;
+    try {
+      await baixarBoleto(id);
+      await carregar();
+    } catch (err) {
+      console.error('Falha ao baixar boleto:', err);
+      addToast({ type: 'error', title: 'Não foi possível baixar o boleto' });
     }
   };
 
-  const excluir = (id: string) => {
-    if (confirm('Excluir este boleto permanentemente?')) {
-      excluirBoleto(id);
-      carregar();
+  const cancelar = async (id: string) => {
+    if (!confirm('Cancelar este boleto?')) return;
+    try {
+      await cancelarBoleto(id);
+      await carregar();
+    } catch (err) {
+      console.error('Falha ao cancelar boleto:', err);
+      addToast({ type: 'error', title: 'Não foi possível cancelar o boleto' });
+    }
+  };
+
+  const excluir = async (id: string) => {
+    if (!confirm('Excluir este boleto permanentemente?')) return;
+    try {
+      await excluirBoleto(id);
+      await carregar();
       setShowDetalhes(null);
+    } catch (err) {
+      console.error('Falha ao excluir boleto:', err);
+      addToast({ type: 'error', title: 'Não foi possível excluir o boleto' });
     }
   };
 

@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
 import { useAuth } from '../../context/AuthContext';
 import { CreditCard, Plus, Search, X, Trash2, Lock, Unlock, AlertTriangle, CheckCircle, DollarSign, TrendingUp, TrendingDown } from 'lucide-react';
-import { getCartoes, criarCartao, bloquearCartao, desbloquearCartao, cancelarCartao, excluirCartao, getDespesasCartao, criarDespesaCartao, pagarDespesaCartao, excluirDespesaCartao, CartaoSocio, DespesaCartao } from '../../services/cartaoService';
+import { getCartoes, criarCartao, bloquearCartao, desbloquearCartao, cancelarCartao, excluirCartao, getDespesasCartao, criarDespesaCartao, pagarDespesaCartao, excluirDespesaCartao, refreshCartoes, refreshDespesasCartao, CartaoSocio, DespesaCartao } from '../../services/cartaoService';
+import { useToast } from '../../components/Toast';
 
 const Cartoes: React.FC = () => {
   const { darkMode } = useApp();
   const { user } = useAuth();
+  const { addToast } = useToast();
   const [cartoes, setCartoes] = useState<CartaoSocio[]>([]);
   const [despesas, setDespesas] = useState<DespesaCartao[]>([]);
   const [showFormCartao, setShowFormCartao] = useState(false);
@@ -23,42 +25,64 @@ const Cartoes: React.FC = () => {
     descricao: '', valor: '', categoria: '', data: '', totalParcelas: '',
   });
 
-  const carregar = () => {
+  const carregarLocal = () => {
     setCartoes(getCartoes());
     setDespesas(getDespesasCartao(selectedCartao || undefined));
   };
 
-  useEffect(() => { carregar(); }, [selectedCartao]);
-
-  const salvarCartao = () => {
-    if (!formCartao.socioNome || !formCartao.limiteTotal) return;
-    criarCartao({
-      socioNome: formCartao.socioNome,
-      socioEmail: formCartao.socioEmail,
-      bandeira: formCartao.bandeira,
-      ultimos4digitos: formCartao.ultimos4digitos || '0000',
-      limiteTotal: parseFloat(formCartao.limiteTotal),
-    });
-    carregar();
-    setFormCartao({ socioNome: '', socioEmail: '', bandeira: 'visa', ultimos4digitos: '', limiteTotal: '' });
-    setShowFormCartao(false);
+  const carregar = async () => {
+    try {
+      await Promise.all([refreshCartoes(), refreshDespesasCartao()]);
+    } catch (err) {
+      console.error('Falha ao buscar cartões no Supabase:', err);
+      addToast({ type: 'error', title: 'Sem conexão com o servidor', message: 'Mostrando os últimos dados salvos localmente.' });
+    }
+    carregarLocal();
   };
 
-  const salvarDespesa = () => {
+  useEffect(() => { carregar(); }, [selectedCartao]);
+
+  const salvarCartao = async () => {
+    if (!formCartao.socioNome || !formCartao.limiteTotal) return;
+    try {
+      await criarCartao({
+        socioNome: formCartao.socioNome,
+        socioEmail: formCartao.socioEmail,
+        bandeira: formCartao.bandeira,
+        ultimos4digitos: formCartao.ultimos4digitos || '0000',
+        limiteTotal: parseFloat(formCartao.limiteTotal),
+      });
+      await carregar();
+      addToast({ type: 'success', title: 'Cartão cadastrado' });
+      setFormCartao({ socioNome: '', socioEmail: '', bandeira: 'visa', ultimos4digitos: '', limiteTotal: '' });
+      setShowFormCartao(false);
+    } catch (err) {
+      console.error('Falha ao cadastrar cartão:', err);
+      addToast({ type: 'error', title: 'Não foi possível cadastrar o cartão', message: 'Tente novamente em instantes.' });
+    }
+  };
+
+  const salvarDespesa = async () => {
     if (!selectedCartao || !formDespesa.descricao || !formDespesa.valor) return;
     const cartao = cartoes.find(c => c.id === selectedCartao);
-    criarDespesaCartao({
-      cartaoId: selectedCartao,
-      socioNome: cartao?.socioNome || '',
-      descricao: formDespesa.descricao,
-      valor: parseFloat(formDespesa.valor),
-      categoria: formDespesa.categoria || 'Geral',
-      data: formDespesa.data || new Date().toLocaleDateString('pt-BR'),
-      totalParcelas: formDespesa.totalParcelas ? parseInt(formDespesa.totalParcelas) : undefined,
-    });
-    carregar();
-    setFormDespesa({ descricao: '', valor: '', categoria: '', data: '', totalParcelas: '' });
-    setShowFormDespesa(false);
+    try {
+      await criarDespesaCartao({
+        cartaoId: selectedCartao,
+        socioNome: cartao?.socioNome || '',
+        descricao: formDespesa.descricao,
+        valor: parseFloat(formDespesa.valor),
+        categoria: formDespesa.categoria || 'Geral',
+        data: formDespesa.data || new Date().toLocaleDateString('pt-BR'),
+        totalParcelas: formDespesa.totalParcelas ? parseInt(formDespesa.totalParcelas) : undefined,
+      });
+      await carregar();
+      addToast({ type: 'success', title: 'Despesa registrada' });
+      setFormDespesa({ descricao: '', valor: '', categoria: '', data: '', totalParcelas: '' });
+      setShowFormDespesa(false);
+    } catch (err) {
+      console.error('Falha ao registrar despesa:', err);
+      addToast({ type: 'error', title: 'Não foi possível registrar a despesa', message: 'Tente novamente em instantes.' });
+    }
   };
 
   const getBandeiraColor = (b: string) => {
@@ -159,11 +183,11 @@ const Cartoes: React.FC = () => {
                 </div>
                 <div className="flex gap-1">
                   {c.status === 'ativo' ? (
-                    <button onClick={() => { bloquearCartao(c.id); carregar(); }} className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20"><Lock size={14} /></button>
+                    <button onClick={() => bloquearCartao(c.id).then(carregar).catch(() => addToast({ type: 'error', title: 'Não foi possível bloquear o cartão' }))} className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20"><Lock size={14} /></button>
                   ) : (
-                    <button onClick={() => { desbloquearCartao(c.id); carregar(); }} className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20"><Unlock size={14} /></button>
+                    <button onClick={() => desbloquearCartao(c.id).then(carregar).catch(() => addToast({ type: 'error', title: 'Não foi possível desbloquear o cartão' }))} className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20"><Unlock size={14} /></button>
                   )}
-                  <button onClick={() => { if (confirm('Excluir cartão?')) { excluirCartao(c.id); carregar(); } }} className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20"><Trash2 size={14} /></button>
+                  <button onClick={() => { if (confirm('Excluir cartão?')) excluirCartao(c.id).then(carregar).catch(() => addToast({ type: 'error', title: 'Não foi possível excluir o cartão' })); }} className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20"><Trash2 size={14} /></button>
                 </div>
               </div>
               <div className="mt-4 grid grid-cols-3 gap-4">
@@ -229,9 +253,9 @@ const Cartoes: React.FC = () => {
                   <span className={`text-[10px] px-2 py-0.5 rounded-full ${getStatusDespesa(d.status)}`}>{d.status}</span>
                   <div className="flex gap-1">
                     {d.status === 'pendente' && (
-                      <button onClick={() => { pagarDespesaCartao(d.id); carregar(); }} className="p-1 text-emerald-400 hover:text-emerald-300"><CheckCircle size={14} /></button>
+                      <button onClick={() => pagarDespesaCartao(d.id).then(carregar).catch(() => addToast({ type: 'error', title: 'Não foi possível marcar a despesa como paga' }))} className="p-1 text-emerald-400 hover:text-emerald-300"><CheckCircle size={14} /></button>
                     )}
-                    <button onClick={() => { if (confirm('Excluir despesa?')) { excluirDespesaCartao(d.id); carregar(); } }} className="p-1 text-gray-500 hover:text-red-400"><Trash2 size={14} /></button>
+                    <button onClick={() => { if (confirm('Excluir despesa?')) excluirDespesaCartao(d.id).then(carregar).catch(() => addToast({ type: 'error', title: 'Não foi possível excluir a despesa' })); }} className="p-1 text-gray-500 hover:text-red-400"><Trash2 size={14} /></button>
                   </div>
                 </div>
               </div>

@@ -48,7 +48,7 @@ export interface ContaBancaria {
 
 export interface ExtratoBancario {
   id: string;
-  conta_id: string;
+  conta_id?: string;
   data: string;
   descricao: string;
   valor: number;
@@ -56,6 +56,9 @@ export interface ExtratoBancario {
   categoria: string;
   conciliado: boolean;
   lancamento_id?: string;
+  banco?: string;
+  agencia?: string;
+  conta?: string;
   criado_em: string;
 }
 
@@ -88,6 +91,7 @@ export interface Boleto {
   id: string;
   sacado: string;
   cpf_cnpj: string;
+  sacado_endereco?: string;
   valor: number;
   vencimento: string;
   data_emissao: string;
@@ -100,17 +104,30 @@ export interface Boleto {
   criado_em: string;
 }
 
-export interface Cartao {
+export interface CartaoSocio {
   id: string;
-  nome: string;
+  socio_nome: string;
+  socio_email?: string;
   bandeira: 'visa' | 'mastercard' | 'elo' | 'amex' | 'outros';
   ultimos4digitos: string;
-  limite: number;
+  limite_total: number;
+  limite_usado: number;
   limite_disponivel: number;
-  fatura_atual: number;
-  dia_fechamento: number;
-  dia_vencimento: number;
   status: 'ativo' | 'bloqueado' | 'cancelado';
+  criado_em: string;
+}
+
+export interface DespesaCartao {
+  id: string;
+  cartao_id: string;
+  socio_nome: string;
+  descricao: string;
+  valor: number;
+  categoria: string;
+  data: string;
+  parcela_atual?: number;
+  total_parcelas?: number;
+  status: 'pendente' | 'paga' | 'atrasada';
   criado_em: string;
 }
 
@@ -334,7 +351,8 @@ export const extratosService = new SupabaseService<ExtratoBancario>('extratos_ba
 export const pixChavesService = new SupabaseService<PixChave>('pix_chaves');
 export const pixTransacoesService = new SupabaseService<PixTransacao>('pix_transacoes');
 export const boletosService = new SupabaseService<Boleto>('boletos');
-export const cartoesService = new SupabaseService<Cartao>('cartoes');
+export const cartoesService = new SupabaseService<CartaoSocio>('cartoes');
+export const despesasCartaoService = new SupabaseService<DespesaCartao>('despesas_cartao');
 export const leadsService = new SupabaseService<Lead>('leads');
 export const tarefasService = new SupabaseService<Tarefa>('tarefas');
 export const chamadosService = new SupabaseService<Chamado>('chamados');

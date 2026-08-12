@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
 import { QrCode, Key, Send, Download, Copy, Trash2, Check, X, ArrowUpRight, ArrowDownLeft } from 'lucide-react';
-import { getChaves, criarChave, desativarChave, excluirChave, getTransacoes, criarPixEnvio, criarPixRecebido, gerarQrCode, getQrCodes, excluirQrCode, PixChave, PixTransacao, PixQrCode } from '../../services/pixService';
+import { getChaves, criarChave, desativarChave, excluirChave, getTransacoes, criarPixEnvio, criarPixRecebido, refreshChaves, refreshTransacoes, gerarQrCode, getQrCodes, excluirQrCode, PixChave, PixTransacao, PixQrCode } from '../../services/pixService';
+import { useToast } from '../../components/Toast';
 
 const Pix: React.FC = () => {
   const { darkMode } = useApp();
+  const { addToast } = useToast();
   const [chaves, setChaves] = useState<PixChave[]>([]);
   const [transacoes, setTransacoes] = useState<PixTransacao[]>([]);
   const [qrCodes, setQrCodes] = useState<PixQrCode[]>([]);
@@ -19,10 +21,20 @@ const Pix: React.FC = () => {
   const [formDataRecebimento, setFormDataRecebimento] = useState({ chave: '', valor: '', descricao: '', contraparte: '' });
   const [formDataQrCode, setFormDataQrCode] = useState({ chave: '', valor: '', descricao: '' });
 
-  const carregar = () => {
+  const carregarLocal = () => {
     setChaves(getChaves());
     setTransacoes(getTransacoes());
     setQrCodes(getQrCodes());
+  };
+
+  const carregar = async () => {
+    try {
+      await Promise.all([refreshChaves(), refreshTransacoes()]);
+    } catch (err) {
+      console.error('Falha ao buscar dados PIX no Supabase:', err);
+      addToast({ type: 'error', title: 'Sem conexão com o servidor', message: 'Mostrando os últimos dados salvos localmente.' });
+    }
+    carregarLocal();
   };
 
   useEffect(() => { carregar(); }, []);
@@ -33,30 +45,48 @@ const Pix: React.FC = () => {
     setTimeout(() => setCopiado(null), 2000);
   };
 
-  const salvarChave = () => {
+  const salvarChave = async () => {
     if (!formDataChave.valor) return;
-    criarChave({ tipo: formDataChave.tipo, valor: formDataChave.valor, banco: formDataChave.banco, conta: formDataChave.conta });
-    carregar();
-    setFormDataChave({ tipo: 'cpf', valor: '', banco: '001', conta: '67890-1' });
-    setShowFormChave(false);
+    try {
+      await criarChave({ tipo: formDataChave.tipo, valor: formDataChave.valor, banco: formDataChave.banco, conta: formDataChave.conta });
+      await carregar();
+      addToast({ type: 'success', title: 'Chave PIX cadastrada' });
+      setFormDataChave({ tipo: 'cpf', valor: '', banco: '001', conta: '67890-1' });
+      setShowFormChave(false);
+    } catch (err) {
+      console.error('Falha ao cadastrar chave PIX:', err);
+      addToast({ type: 'error', title: 'Não foi possível cadastrar a chave', message: 'Tente novamente em instantes.' });
+    }
   };
 
-  const enviarPix = () => {
+  const enviarPix = async () => {
     if (!formDataEnvio.chave || !formDataEnvio.valor) return;
-    criarPixEnvio(formDataEnvio.chave, parseFloat(formDataEnvio.valor), formDataEnvio.descricao, formDataEnvio.contraparte);
-    carregar();
-    setFormDataEnvio({ chave: '', valor: '', descricao: '', contraparte: '' });
-    setShowFormEnvio(false);
-    setAba('historico');
+    try {
+      await criarPixEnvio(formDataEnvio.chave, parseFloat(formDataEnvio.valor), formDataEnvio.descricao, formDataEnvio.contraparte);
+      await carregar();
+      addToast({ type: 'success', title: 'PIX enviado' });
+      setFormDataEnvio({ chave: '', valor: '', descricao: '', contraparte: '' });
+      setShowFormEnvio(false);
+      setAba('historico');
+    } catch (err) {
+      console.error('Falha ao enviar PIX:', err);
+      addToast({ type: 'error', title: 'Não foi possível enviar o PIX', message: 'Tente novamente em instantes.' });
+    }
   };
 
-  const receberPix = () => {
+  const receberPix = async () => {
     if (!formDataRecebimento.chave || !formDataRecebimento.valor) return;
-    criarPixRecebido(formDataRecebimento.chave, parseFloat(formDataRecebimento.valor), formDataRecebimento.descricao, formDataRecebimento.contraparte);
-    carregar();
-    setFormDataRecebimento({ chave: '', valor: '', descricao: '', contraparte: '' });
-    setShowFormRecebimento(false);
-    setAba('historico');
+    try {
+      await criarPixRecebido(formDataRecebimento.chave, parseFloat(formDataRecebimento.valor), formDataRecebimento.descricao, formDataRecebimento.contraparte);
+      await carregar();
+      addToast({ type: 'success', title: 'Recebimento registrado' });
+      setFormDataRecebimento({ chave: '', valor: '', descricao: '', contraparte: '' });
+      setShowFormRecebimento(false);
+      setAba('historico');
+    } catch (err) {
+      console.error('Falha ao registrar recebimento PIX:', err);
+      addToast({ type: 'error', title: 'Não foi possível registrar o recebimento', message: 'Tente novamente em instantes.' });
+    }
   };
 
   const gerarQr = () => {
@@ -121,8 +151,8 @@ const Pix: React.FC = () => {
                   <button onClick={() => copiar(c.valor, c.id)} className="p-1.5 text-gray-500 hover:text-cyan-400">
                     {copiado === c.id ? <Check size={14} className="text-emerald-400" /> : <Copy size={14} />}
                   </button>
-                  <button onClick={() => { desativarChave(c.id); carregar(); }} className="p-1.5 text-gray-500 hover:text-amber-400"><X size={14} /></button>
-                  <button onClick={() => { excluirChave(c.id); carregar(); }} className="p-1.5 text-gray-500 hover:text-red-400"><Trash2 size={14} /></button>
+                  <button onClick={() => desativarChave(c.id).then(carregar).catch(() => addToast({ type: 'error', title: 'Não foi possível desativar a chave' }))} className="p-1.5 text-gray-500 hover:text-amber-400"><X size={14} /></button>
+                  <button onClick={() => excluirChave(c.id).then(carregar).catch(() => addToast({ type: 'error', title: 'Não foi possível excluir a chave' }))} className="p-1.5 text-gray-500 hover:text-red-400"><Trash2 size={14} /></button>
                 </div>
               </div>
             ))}
