@@ -1,68 +1,54 @@
 import { DataService } from './dataService';
 import { api } from './api';
 
-export interface Cartao {
+export interface CartaoSocio {
   id: string;
-  nome: string;
+  socioNome: string;
+  socioEmail: string;
   bandeira: 'visa' | 'mastercard' | 'elo' | 'amex' | 'outros';
   ultimos4digitos: string;
-  limite: number;
+  limiteTotal: number;
+  limiteUsado: number;
   limiteDisponivel: number;
-  faturaAtual: number;
-  diaFechamento: number;
-  diaVencimento: number;
   status: 'ativo' | 'bloqueado' | 'cancelado';
   criadaEm: string;
 }
 
-export interface FaturaCartao {
+export interface DespesaCartao {
   id: string;
   cartaoId: string;
-  mes: string;
-  ano: number;
-  valorTotal: number;
-  pago: boolean;
-  dataPagamento?: string;
-  criadaEm: string;
-}
-
-export interface TransacaoCartao {
-  id: string;
-  cartaoId: string;
-  faturaId: string;
+  socioNome: string;
   descricao: string;
   valor: number;
-  data: string;
   categoria: string;
+  data: string;
   parcelaAtual?: number;
   totalParcelas?: number;
-  status: 'pendente' | 'processada' | 'estornada';
+  status: 'pendente' | 'paga' | 'atrasada';
   criadaEm: string;
 }
 
-const CARTAO_KEY = 'athos_cartoes';
-const FATURA_KEY = 'athos_faturas_cartao';
-const TRANSACAO_KEY = 'athos_transacoes_cartao';
+const CARTAO_KEY = 'athos_cartoes_socio';
+const DESPESA_KEY = 'athos_despesas_cartao';
 
-export const cartaoService = new DataService<Cartao>(CARTAO_KEY);
-export const faturaService = new DataService<FaturaCartao>(FATURA_KEY);
-export const transacaoCartaoService = new DataService<TransacaoCartao>(TRANSACAO_KEY);
+export const cartaoService = new DataService<CartaoSocio>(CARTAO_KEY);
+export const despesaCartaoService = new DataService<DespesaCartao>(DESPESA_KEY);
 
 function uuid() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 9);
 }
 
-export function getCartoes(): Cartao[] {
+export function getCartoes(): CartaoSocio[] {
   return cartaoService.getAll();
 }
 
-export function criarCartao(data: Omit<Cartao, 'id' | 'criadaEm' | 'status' | 'faturaAtual' | 'limiteDisponivel'>): Cartao {
-  const completo: Cartao = {
+export function criarCartao(data: Omit<CartaoSocio, 'id' | 'criadaEm' | 'status' | 'limiteUsado' | 'limiteDisponivel'>): CartaoSocio {
+  const completo: CartaoSocio = {
     ...data,
     id: uuid(),
     status: 'ativo',
-    faturaAtual: 0,
-    limiteDisponivel: data.limite,
+    limiteUsado: 0,
+    limiteDisponivel: data.limiteTotal,
     criadaEm: new Date().toISOString().slice(0, 10),
   };
   cartaoService.create(completo);
@@ -70,21 +56,21 @@ export function criarCartao(data: Omit<Cartao, 'id' | 'criadaEm' | 'status' | 'f
   return completo;
 }
 
-export function atualizarCartao(id: string, data: Partial<Cartao>): Cartao | undefined {
+export function atualizarCartao(id: string, data: Partial<CartaoSocio>): CartaoSocio | undefined {
   const result = cartaoService.update(id, data);
   if (result) api.notifyChange('update', CARTAO_KEY, id, data);
   return result;
 }
 
-export function bloquearCartao(id: string): Cartao | undefined {
+export function bloquearCartao(id: string): CartaoSocio | undefined {
   return atualizarCartao(id, { status: 'bloqueado' });
 }
 
-export function desbloquearCartao(id: string): Cartao | undefined {
+export function desbloquearCartao(id: string): CartaoSocio | undefined {
   return atualizarCartao(id, { status: 'ativo' });
 }
 
-export function cancelarCartao(id: string): Cartao | undefined {
+export function cancelarCartao(id: string): CartaoSocio | undefined {
   return atualizarCartao(id, { status: 'cancelado' });
 }
 
@@ -94,120 +80,75 @@ export function excluirCartao(id: string): boolean {
   return result;
 }
 
-export function getFaturas(cartaoId?: string): FaturaCartao[] {
-  const todas = faturaService.getAll();
-  return cartaoId ? todas.filter(f => f.cartaoId === cartaoId) : todas;
+export function getDespesasCartao(cartaoId?: string): DespesaCartao[] {
+  const todas = despesaCartaoService.getAll();
+  return cartaoId ? todas.filter(d => d.cartaoId === cartaoId) : todas;
 }
 
-export function criarFatura(cartaoId: string, mes: string, ano: number): FaturaCartao {
-  const completo: FaturaCartao = {
-    id: uuid(),
-    cartaoId,
-    mes,
-    ano,
-    valorTotal: 0,
-    pago: false,
-    criadaEm: new Date().toISOString().slice(0, 10),
-  };
-  faturaService.create(completo);
-  api.notifyChange('create', FATURA_KEY, completo.id, completo);
-  return completo;
-}
-
-export function pagarFatura(id: string): FaturaCartao | undefined {
-  const result = faturaService.update(id, {
-    pago: true,
-    dataPagamento: new Date().toLocaleDateString('pt-BR'),
-  });
-  if (result) {
-    const cartao = cartaoService.getById(result.cartaoId);
-    if (cartao) {
-      cartaoService.update(cartao.id, {
-        faturaAtual: 0,
-        limiteDisponivel: cartao.limite,
-      });
-    }
-    api.notifyChange('update', FATURA_KEY, id, result);
-  }
-  return result;
-}
-
-export function excluirFatura(id: string): boolean {
-  const result = faturaService.delete(id);
-  if (result) api.notifyChange('delete', FATURA_KEY, id);
-  return result;
-}
-
-export function getTransacoesCartao(cartaoId?: string, faturaId?: string): TransacaoCartao[] {
-  let todas = transacaoCartaoService.getAll();
-  if (cartaoId) todas = todas.filter(t => t.cartaoId === cartaoId);
-  if (faturaId) todas = todas.filter(t => t.faturaId === faturaId);
-  return todas;
-}
-
-export function criarTransacaoCartao(data: Omit<TransacaoCartao, 'id' | 'criadaEm' | 'status'>): TransacaoCartao {
-  const completo: TransacaoCartao = {
+export function criarDespesaCartao(data: Omit<DespesaCartao, 'id' | 'criadaEm' | 'status'>): DespesaCartao {
+  const completo: DespesaCartao = {
     ...data,
     id: uuid(),
-    status: 'processada',
+    status: 'pendente',
     criadaEm: new Date().toISOString().slice(0, 10),
   };
-  transacaoCartaoService.create(completo);
+  despesaCartaoService.create(completo);
 
   const cartao = cartaoService.getById(data.cartaoId);
   if (cartao) {
-    const novoFatura = cartao.faturaAtual + data.valor;
-    const novoDisponivel = cartao.limiteDisponivel - data.valor;
+    const novoUsado = cartao.limiteUsado + data.valor;
     cartaoService.update(cartao.id, {
-      faturaAtual: novoFatura,
-      limiteDisponivel: Math.max(0, novoDisponivel),
+      limiteUsado: novoUsado,
+      limiteDisponivel: Math.max(0, cartao.limiteTotal - novoUsado),
     });
   }
 
-  const fatura = faturaService.getById(data.faturaId);
-  if (fatura) {
-    faturaService.update(fatura.id, { valorTotal: fatura.valorTotal + data.valor });
-  }
-
-  api.notifyChange('create', TRANSACAO_KEY, completo.id, completo);
+  api.notifyChange('create', DESPESA_KEY, completo.id, completo);
   return completo;
 }
 
-export function estornarTransacao(id: string): TransacaoCartao | undefined {
-  const transacao = transacaoCartaoService.getById(id);
-  if (!transacao) return undefined;
+export function pagarDespesaCartao(id: string): DespesaCartao | undefined {
+  const despesa = despesaCartaoService.getById(id);
+  if (!despesa) return undefined;
 
-  const result = transacaoCartaoService.update(id, { status: 'estornada' });
+  const result = despesaCartaoService.update(id, { status: 'paga' });
   if (result) {
-    const cartao = cartaoService.getById(transacao.cartaoId);
+    const cartao = cartaoService.getById(despesa.cartaoId);
     if (cartao) {
+      const novoUsado = Math.max(0, cartao.limiteUsado - despesa.valor);
       cartaoService.update(cartao.id, {
-        faturaAtual: Math.max(0, cartao.faturaAtual - transacao.valor),
-        limiteDisponivel: cartao.limiteDisponivel + transacao.valor,
+        limiteUsado: novoUsado,
+        limiteDisponivel: cartao.limiteTotal - novoUsado,
       });
     }
-
-    const fatura = faturaService.getById(transacao.faturaId);
-    if (fatura) {
-      faturaService.update(fatura.id, { valorTotal: Math.max(0, fatura.valorTotal - transacao.valor) });
-    }
-
-    api.notifyChange('update', TRANSACAO_KEY, id, result);
+    api.notifyChange('update', DESPESA_KEY, id, result);
   }
   return result;
 }
 
-export function excluirTransacaoCartao(id: string): boolean {
-  const result = transacaoCartaoService.delete(id);
-  if (result) api.notifyChange('delete', TRANSACAO_KEY, id);
+export function excluirDespesaCartao(id: string): boolean {
+  const despesa = despesaCartaoService.getById(id);
+  if (despesa && despesa.status === 'pendente') {
+    const cartao = cartaoService.getById(despesa.cartaoId);
+    if (cartao) {
+      const novoUsado = Math.max(0, cartao.limiteUsado - despesa.valor);
+      cartaoService.update(cartao.id, {
+        limiteUsado: novoUsado,
+        limiteDisponivel: cartao.limiteTotal - novoUsado,
+      });
+    }
+  }
+  const result = despesaCartaoService.delete(id);
+  if (result) api.notifyChange('delete', DESPESA_KEY, id);
   return result;
 }
 
 export function seedCartoesPadrao(): void {
   if (cartaoService.getAll().length === 0) {
-    const cartoes: Omit<Cartao, 'id' | 'criadaEm' | 'status' | 'faturaAtual' | 'limiteDisponivel'>[] = [
-      { nome: 'Visa Platinum', bandeira: 'visa', ultimos4digitos: '1234', limite: 15000, diaFechamento: 5, diaVencimento: 15 },
-      { nome: 'Mastercard Gold', bandeira: 'mastercard', ultimos4digitos: '5678', limite: 10000, diaFechamento: 10, diaVencimento: 20 },
+    const cartoes: Omit<CartaoSocio, 'id' | 'criadaEm' | 'status' | 'limiteUsado' | 'limiteDisponivel'>[] = [
+      { socioNome: 'Kleber Duarte', socioEmail: 'kleber@athos.com', bandeira: 'visa', ultimos4digitos: '1234', limiteTotal: 25000 },
+      { socioNome: 'Joel Oliveira', socioEmail: 'joel@athos.com', bandeira: 'mastercard', ultimos4digitos: '5678', limiteTotal: 20000 },
+      { socioNome: 'Oscar Carvalho', socioEmail: 'oscar@athos.com', bandeira: 'elo', ultimos4digitos: '9012', limiteTotal: 18000 },
     ];
     cartoes.forEach(c => criarCartao(c));
   }

@@ -3,14 +3,24 @@ import { api } from './api';
 
 export interface Boleto {
   id: string;
+  cedenteNome: string;
+  cedenteCnpj: string;
+  cedenteEndereco: string;
+  cedenteCidade: string;
+  cedenteUf: string;
+  cedenteCep: string;
+  cedenteBanco: string;
+  cedenteAgencia: string;
+  cedenteConta: string;
+  cedenteCarteira: string;
   sacado: string;
   cpfCnpj: string;
+  sacadoEndereco: string;
   valor: number;
   vencimento: string;
   dataEmissao: string;
   linhaDigitavel: string;
   codigoBarras: string;
-  carteira: string;
   nossoNumero: string;
   status: 'pendente' | 'pago' | 'vencido' | 'cancelado' | 'baixado';
   observacao: string;
@@ -56,16 +66,33 @@ function generateCodigoBarras(valor: number): string {
   return `2379338128${rand.slice(0, 15)}${String(Math.floor(valor * 100)).padStart(10, '0')}`;
 }
 
+export function getCedentePadrao() {
+  return {
+    cedenteNome: 'ATHOS Solution Tecnologia LTDA',
+    cedenteCnpj: '00.000.000/0001-00',
+    cedenteEndereco: 'Rua Exemplo, 123 - Centro',
+    cedenteCidade: 'São Paulo',
+    cedenteUf: 'SP',
+    cedenteCep: '01000-000',
+    cedenteBanco: 'Bradesco',
+    cedenteAgencia: '0001',
+    cedenteConta: '000000',
+    cedenteCarteira: '109',
+  };
+}
+
 export function getBoletos(): Boleto[] {
   return boletoService.getAll();
 }
 
-export function criarBoleto(data: Omit<Boleto, 'id' | 'criadaEm' | 'linhaDigitavel' | 'codigoBarras' | 'nossoNumero' | 'status'>): Boleto {
+export function criarBoleto(data: Omit<Boleto, 'id' | 'criadaEm' | 'linhaDigitavel' | 'codigoBarras' | 'nossoNumero' | 'status' | 'cedenteNome' | 'cedenteCnpj' | 'cedenteEndereco' | 'cedenteCidade' | 'cedenteUf' | 'cedenteCep' | 'cedenteBanco' | 'cedenteAgencia' | 'cedenteConta' | 'cedenteCarteira'>): Boleto {
   const nossoNumero = generateNossoNumero();
   const linhaDigitavel = generateLinhaDigitavel(data.valor, data.vencimento);
   const codigoBarras = generateCodigoBarras(data.valor);
+  const cedente = getCedentePadrao();
 
   const completo: Boleto = {
+    ...cedente,
     ...data,
     id: uuid(),
     nossoNumero,
