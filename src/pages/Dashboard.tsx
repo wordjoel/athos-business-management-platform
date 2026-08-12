@@ -16,11 +16,11 @@ import {
 import { getLancamentos, getFluxoCaixaMensal, refreshLancamentos, Lancamento } from '../services/lancamentoService';
 import { alertas as mockAlertas, insightsIA, contratos, setores } from '../data/mockData';
 import Pane from '../components/TerminalPane';
+import ChartTooltip from '../components/charts/ChartTooltip';
+import ChartLegend from '../components/charts/ChartLegend';
+import { CATEGORY_COLORS, SEMANTIC, AXIS_TICK, fmtBRL, fmtCompact, topNWithOthers, type PieDatum } from '../lib/chartTheme';
 
-const COLORS = ['#C9A961', '#5B7FA8', '#2F9E7C', '#A6484A', '#8E6E9F', '#B8785A', '#B06E85', '#8B93A6'];
-const TOOLTIP_STYLE = { background: '#131722', border: '1px solid #232837', borderRadius: 10, fontSize: '12px', color: '#E9E4D8', boxShadow: '0 8px 24px rgba(0,0,0,0.4)' };
-const AXIS_TICK = { fill: '#8B93A6', fontSize: 11 };
-const GRID_STROKE = 'rgba(201,169,97,0.08)';
+const GRID_STROKE = 'rgba(201,169,97,0.07)';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -71,10 +71,11 @@ const Dashboard: React.FC = () => {
   const catDespesas = new Map<string, number>();
   despesas.forEach(l => catDespesas.set(l.categoria, (catDespesas.get(l.categoria) || 0) + l.valor));
   const totalDespCalc = Array.from(catDespesas.values()).reduce((s, v) => s + v, 0);
-  const pieDespesas = Array.from(catDespesas.entries()).map(([name, value], i) => ({
-    name, value, cor: COLORS[i % COLORS.length],
+  const pieDespesasRaw: PieDatum[] = Array.from(catDespesas.entries()).map(([name, value]) => ({
+    name, value, cor: '',
     pct: totalDespCalc > 0 ? ((value / totalDespCalc) * 100) : 0,
   }));
+  const pieDespesas = topNWithOthers(pieDespesasRaw, 7).map((d, i) => ({ ...d, cor: CATEGORY_COLORS[i % CATEGORY_COLORS.length] }));
 
   const radarData = setores.map(s => ({
     setor: s.nome,
@@ -95,8 +96,8 @@ const Dashboard: React.FC = () => {
     .slice(0, 6)
     .map(l => ({ tipo: l.tipo, descricao: l.descricao, valor: l.valor, origem: l.contraparte, data: l.vencimento }));
 
-  const fmt = (v: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v);
-  const tooltipFmt = (value: unknown) => typeof value === 'number' ? fmt(value) : String(value);
+  const fmt = fmtBRL;
+  const totalDespesasPie = pieDespesas.reduce((s, d) => s + d.value, 0);
 
   const miniCards = [
     { label: 'A Receber', value: fmt(aReceberValor), icon: ArrowUpRight, route: '/contas-receber' },
@@ -128,10 +129,10 @@ const Dashboard: React.FC = () => {
       </motion.div>
 
       <motion.div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" variants={itemVariants}>
-        <StatCard title="Receita Total" value={fmt(totalReceitas)} change={`${receitasRecebidas.length} recebidas de ${receitas.length}`} changeType="up" icon={DollarSign} color="green" darkMode subtitle={totalReceitas > 0 ? `Média: ${fmt(totalReceitas / receitas.length)}` : 'Nenhuma receita'} index={0} />
-        <StatCard title="Despesas Totais" value={fmt(totalDespesas)} change={`${despesasPagas.length} pagas de ${despesas.length}`} changeType="down" icon={CreditCard} color="red" darkMode subtitle={totalDespesas > 0 ? `Média: ${fmt(totalDespesas / despesas.length)}` : 'Nenhuma despesa'} index={1} />
-        <StatCard title="Lucro Líquido" value={fmt(lucroLiquido)} change={`Margem: ${margemLucro}%`} changeType={lucroLiquido >= 0 ? 'up' : 'down'} icon={TrendingUp} color="green" darkMode subtitle="Receitas - Despesas" index={2} />
-        <StatCard title="Fluxo de Caixa" value={fmt(totalRecebido - totalPago)} change={`${contasReceberCount} a receber • ${contasPagarCount} a pagar`} changeType="neutral" icon={Wallet} color="green" darkMode subtitle="Saldo disponível" index={3} />
+        <StatCard title="Receita Total" value={fmt(totalReceitas)} change={`${receitasRecebidas.length} recebidas de ${receitas.length}`} changeType="up" icon={DollarSign} color="green" darkMode subtitle={totalReceitas > 0 ? `Média: ${fmt(totalReceitas / receitas.length)}` : 'Nenhuma receita'} index={0} trend={fluxoMensal.map(f => f.receita)} />
+        <StatCard title="Despesas Totais" value={fmt(totalDespesas)} change={`${despesasPagas.length} pagas de ${despesas.length}`} changeType="down" icon={CreditCard} color="red" darkMode subtitle={totalDespesas > 0 ? `Média: ${fmt(totalDespesas / despesas.length)}` : 'Nenhuma despesa'} index={1} trend={fluxoMensal.map(f => f.despesa)} />
+        <StatCard title="Lucro Líquido" value={fmt(lucroLiquido)} change={`Margem: ${margemLucro}%`} changeType={lucroLiquido >= 0 ? 'up' : 'down'} icon={TrendingUp} color="green" darkMode subtitle="Receitas - Despesas" index={2} trend={fluxoMensal.map(f => f.saldo)} />
+        <StatCard title="Fluxo de Caixa" value={fmt(totalRecebido - totalPago)} change={`${contasReceberCount} a receber • ${contasPagarCount} a pagar`} changeType="neutral" icon={Wallet} color="green" darkMode subtitle="Saldo disponível" index={3} trend={fluxoMensal.map(f => f.saldo)} />
       </motion.div>
 
       <motion.div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3" variants={itemVariants}>
@@ -154,35 +155,41 @@ const Dashboard: React.FC = () => {
           <ResponsiveContainer width="100%" height={300}>
             <AreaChart data={fluxoMensal.length > 0 ? fluxoMensal : [{ mes: 'Sem dados', receita: 0, despesa: 0, saldo: 0 }]}>
               <defs>
-                <linearGradient id="colorReceitas" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#C9A961" stopOpacity={0.25} /><stop offset="95%" stopColor="#C9A961" stopOpacity={0} /></linearGradient>
-                <linearGradient id="colorDespesas" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#A6484A" stopOpacity={0.25} /><stop offset="95%" stopColor="#A6484A" stopOpacity={0} /></linearGradient>
+                <linearGradient id="colorReceitas" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={SEMANTIC.positivo} stopOpacity={0.32} /><stop offset="95%" stopColor={SEMANTIC.positivo} stopOpacity={0} /></linearGradient>
+                <linearGradient id="colorDespesas" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={SEMANTIC.negativo} stopOpacity={0.28} /><stop offset="95%" stopColor={SEMANTIC.negativo} stopOpacity={0} /></linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke={GRID_STROKE} />
-              <XAxis dataKey="mes" tick={AXIS_TICK} />
-              <YAxis tick={AXIS_TICK} tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`} />
-              <RTooltip contentStyle={TOOLTIP_STYLE} formatter={tooltipFmt} />
-              <Legend />
-              <Area type="monotone" dataKey="receita" name="Receitas" stroke="#C9A961" fillOpacity={1} fill="url(#colorReceitas)" strokeWidth={1.5} />
-              <Area type="monotone" dataKey="despesa" name="Despesas" stroke="#A6484A" fillOpacity={1} fill="url(#colorDespesas)" strokeWidth={1.5} />
+              <CartesianGrid strokeDasharray="3 3" stroke={GRID_STROKE} vertical={false} />
+              <XAxis dataKey="mes" tick={AXIS_TICK} axisLine={{ stroke: '#232837' }} tickLine={false} />
+              <YAxis tick={AXIS_TICK} axisLine={false} tickLine={false} tickFormatter={fmtCompact} width={44} />
+              <RTooltip content={<ChartTooltip />} cursor={{ stroke: 'rgba(201,169,97,0.25)', strokeWidth: 1 }} />
+              <Legend content={<ChartLegend />} />
+              <Area type="monotone" dataKey="receita" name="Receitas" stroke={SEMANTIC.positivo} fillOpacity={1} fill="url(#colorReceitas)" strokeWidth={2} activeDot={{ r: 5, strokeWidth: 2, stroke: '#131722' }} />
+              <Area type="monotone" dataKey="despesa" name="Despesas" stroke={SEMANTIC.negativo} fillOpacity={1} fill="url(#colorDespesas)" strokeWidth={2} activeDot={{ r: 5, strokeWidth: 2, stroke: '#131722' }} />
             </AreaChart>
           </ResponsiveContainer>
         </Pane>
 
         <Pane title="Despesas por Categoria" icon={<BarChart3 size={16} className="text-[#C9A961]" />}>
-          <ResponsiveContainer width="100%" height={200}>
-            <RePieChart>
-              <Pie data={pieDespesas.length > 0 ? pieDespesas : [{ name: 'Sem dados', value: 1, cor: '#2A2F3D' }]} cx="50%" cy="50%" innerRadius={55} outerRadius={85} paddingAngle={2} dataKey="value" stroke="#0B0E14">
-                {pieDespesas.map((entry, i) => <Cell key={i} fill={entry.cor} />)}
-              </Pie>
-              <RTooltip formatter={tooltipFmt} contentStyle={TOOLTIP_STYLE} />
-            </RePieChart>
-          </ResponsiveContainer>
+          <div className="relative">
+            <ResponsiveContainer width="100%" height={200}>
+              <RePieChart>
+                <Pie data={pieDespesas.length > 0 ? pieDespesas : [{ name: 'Sem dados', value: 1, cor: '#2A2F3D', pct: 0 }]} cx="50%" cy="50%" innerRadius={58} outerRadius={85} paddingAngle={3} cornerRadius={4} dataKey="value" stroke="#131722" strokeWidth={2}>
+                  {pieDespesas.map((entry, i) => <Cell key={i} fill={entry.cor} />)}
+                </Pie>
+                <RTooltip content={<ChartTooltip />} />
+              </RePieChart>
+            </ResponsiveContainer>
+            <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none pb-4">
+              <p className="text-[9px] font-semibold uppercase tracking-wider text-[#8B93A6]">Total</p>
+              <p className="font-display text-base text-[#F0E6CC]">{fmtCompact(totalDespesasPie)}</p>
+            </div>
+          </div>
           <div className="space-y-2 mt-2">
             {pieDespesas.slice(0, 5).map((item, i) => (
               <div key={i}>
                 <div className="flex items-center justify-between mb-1">
                   <div className="flex items-center gap-2">
-                    <div className="w-2.5 h-2.5" style={{ backgroundColor: item.cor }} />
+                    <div className="w-2.5 h-2.5 rounded-sm" style={{ backgroundColor: item.cor }} />
                     <span className="text-xs text-[#8B93A6]">{item.name}</span>
                   </div>
                   <div className="flex items-center gap-2">
@@ -191,7 +198,7 @@ const Dashboard: React.FC = () => {
                   </div>
                 </div>
                 <div className="w-full h-1.5 rounded-full border border-[#2A2F3D] overflow-hidden">
-                  <div className="h-full transition-all duration-500" style={{ width: `${Math.min(item.pct, 100)}%`, backgroundColor: item.cor }} />
+                  <div className="h-full rounded-full transition-all duration-500" style={{ width: `${Math.min(item.pct, 100)}%`, backgroundColor: item.cor }} />
                 </div>
               </div>
             ))}
@@ -205,25 +212,28 @@ const Dashboard: React.FC = () => {
             <ReRadarChart data={radarData}>
               <PolarGrid stroke="rgba(201,169,97,0.15)" />
               <PolarAngleAxis dataKey="setor" tick={AXIS_TICK} />
-              <PolarRadiusAxis angle={30} domain={[0, 100]} tick={{ fill: '#2A2F3D', fontSize: 10 }} />
-              <ReRadar name="Eficiência" dataKey="Eficiência" stroke="#C9A961" fill="#C9A961" fillOpacity={0.1} />
-              <ReRadar name="Produtividade" dataKey="Produtividade" stroke="#5B7FA8" fill="#5B7FA8" fillOpacity={0.1} />
-              <ReRadar name="Satisfação" dataKey="Satisfação" stroke="#5ecf7f" fill="#5ecf7f" fillOpacity={0.1} />
-              <Legend />
+              <PolarRadiusAxis angle={30} domain={[0, 100]} tick={{ fill: '#2A2F3D', fontSize: 10 }} axisLine={false} />
+              <ReRadar name="Eficiência" dataKey="Eficiência" stroke={CATEGORY_COLORS[3]} fill={CATEGORY_COLORS[3]} fillOpacity={0.14} strokeWidth={2} />
+              <ReRadar name="Produtividade" dataKey="Produtividade" stroke={CATEGORY_COLORS[0]} fill={CATEGORY_COLORS[0]} fillOpacity={0.14} strokeWidth={2} />
+              <ReRadar name="Satisfação" dataKey="Satisfação" stroke={CATEGORY_COLORS[2]} fill={CATEGORY_COLORS[2]} fillOpacity={0.14} strokeWidth={2} />
+              <RTooltip content={<ChartTooltip currency={false} />} />
+              <Legend content={<ChartLegend />} />
             </ReRadarChart>
           </ResponsiveContainer>
         </Pane>
 
         <Pane title="Orçamento vs. Gastos" icon={<Building2 size={16} className="text-[#C9A961]" />}>
           <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={setorData} layout="vertical">
-              <CartesianGrid strokeDasharray="3 3" stroke={GRID_STROKE} />
-              <XAxis type="number" tick={AXIS_TICK} tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`} />
-              <YAxis dataKey="nome" type="category" tick={AXIS_TICK} width={100} />
-              <RTooltip formatter={tooltipFmt} contentStyle={TOOLTIP_STYLE} />
-              <Legend />
-              <Bar dataKey="orcamento" name="Orçamento" fill="#5ecf7f" />
-              <Bar dataKey="gastos" name="Gastos" fill="#A6484A" />
+            <BarChart data={setorData} layout="vertical" barGap={4}>
+              <CartesianGrid strokeDasharray="3 3" stroke={GRID_STROKE} horizontal={false} />
+              <XAxis type="number" tick={AXIS_TICK} axisLine={false} tickLine={false} tickFormatter={fmtCompact} />
+              <YAxis dataKey="nome" type="category" tick={AXIS_TICK} axisLine={false} tickLine={false} width={100} />
+              <RTooltip content={<ChartTooltip />} cursor={{ fill: 'rgba(201,169,97,0.05)' }} />
+              <Legend content={<ChartLegend />} />
+              <Bar dataKey="orcamento" name="Orçamento" fill="#5B7FA8" radius={[0, 4, 4, 0]} maxBarSize={16} />
+              <Bar dataKey="gastos" name="Gastos" radius={[0, 4, 4, 0]} maxBarSize={16}>
+                {setorData.map((d, i) => <Cell key={i} fill={d.gastos > d.orcamento ? SEMANTIC.negativo : '#2F9E7C'} />)}
+              </Bar>
             </BarChart>
           </ResponsiveContainer>
         </Pane>
@@ -288,13 +298,14 @@ const Dashboard: React.FC = () => {
 
       <Pane title="Comparativo Mensal" icon={<Activity size={16} className="text-[#C9A961]" />}>
         <ResponsiveContainer width="100%" height={280}>
-          <BarChart data={fluxoMensal.length > 0 ? fluxoMensal : [{ mes: 'Sem dados', receita: 0, despesa: 0, saldo: 0 }]}>
-            <CartesianGrid strokeDasharray="3 3" stroke={GRID_STROKE} />
-            <XAxis dataKey="mes" tick={AXIS_TICK} />
-            <YAxis tick={AXIS_TICK} tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`} />
-            <RTooltip formatter={tooltipFmt} contentStyle={TOOLTIP_STYLE} />
-            <Bar dataKey="receita" name="Receitas" fill="#C9A961" />
-            <Bar dataKey="despesa" name="Despesas" fill="#A6484A" />
+          <BarChart data={fluxoMensal.length > 0 ? fluxoMensal : [{ mes: 'Sem dados', receita: 0, despesa: 0, saldo: 0 }]} barGap={4}>
+            <CartesianGrid strokeDasharray="3 3" stroke={GRID_STROKE} vertical={false} />
+            <XAxis dataKey="mes" tick={AXIS_TICK} axisLine={{ stroke: '#232837' }} tickLine={false} />
+            <YAxis tick={AXIS_TICK} axisLine={false} tickLine={false} tickFormatter={fmtCompact} width={44} />
+            <RTooltip content={<ChartTooltip />} cursor={{ fill: 'rgba(201,169,97,0.05)' }} />
+            <Legend content={<ChartLegend />} />
+            <Bar dataKey="receita" name="Receitas" fill={SEMANTIC.positivo} radius={[4, 4, 0, 0]} maxBarSize={28} />
+            <Bar dataKey="despesa" name="Despesas" fill={SEMANTIC.negativo} radius={[4, 4, 0, 0]} maxBarSize={28} />
           </BarChart>
         </ResponsiveContainer>
       </Pane>

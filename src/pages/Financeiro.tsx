@@ -3,11 +3,10 @@ import { DollarSign, ArrowUpRight, ArrowDownRight, CheckCircle, Clock, Receipt, 
 import { getLancamentos, refreshLancamentos, Lancamento } from '../services/lancamentoService';
 import { fornecedores, contratos } from '../data/mockData';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RTooltip, ResponsiveContainer, Cell } from 'recharts';
+import ChartTooltip from '../components/charts/ChartTooltip';
+import { CATEGORY_COLORS, AXIS_TICK, fmtCompact } from '../lib/chartTheme';
 
-const COLORS = ['#C9A961', '#5B7FA8', '#2F9E7C', '#A6484A', '#8E6E9F', '#B8785A', '#B06E85', '#8B93A6'];
-const TOOLTIP_STYLE = { background: '#131722', border: '1px solid #232837', borderRadius: 10, fontSize: '12px', color: '#E9E4D8', boxShadow: '0 8px 24px rgba(0,0,0,0.4)' };
-const AXIS_TICK = { fill: '#8B93A6', fontSize: 10 };
-const GRID_STROKE = 'rgba(201,169,97,0.08)';
+const GRID_STROKE = 'rgba(201,169,97,0.07)';
 
 const StatusBadge: React.FC<{ status: Lancamento['status']; kind: 'despesa' | 'receita' }> = ({ status, kind }) => {
   if (status === (kind === 'despesa' ? 'pago' : 'recebido')) {
@@ -30,7 +29,6 @@ const Financeiro: React.FC = () => {
   }, []);
 
   const fmt = (v: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v);
-  const tooltipFmt = (value: unknown) => typeof value === 'number' ? fmt(value) : String(value);
 
   const despesas = lancamentos.filter(l => l.tipo === 'despesa');
   const receitas = lancamentos.filter(l => l.tipo === 'receita');
@@ -47,7 +45,7 @@ const Financeiro: React.FC = () => {
     catMap.get(l.categoria)!.gasto += l.valor;
   });
   const catData = Array.from(catMap.entries()).map(([name, data], i) => ({
-    name, orcamento: Math.round(data.gasto * 1.3), gasto: data.gasto, cor: COLORS[i % COLORS.length],
+    name, orcamento: Math.round(data.gasto * 1.3), gasto: data.gasto, cor: CATEGORY_COLORS[i % CATEGORY_COLORS.length],
   }));
 
   const statCards = [
@@ -150,11 +148,11 @@ const Financeiro: React.FC = () => {
                 <h4 className="text-[13px] font-semibold tracking-[0.06em] uppercase mb-4 text-[#8B93A6]">Gastos por Categoria</h4>
                 <ResponsiveContainer width="100%" height={300}>
                   <BarChart data={catData} layout="vertical">
-                    <CartesianGrid strokeDasharray="3 3" stroke={GRID_STROKE} />
-                    <XAxis type="number" tick={AXIS_TICK} tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`} />
-                    <YAxis dataKey="name" type="category" tick={AXIS_TICK} width={100} />
-                    <RTooltip formatter={tooltipFmt} contentStyle={TOOLTIP_STYLE} />
-                    <Bar dataKey="gasto" name="Gasto">
+                    <CartesianGrid strokeDasharray="3 3" stroke={GRID_STROKE} horizontal={false} />
+                    <XAxis type="number" tick={AXIS_TICK} axisLine={false} tickLine={false} tickFormatter={fmtCompact} />
+                    <YAxis dataKey="name" type="category" tick={AXIS_TICK} axisLine={false} tickLine={false} width={100} />
+                    <RTooltip content={<ChartTooltip />} cursor={{ fill: 'rgba(201,169,97,0.05)' }} />
+                    <Bar dataKey="gasto" name="Gasto" radius={[0, 4, 4, 0]} maxBarSize={22}>
                       {catData.map((entry, i) => <Cell key={i} fill={entry.cor} />)}
                     </Bar>
                   </BarChart>
