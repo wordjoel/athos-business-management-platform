@@ -10,10 +10,10 @@ const AppLayout: React.FC = () => {
   const { darkMode, aiPanelOpen, toggleAIPanel } = useApp();
 
   return (
-    <div className="flex h-screen overflow-hidden relative text-[#33ff00] bg-[#0a0a0a]">
+    <div className="flex h-screen overflow-hidden relative text-[#C9A961] bg-[#0B0E14]">
       <div className="absolute inset-0 opacity-[0.06] pointer-events-none">
         <LetterGlitch
-          glitchColors={['#33ff00', '#1a7a00', '#ffb000']}
+          glitchColors={['#C9A961', '#8E6E9F', '#5B7FA8']}
           glitchSpeed={50}
           centerVignette={true}
           outerVignette={false}

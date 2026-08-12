@@ -20,30 +20,30 @@ const StatCard: React.FC<StatCardProps> = ({ title, value, change, changeType = 
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, delay: index * 0.06 }}
-      className="p-5 border border-[#1f521f] hover:border-[#33ff00] transition-all duration-150 bg-[#0a0a0a]"
+      className="p-5 rounded-2xl border border-[#232837] bg-[#131722] hover:border-[#C9A961]/40 transition-all duration-200 shadow-[0_1px_2px_rgba(0,0,0,0.4),0_12px_28px_-16px_rgba(0,0,0,0.55)]"
     >
       <div className="flex items-start justify-between">
         <div className="flex-1">
-          <p className="text-xs font-medium tracking-wide uppercase text-[#3f9e5c]">{title}</p>
-          <p className="text-2xl font-bold mt-2 text-[#33ff00] term-glow">{value}</p>
-          {subtitle && <p className="text-xs mt-1 text-[#3f9e5c]"># {subtitle}</p>}
+          <p className="text-xs font-medium tracking-wide uppercase text-[#8B93A6]">{title}</p>
+          <p className="font-display text-2xl mt-2 text-[#F0E6CC]">{value}</p>
+          {subtitle && <p className="text-xs mt-1 text-[#8B93A6]">{subtitle}</p>}
           {change && (
             <div className="flex items-center gap-1.5 mt-2">
               {changeType === 'up' ? (
-                <TrendingUp size={14} className="text-[#33ff00]" />
+                <TrendingUp size={14} className="text-[#2F9E7C]" />
               ) : changeType === 'down' ? (
-                <TrendingDown size={14} className="text-[#ff3333]" />
+                <TrendingDown size={14} className="text-[#A6484A]" />
               ) : null}
               <span className={`text-xs font-medium ${
-                changeType === 'up' ? 'text-[#33ff00]' : changeType === 'down' ? 'text-[#ff3333]' : 'text-[#3f9e5c]'
+                changeType === 'up' ? 'text-[#2F9E7C]' : changeType === 'down' ? 'text-[#A6484A]' : 'text-[#8B93A6]'
               }`}>
                 {change}
               </span>
             </div>
           )}
         </div>
-        <div className="p-3 border border-[#1f521f]">
-          <Icon size={22} className="text-[#33ff00]" />
+        <div className="p-3 rounded-xl bg-[#1E2430]">
+          <Icon size={22} className="text-[#C9A961]" />
         </div>
       </div>
     </motion.div>

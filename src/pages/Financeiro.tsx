@@ -4,19 +4,19 @@ import { getLancamentos, refreshLancamentos, Lancamento } from '../services/lanc
 import { fornecedores, contratos } from '../data/mockData';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RTooltip, ResponsiveContainer, Cell } from 'recharts';
 
-const COLORS = ['#33ff00', '#ffb000', '#5ecf7f', '#8fe6a8', '#1f9900', '#3f9e5c', '#ff3333', '#c9f7d6'];
-const TOOLTIP_STYLE = { background: '#0a0a0a', border: '1px solid #1f521f', borderRadius: 0, fontSize: '12px', color: '#33ff00' };
-const AXIS_TICK = { fill: '#3f9e5c', fontSize: 10 };
-const GRID_STROKE = 'rgba(51,255,0,0.08)';
+const COLORS = ['#C9A961', '#5B7FA8', '#2F9E7C', '#A6484A', '#8E6E9F', '#B8785A', '#B06E85', '#8B93A6'];
+const TOOLTIP_STYLE = { background: '#131722', border: '1px solid #232837', borderRadius: 10, fontSize: '12px', color: '#E9E4D8', boxShadow: '0 8px 24px rgba(0,0,0,0.4)' };
+const AXIS_TICK = { fill: '#8B93A6', fontSize: 10 };
+const GRID_STROKE = 'rgba(201,169,97,0.08)';
 
 const StatusBadge: React.FC<{ status: Lancamento['status']; kind: 'despesa' | 'receita' }> = ({ status, kind }) => {
   if (status === (kind === 'despesa' ? 'pago' : 'recebido')) {
-    return <span className="flex items-center gap-1 text-xs text-[#33ff00]"><CheckCircle size={12} /> {kind === 'despesa' ? 'Pago' : 'Recebido'}</span>;
+    return <span className="flex items-center gap-1 text-xs text-[#C9A961]"><CheckCircle size={12} /> {kind === 'despesa' ? 'Pago' : 'Recebido'}</span>;
   }
   if (status === 'atrasado') {
-    return <span className="flex items-center gap-1 text-xs text-[#ff3333]"><Clock size={12} /> Atrasado</span>;
+    return <span className="flex items-center gap-1 text-xs text-[#A6484A]"><Clock size={12} /> Atrasado</span>;
   }
-  return <span className="flex items-center gap-1 text-xs text-[#ffb000]"><Clock size={12} /> Pendente</span>;
+  return <span className="flex items-center gap-1 text-xs text-[#5B7FA8]"><Clock size={12} /> Pendente</span>;
 };
 
 const Financeiro: React.FC = () => {
@@ -51,49 +51,50 @@ const Financeiro: React.FC = () => {
   }));
 
   const statCards = [
-    { icon: ArrowUpRight, label: 'Receitas', value: fmt(totalReceitas), sub: `${recebidas} recebidas / ${receitas.length} total`, color: '#33ff00' },
-    { icon: ArrowDownRight, label: 'Despesas', value: fmt(totalDespesas), sub: `${pagas} pagas / ${despesas.length} total`, color: '#ff3333' },
-    { icon: DollarSign, label: 'Saldo', value: fmt(totalReceitas - totalDespesas), sub: `Margem: ${totalReceitas > 0 ? ((totalReceitas - totalDespesas) / totalReceitas * 100).toFixed(1) : '0.0'}%`, color: '#33ff00' },
-    { icon: Clock, label: 'A Vencer', value: fmt(aVencer), sub: `${pendentes} contas pendentes`, color: '#ffb000' },
+    { icon: ArrowUpRight, label: 'Receitas', value: fmt(totalReceitas), sub: `${recebidas} recebidas / ${receitas.length} total`, color: '#C9A961' },
+    { icon: ArrowDownRight, label: 'Despesas', value: fmt(totalDespesas), sub: `${pagas} pagas / ${despesas.length} total`, color: '#A6484A' },
+    { icon: DollarSign, label: 'Saldo', value: fmt(totalReceitas - totalDespesas), sub: `Margem: ${totalReceitas > 0 ? ((totalReceitas - totalDespesas) / totalReceitas * 100).toFixed(1) : '0.0'}%`, color: '#C9A961' },
+    { icon: Clock, label: 'A Vencer', value: fmt(aVencer), sub: `${pendentes} contas pendentes`, color: '#5B7FA8' },
   ];
 
   const tabs = [
-    { id: 'despesas' as const, label: 'CONTAS_A_PAGAR', icon: ArrowDownRight },
-    { id: 'receitas' as const, label: 'CONTAS_A_RECEBER', icon: ArrowUpRight },
-    { id: 'categorias' as const, label: 'CATEGORIAS', icon: Receipt },
-    { id: 'fornecedores' as const, label: 'FORNECEDORES', icon: Building2 },
-    { id: 'contratos' as const, label: 'CONTRATOS', icon: Calendar },
+    { id: 'despesas' as const, label: 'Contas a Pagar', icon: ArrowDownRight },
+    { id: 'receitas' as const, label: 'Contas a Receber', icon: ArrowUpRight },
+    { id: 'categorias' as const, label: 'Categorias', icon: Receipt },
+    { id: 'fornecedores' as const, label: 'Fornecedores', icon: Building2 },
+    { id: 'contratos' as const, label: 'Contratos', icon: Calendar },
   ];
 
   return (
     <div className="p-6 space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold flex items-center gap-2 text-[#33ff00] term-glow">
-            <DollarSign size={22} /> GESTAO_FINANCEIRA
+          <p className="module-eyebrow mb-1">Financeiro</p>
+          <h1 className="font-display text-3xl text-[#F0E6CC] flex items-center gap-2.5">
+            <DollarSign size={24} className="text-[#C9A961]" /> Gestão Financeira
           </h1>
-          <p className="text-sm mt-1 text-[#3f9e5c]"># controle completo das finanças da empresa</p>
+          <p className="text-sm mt-1.5 text-[#8B93A6]">Controle completo das finanças da empresa</p>
         </div>
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {statCards.map((card, i) => (
-          <div key={i} className="p-5 border border-[#1f521f] hover:border-[#33ff00] transition-all">
+          <div key={i} className="p-5 rounded-2xl border border-[#232837] bg-[#131722] hover:border-[#C9A961]/40 transition-all">
             <div className="flex items-center gap-2 mb-3">
-              <div className="p-2 border border-[#1f521f]"><card.icon size={16} style={{ color: card.color }} /></div>
-              <span className="text-xs font-medium uppercase tracking-wider text-[#3f9e5c]">{card.label}</span>
+              <div className="p-2 rounded-lg bg-[#1E2430]"><card.icon size={16} style={{ color: card.color }} /></div>
+              <span className="text-xs font-medium uppercase tracking-wider text-[#8B93A6]">{card.label}</span>
             </div>
-            <p className="text-xl font-bold text-[#33ff00]">{card.value}</p>
-            <p className="text-xs mt-1 text-[#3f9e5c]">{card.sub}</p>
+            <p className="font-display text-xl text-[#F0E6CC]">{card.value}</p>
+            <p className="text-xs mt-1 text-[#8B93A6]">{card.sub}</p>
           </div>
         ))}
       </div>
 
-      <div className="border border-[#1f521f] bg-[#0a0a0a] overflow-hidden">
-        <div className="flex border-b border-[#1f521f] overflow-x-auto">
+      <div className="rounded-2xl border border-[#232837] bg-[#131722] overflow-hidden">
+        <div className="flex border-b border-[#232837] overflow-x-auto">
           {tabs.map(t => (
-            <button key={t.id} onClick={() => setTab(t.id)} className={`flex items-center gap-2 px-5 py-3.5 text-xs font-bold whitespace-nowrap border-b-2 transition-all ${
-              tab === t.id ? 'border-[#33ff00] text-[#33ff00] bg-[#0f2610]' : 'border-transparent text-[#3f9e5c] hover:text-[#33ff00]'
+            <button key={t.id} onClick={() => setTab(t.id)} className={`flex items-center gap-2 px-5 py-3.5 text-xs font-semibold whitespace-nowrap border-b-2 transition-all ${
+              tab === t.id ? 'border-[#C9A961] text-[#C9A961] bg-[#1E2430]' : 'border-transparent text-[#8B93A6] hover:text-[#C9A961]'
             }`}>
               <t.icon size={14} /> {t.label}
             </button>
@@ -105,20 +106,20 @@ const Financeiro: React.FC = () => {
             <div className="space-y-1">
               <div className="grid grid-cols-12 gap-3 mb-2 px-3">
                 {['Descrição', 'Valor', 'Categoria', 'Fornecedor', 'Vencimento', 'Status'].map((h, i) => (
-                  <div key={i} className={`text-[10px] font-semibold uppercase tracking-wider text-[#1f521f] ${i === 0 ? 'col-span-3' : i === 1 || i === 5 ? 'col-span-2' : 'col-span-2'}`}>{h}</div>
+                  <div key={i} className={`text-[10px] font-semibold uppercase tracking-wider text-[#8B93A6] ${i === 0 ? 'col-span-3' : i === 1 || i === 5 ? 'col-span-2' : 'col-span-2'}`}>{h}</div>
                 ))}
               </div>
               {despesas.map(l => (
-                <div key={l.id} className="grid grid-cols-12 gap-3 items-center p-3 border-b border-[#1f521f] transition-all hover:bg-[#0d1a0d]">
-                  <div className="col-span-3 text-sm font-medium text-[#33ff00]">{l.descricao}</div>
-                  <div className="col-span-2 text-sm font-bold text-[#33ff00]">{fmt(l.valor)}</div>
-                  <div className="col-span-2"><span className="text-xs px-2 py-1 border border-[#1f521f] text-[#3f9e5c]">{l.categoria}</span></div>
-                  <div className="col-span-2 text-xs text-[#3f9e5c]">{l.contraparte}</div>
-                  <div className="col-span-1 text-xs text-[#3f9e5c]">{l.vencimento}</div>
+                <div key={l.id} className="grid grid-cols-12 gap-3 items-center p-3 rounded-lg border-b border-[#232837] transition-all hover:bg-[#12151E]">
+                  <div className="col-span-3 text-sm font-medium text-[#E9E4D8]">{l.descricao}</div>
+                  <div className="col-span-2 text-sm font-bold text-[#A6484A]">{fmt(l.valor)}</div>
+                  <div className="col-span-2"><span className="text-xs px-2 py-1 rounded-full border border-[#2A2F3D] text-[#8B93A6]">{l.categoria}</span></div>
+                  <div className="col-span-2 text-xs text-[#8B93A6]">{l.contraparte}</div>
+                  <div className="col-span-1 text-xs text-[#8B93A6]">{l.vencimento}</div>
                   <div className="col-span-2"><StatusBadge status={l.status} kind="despesa" /></div>
                 </div>
               ))}
-              {despesas.length === 0 && <p className="text-sm text-center py-8 text-[#1f521f]"># nenhuma despesa lançada</p>}
+              {despesas.length === 0 && <p className="text-sm text-center py-8 text-[#4E5468] italic">Nenhuma despesa lançada.</p>}
             </div>
           )}
 
@@ -126,27 +127,27 @@ const Financeiro: React.FC = () => {
             <div className="space-y-1">
               <div className="grid grid-cols-12 gap-3 mb-2 px-3">
                 {['Descrição', 'Valor', 'Cliente', 'Categoria', 'Vencimento', 'Status'].map((h, i) => (
-                  <div key={i} className={`text-[10px] font-semibold uppercase tracking-wider text-[#1f521f] ${i === 0 ? 'col-span-3' : 'col-span-2'}`}>{h}</div>
+                  <div key={i} className={`text-[10px] font-semibold uppercase tracking-wider text-[#8B93A6] ${i === 0 ? 'col-span-3' : 'col-span-2'}`}>{h}</div>
                 ))}
               </div>
               {receitas.map(l => (
-                <div key={l.id} className="grid grid-cols-12 gap-3 items-center p-3 border-b border-[#1f521f] transition-all hover:bg-[#0d1a0d]">
-                  <div className="col-span-3 text-sm font-medium text-[#33ff00]">{l.descricao}</div>
-                  <div className="col-span-2 text-sm font-bold text-[#33ff00]">{fmt(l.valor)}</div>
-                  <div className="col-span-2 text-xs text-[#3f9e5c]">{l.contraparte}</div>
-                  <div className="col-span-2"><span className="text-xs px-2 py-1 border border-[#1f521f] text-[#3f9e5c]">{l.categoria}</span></div>
-                  <div className="col-span-1 text-xs text-[#3f9e5c]">{l.vencimento}</div>
+                <div key={l.id} className="grid grid-cols-12 gap-3 items-center p-3 rounded-lg border-b border-[#232837] transition-all hover:bg-[#12151E]">
+                  <div className="col-span-3 text-sm font-medium text-[#E9E4D8]">{l.descricao}</div>
+                  <div className="col-span-2 text-sm font-bold text-[#2F9E7C]">{fmt(l.valor)}</div>
+                  <div className="col-span-2 text-xs text-[#8B93A6]">{l.contraparte}</div>
+                  <div className="col-span-2"><span className="text-xs px-2 py-1 rounded-full border border-[#2A2F3D] text-[#8B93A6]">{l.categoria}</span></div>
+                  <div className="col-span-1 text-xs text-[#8B93A6]">{l.vencimento}</div>
                   <div className="col-span-2"><StatusBadge status={l.status} kind="receita" /></div>
                 </div>
               ))}
-              {receitas.length === 0 && <p className="text-sm text-center py-8 text-[#1f521f]"># nenhuma receita lançada</p>}
+              {receitas.length === 0 && <p className="text-sm text-center py-8 text-[#4E5468] italic">Nenhuma receita lançada.</p>}
             </div>
           )}
 
           {tab === 'categorias' && (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div>
-                <h4 className="text-xs font-bold uppercase tracking-widest mb-4 text-[#33ff00]">// gastos_por_categoria</h4>
+                <h4 className="text-[13px] font-semibold tracking-[0.06em] uppercase mb-4 text-[#8B93A6]">Gastos por Categoria</h4>
                 <ResponsiveContainer width="100%" height={300}>
                   <BarChart data={catData} layout="vertical">
                     <CartesianGrid strokeDasharray="3 3" stroke={GRID_STROKE} />
@@ -160,30 +161,30 @@ const Financeiro: React.FC = () => {
                 </ResponsiveContainer>
               </div>
               <div className="space-y-3">
-                <h4 className="text-xs font-bold uppercase tracking-widest text-[#33ff00]">// detalhamento</h4>
+                <h4 className="text-[13px] font-semibold tracking-[0.06em] uppercase text-[#8B93A6]">Detalhamento</h4>
                 {catData.map((cat, i) => {
                   const pct = cat.orcamento > 0 ? Math.min((cat.gasto / cat.orcamento) * 100, 100) : 100;
                   const over = cat.gasto > cat.orcamento;
                   return (
-                    <div key={i} className="p-4 border border-[#1f521f]">
+                    <div key={i} className="p-4 rounded-xl border border-[#232837] bg-[#131722]">
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2">
-                          <div className="w-3 h-3" style={{ backgroundColor: cat.cor }} />
-                          <span className="text-sm font-medium text-[#33ff00]">{cat.name}</span>
+                          <div className="w-3 h-3 rounded-full" style={{ backgroundColor: cat.cor }} />
+                          <span className="text-sm font-medium text-[#E9E4D8]">{cat.name}</span>
                         </div>
-                        <span className={`text-xs font-medium ${over ? 'text-[#ff3333]' : 'text-[#3f9e5c]'}`}>{pct.toFixed(0)}%</span>
+                        <span className={`text-xs font-medium ${over ? 'text-[#A6484A]' : 'text-[#8B93A6]'}`}>{pct.toFixed(0)}%</span>
                       </div>
-                      <div className="w-full h-2 border border-[#1f521f]">
-                        <div className="h-full transition-all" style={{ width: `${pct}%`, backgroundColor: over ? '#ff3333' : cat.cor }} />
+                      <div className="w-full h-1.5 rounded-full bg-[#232837] overflow-hidden">
+                        <div className="h-full rounded-full transition-all" style={{ width: `${pct}%`, backgroundColor: over ? '#A6484A' : cat.cor }} />
                       </div>
                       <div className="flex justify-between mt-1">
-                        <span className="text-[11px] text-[#3f9e5c]">{fmt(cat.gasto)} gasto</span>
-                        <span className="text-[11px] text-[#3f9e5c]">{fmt(cat.orcamento)} orçamento</span>
+                        <span className="text-[11px] text-[#8B93A6]">{fmt(cat.gasto)} gasto</span>
+                        <span className="text-[11px] text-[#8B93A6]">{fmt(cat.orcamento)} orçamento</span>
                       </div>
                     </div>
                   );
                 })}
-                {catData.length === 0 && <p className="text-sm text-[#1f521f]"># nenhuma categoria de despesa</p>}
+                {catData.length === 0 && <p className="text-sm text-[#4E5468] italic">Nenhuma categoria de despesa.</p>}
               </div>
             </div>
           )}
@@ -191,17 +192,17 @@ const Financeiro: React.FC = () => {
           {tab === 'fornecedores' && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {fornecedores.map(f => (
-                <div key={f.id} className="p-5 border border-[#1f521f] hover:border-[#33ff00] transition-all">
+                <div key={f.id} className="p-5 rounded-2xl border border-[#232837] bg-[#131722] hover:border-[#C9A961]/40 transition-all">
                   <div className="flex items-center justify-between mb-3">
-                    <div className="w-10 h-10 border border-[#33ff00] flex items-center justify-center text-[#33ff00] text-sm font-bold">{f.nome.charAt(0)}</div>
-                    <span className={`text-[10px] font-bold px-2 py-1 border ${f.status === 'ativo' ? 'border-[#33ff00] text-[#33ff00]' : 'border-[#1f521f] text-[#1f521f]'}`}>{f.status.toUpperCase()}</span>
+                    <div className="w-10 h-10 rounded-full flex items-center justify-center text-[#0B0E14] text-sm font-bold" style={{ background: 'linear-gradient(135deg, #E0C583 0%, #C9A961 55%, #A98A47 100%)' }}>{f.nome.charAt(0)}</div>
+                    <span className={`text-[10px] font-bold px-2 py-1 rounded-full border ${f.status === 'ativo' ? 'border-[#2F9E7C]/50 text-[#2F9E7C]' : 'border-[#2A2F3D] text-[#4E5468]'}`}>{f.status.toUpperCase()}</span>
                   </div>
-                  <h4 className="text-sm font-semibold text-[#33ff00]">{f.nome}</h4>
-                  <p className="text-xs mt-1 text-[#3f9e5c]">{f.cnpj}</p>
-                  <div className="mt-3 pt-3 border-t border-[#1f521f]">
-                    <p className="text-xs text-[#3f9e5c]">Contato: {f.contato}</p>
-                    <p className="text-xs text-[#3f9e5c]">{f.email}</p>
-                    <p className="text-xs font-semibold mt-2 text-[#33ff00]">Mensal: {fmt(f.valorMensal)}</p>
+                  <h4 className="text-sm font-semibold text-[#F0E6CC]">{f.nome}</h4>
+                  <p className="text-xs mt-1 text-[#8B93A6]">{f.cnpj}</p>
+                  <div className="mt-3 pt-3 border-t border-[#232837]">
+                    <p className="text-xs text-[#8B93A6]">Contato: {f.contato}</p>
+                    <p className="text-xs text-[#8B93A6]">{f.email}</p>
+                    <p className="text-xs font-semibold mt-2 text-[#C9A961]">Mensal: {fmt(f.valorMensal)}</p>
                   </div>
                 </div>
               ))}
@@ -211,20 +212,20 @@ const Financeiro: React.FC = () => {
           {tab === 'contratos' && (
             <div className="space-y-2">
               {contratos.map(c => (
-                <div key={c.id} className="flex items-center justify-between p-4 border border-[#1f521f] hover:border-[#33ff00] transition-all">
+                <div key={c.id} className="flex items-center justify-between p-4 rounded-xl border border-[#232837] bg-[#131722] hover:border-[#C9A961]/40 transition-all">
                   <div className="flex items-center gap-4">
-                    <div className={`w-10 h-10 border flex items-center justify-center ${c.status === 'ativo' ? 'border-[#33ff00] text-[#33ff00]' : 'border-[#1f521f] text-[#1f521f]'}`}>
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${c.status === 'ativo' ? 'bg-[#1E2430] text-[#C9A961]' : 'bg-[#1a1d26] text-[#4E5468]'}`}>
                       <Calendar size={18} />
                     </div>
                     <div>
-                      <p className="text-sm font-semibold text-[#33ff00]">{c.titulo}</p>
-                      <p className="text-xs text-[#3f9e5c]">{c.fornecedor} • {c.inicio} até {c.fim}</p>
+                      <p className="text-sm font-semibold text-[#F0E6CC]">{c.titulo}</p>
+                      <p className="text-xs text-[#8B93A6]">{c.fornecedor} • {c.inicio} até {c.fim}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-4">
-                    <span className="text-sm font-bold text-[#33ff00]">{fmt(c.valor)}/mês</span>
-                    <span className={`text-[10px] font-bold px-2 py-1 border ${c.status === 'ativo' ? 'border-[#33ff00] text-[#33ff00]' : 'border-[#1f521f] text-[#1f521f]'}`}>{c.status}</span>
-                    {c.renovacaoAutomatica && <span className="text-[10px] text-[#ffb000]">[AUTO]</span>}
+                    <span className="text-sm font-bold text-[#C9A961]">{fmt(c.valor)}/mês</span>
+                    <span className={`text-[10px] font-bold px-2 py-1 rounded-full border ${c.status === 'ativo' ? 'border-[#2F9E7C]/50 text-[#2F9E7C]' : 'border-[#2A2F3D] text-[#4E5468]'}`}>{c.status}</span>
+                    {c.renovacaoAutomatica && <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#5B7FA8]/15 text-[#5B7FA8]">Auto</span>}
                   </div>
                 </div>
               ))}

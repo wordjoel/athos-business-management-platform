@@ -54,52 +54,49 @@ const LoginPage: React.FC = () => {
   const busy = isSubmitting || loading;
 
   return (
-    <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-[#0a0a0a]">
+    <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-[#0B0E14]">
       <div className="absolute inset-0 bg-grid-teal opacity-60" />
+      <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[560px] h-[560px] rounded-full pointer-events-none" style={{ background: 'radial-gradient(circle, rgba(201,169,97,0.14) 0%, transparent 68%)' }} />
 
       <div className="relative z-10 w-full max-w-md px-6">
         <div className="flex justify-center mb-6">
-          <img src="/logo.png" alt="ATHOS Logo" className="w-24 h-24 object-contain" />
+          <img src="/logo.png" alt="ATHOS" className="w-20 h-20 object-contain" />
         </div>
 
-        <div className="bg-[#0a0a0a] border border-[#1f521f]">
-          <div className="px-4 py-2 border-b border-[#1f521f] flex items-center justify-between">
-            <span className="text-xs text-[#33ff00] font-bold tracking-widest">+--- LOGIN ---+</span>
-            <span className="text-[10px] text-[#1f521f]">v2.4.0</span>
+        <div className="glass-card overflow-hidden">
+          <div className="px-6 pt-6 pb-5 text-center border-b border-[#232837]">
+            <p className="module-eyebrow mb-2">Acesso Privado</p>
+            <h1 className="font-display text-2xl text-[#F0E6CC]">{t('app.welcome')}</h1>
+            <p className="text-xs text-[#8B93A6] mt-1.5">{t('auth.enter_credentials')}</p>
           </div>
 
-          <div className="p-6">
-            <div className="mb-6">
-              <p className="text-sm text-[#33ff00]">{t('app.welcome')}</p>
-              <p className="text-xs text-[#3f9e5c] mt-1">{t('auth.enter_credentials')}</p>
-            </div>
-
+          <div className="p-6 pt-5">
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="flex items-center gap-2 text-xs text-[#33ff00] mb-1">
-                  <Mail size={13} className="text-[#3f9e5c]" />
-                  user@athos:~$
+                <label className="flex items-center gap-2 text-xs font-medium text-[#8B93A6] mb-1.5">
+                  <Mail size={13} />
+                  {t('auth.email')}
                 </label>
                 <input
                   type="email"
                   value={values.email}
                   onChange={handleChange('email')}
                   onBlur={handleBlur('email')}
-                  className={`w-full py-2 bg-transparent border-0 border-b text-[#33ff00] placeholder-[#1f521f] text-sm focus:outline-none transition-colors ${
-                    touched.email && errors.email ? 'border-[#ff3333]' : 'border-[#1f521f] focus:border-[#33ff00]'
+                  className={`w-full py-2.5 px-3 bg-[#0B0E14] rounded-[10px] border text-[#F0E6CC] placeholder-[#4E5468] text-sm focus:outline-none transition-colors ${
+                    touched.email && errors.email ? 'border-[#A6484A]' : 'border-[#232837] focus:border-[#C9A961]'
                   }`}
                   placeholder={t('auth.email')}
                   disabled={busy}
                 />
                 {touched.email && errors.email && (
-                  <p className="text-[#ff3333] text-xs mt-1.5 animate-fade-in">[ERR] {errors.email}</p>
+                  <p className="text-[#C06A6C] text-xs mt-1.5 animate-fade-in">{errors.email}</p>
                 )}
               </div>
 
               <div>
-                <label className="flex items-center gap-2 text-xs text-[#33ff00] mb-1">
-                  <Lock size={13} className="text-[#3f9e5c]" />
-                  passwd:~$
+                <label className="flex items-center gap-2 text-xs font-medium text-[#8B93A6] mb-1.5">
+                  <Lock size={13} />
+                  {t('auth.password')}
                 </label>
                 <div className="relative">
                   <input
@@ -107,8 +104,8 @@ const LoginPage: React.FC = () => {
                     value={values.password}
                     onChange={handleChange('password')}
                     onBlur={handleBlur('password')}
-                    className={`w-full py-2 pr-10 bg-transparent border-0 border-b text-[#33ff00] placeholder-[#1f521f] text-sm focus:outline-none transition-colors ${
-                      touched.password && errors.password ? 'border-[#ff3333]' : 'border-[#1f521f] focus:border-[#33ff00]'
+                    className={`w-full py-2.5 px-3 pr-10 bg-[#0B0E14] rounded-[10px] border text-[#F0E6CC] placeholder-[#4E5468] text-sm focus:outline-none transition-colors ${
+                      touched.password && errors.password ? 'border-[#A6484A]' : 'border-[#232837] focus:border-[#C9A961]'
                     }`}
                     placeholder={t('auth.password')}
                     disabled={busy}
@@ -116,33 +113,30 @@ const LoginPage: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-0 top-1/2 -translate-y-1/2 text-[#3f9e5c] hover:text-[#33ff00] transition-colors"
+                    className="absolute right-0 top-1/2 -translate-y-1/2 px-3 text-[#8B93A6] hover:text-[#C9A961] transition-colors"
                   >
                     {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                   </button>
                 </div>
                 {touched.password && errors.password && (
-                  <p className="text-[#ff3333] text-xs mt-1.5 animate-fade-in">[ERR] {errors.password}</p>
+                  <p className="text-[#C06A6C] text-xs mt-1.5 animate-fade-in">{errors.password}</p>
                 )}
               </div>
 
               <button
                 type="submit"
                 disabled={busy}
-                className="w-full py-3 border border-[#33ff00] text-[#33ff00] font-bold text-sm tracking-widest transition-all duration-150 flex items-center justify-center gap-2 hover:bg-[#33ff00] hover:text-[#0a0a0a] disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-[#33ff00]"
+                className="w-full py-3 rounded-[10px] font-medium text-sm transition-all duration-150 flex items-center justify-center gap-2 disabled:opacity-50"
+                style={{ background: busy ? '#232837' : 'linear-gradient(135deg, #E0C583 0%, #C9A961 55%, #A98A47 100%)', color: busy ? '#8B93A6' : '#12151E' }}
               >
-                {busy ? (
-                  <span className="animate-blink">CONECTANDO...</span>
-                ) : (
-                  <span>[ INITIATE ]</span>
-                )}
+                {busy ? 'Entrando…' : 'Entrar'}
               </button>
             </form>
           </div>
         </div>
 
-        <p className="text-center text-[#1f521f] text-xs mt-6">
-          © 2026 ATHOS Platform <span className="animate-blink">_</span>
+        <p className="text-center text-[#4E5468] text-xs mt-6 tracking-wide">
+          © 2026 ATHOS Platform
         </p>
       </div>
     </div>

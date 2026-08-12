@@ -1,250 +1,254 @@
 @import "tailwindcss";
 
 /* ============================================
-   TERMINAL CLI DESIGN SYSTEM
-   Monospace supremacy. Brutally functional.
+   ATHOS PRIVATE — LUXURY BANKING DESIGN SYSTEM
+   Deep navy ink, champagne gold, jewel-tone data.
    ============================================ */
 
 @theme {
-  /* Legacy custom "athos" color scale, remapped to terminal green so
-     every existing usage of it re-themes for free. */
-  --color-athos-50: #eafff0;
-  --color-athos-100: #c9f7d6;
-  --color-athos-200: #8fe6a8;
-  --color-athos-300: #5ecf7f;
-  --color-athos-400: #33ff00;
-  --color-athos-500: #33ff00;
-  --color-athos-600: #29cc00;
-  --color-athos-700: #1f9900;
-  --color-athos-800: #163a17;
-  --color-athos-900: #0d1a0d;
-  --color-athos-950: #0a0a0a;
-  --color-teal-glow: rgba(51, 255, 0, 0.08);
+  /* Legacy custom "athos" color scale, remapped to gold so every
+     existing usage of it re-themes for free. */
+  --color-athos-50:  #FBF7EE;
+  --color-athos-100: #F3E9CE;
+  --color-athos-200: #E6D19E;
+  --color-athos-300: #D9B96D;
+  --color-athos-400: #C9A961;
+  --color-athos-500: #C9A961;
+  --color-athos-600: #B0904D;
+  --color-athos-700: #8C7139;
+  --color-athos-800: #46381E;
+  --color-athos-900: #241C10;
+  --color-athos-950: #0B0E14;
+  --color-teal-glow: rgba(201, 169, 97, 0.10);
 
   /* Base palette */
-  --color-term-bg: #0a0a0a;
-  --color-term-primary: #33ff00;
-  --color-term-secondary: #ffb000;
-  --color-term-muted: #1f521f;
-  --color-term-error: #ff3333;
-  --color-term-border: #1f521f;
+  --color-term-bg: #0B0E14;
+  --color-term-primary: #C9A961;
+  --color-term-secondary: #5B7FA8;
+  --color-term-muted: #2A2F3D;
+  --color-term-error: #A6484A;
+  --color-term-border: #262B38;
 
-  /* Fonts: monospace everywhere, headers and body alike */
-  --font-sans: 'JetBrains Mono', 'Fira Code', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
-  --font-display: 'JetBrains Mono', 'Fira Code', ui-monospace, monospace;
+  /* Fonts: serif display for headings/figures, humanist sans for UI,
+     monospace reserved for literal codes (linha digitável, txid). */
+  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-display: 'Fraunces', 'Georgia', serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, monospace;
 
-  /* Radius: zero, always. No rounded corners in a terminal. */
+  /* Radius: soft, restrained — private-bank card language, not pill-shaped */
   --radius-none: 0px;
-  --radius-sm: 0px;
-  --radius-md: 0px;
-  --radius-lg: 0px;
-  --radius-xl: 0px;
-  --radius-2xl: 0px;
-  --radius-3xl: 0px;
-  --radius-full: 0px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
+  --radius-2xl: 22px;
+  --radius-3xl: 28px;
+  --radius-full: 9999px;
 
   /* Remap the neutral scale used pervasively (bg-slate-900, border-gray-800, etc.)
-     toward black / dim-green-black so existing markup re-themes for free. */
-  --color-slate-50:  #eafff0;
-  --color-slate-100: #c9f7d6;
-  --color-slate-200: #8fe6a8;
-  --color-slate-300: #5ecf7f;
-  --color-slate-400: #3f9e5c;
-  --color-slate-500: #2c7a44;
-  --color-slate-600: #1f521f;
-  --color-slate-700: #163a17;
-  --color-slate-800: #0f2610;
-  --color-slate-900: #0d1a0d;
-  --color-slate-950: #0a0a0a;
+     toward navy-ink so existing markup re-themes for free. */
+  --color-slate-50:  #F4F1E9;
+  --color-slate-100: #E4DFD1;
+  --color-slate-200: #C7C2B4;
+  --color-slate-300: #9D9C9C;
+  --color-slate-400: #757A8C;
+  --color-slate-500: #4E5468;
+  --color-slate-600: #343A4C;
+  --color-slate-700: #232837;
+  --color-slate-800: #171B26;
+  --color-slate-900: #10131C;
+  --color-slate-950: #0B0E14;
 
-  --color-gray-50:  #eafff0;
-  --color-gray-100: #c9f7d6;
-  --color-gray-200: #8fe6a8;
-  --color-gray-300: #5ecf7f;
-  --color-gray-400: #3f9e5c;
-  --color-gray-500: #2c7a44;
-  --color-gray-600: #1f521f;
-  --color-gray-700: #163a17;
-  --color-gray-800: #0f2610;
-  --color-gray-900: #0d1a0d;
-  --color-gray-950: #0a0a0a;
+  --color-gray-50:  #F4F1E9;
+  --color-gray-100: #E4DFD1;
+  --color-gray-200: #C7C2B4;
+  --color-gray-300: #9D9C9C;
+  --color-gray-400: #757A8C;
+  --color-gray-500: #4E5468;
+  --color-gray-600: #343A4C;
+  --color-gray-700: #232837;
+  --color-gray-800: #171B26;
+  --color-gray-900: #10131C;
+  --color-gray-950: #0B0E14;
 
-  --color-zinc-50:  #eafff0;
-  --color-zinc-100: #c9f7d6;
-  --color-zinc-800: #0f2610;
-  --color-zinc-900: #0d1a0d;
-  --color-zinc-950: #0a0a0a;
+  --color-zinc-50:  #F4F1E9;
+  --color-zinc-100: #E4DFD1;
+  --color-zinc-800: #171B26;
+  --color-zinc-900: #10131C;
+  --color-zinc-950: #0B0E14;
 
-  /* Remap accent scales (blue/cyan/emerald/indigo/violet/purple) toward terminal green.
-     Keep amber as the secondary/warning accent, red as error. */
-  --color-blue-400: #5cff33;
-  --color-blue-500: #33ff00;
-  --color-blue-600: #29cc00;
-  --color-blue-700: #1f9900;
+  /* Remap accent scales toward the jewel-tone data palette. Each hue keeps
+     a distinct identity now (gold / sapphire / emerald / wine / plum)
+     instead of collapsing to one signal color like the terminal theme did. */
+  --color-blue-400: #7DA0CC;
+  --color-blue-500: #5B7FA8;
+  --color-blue-600: #4C6D95;
+  --color-blue-700: #3D5878;
 
-  --color-cyan-400: #5cff33;
-  --color-cyan-500: #33ff00;
+  --color-cyan-400: #7DA0CC;
+  --color-cyan-500: #5B7FA8;
+  --color-cyan-600: #4C6D95;
 
-  --color-emerald-400: #5cff33;
-  --color-emerald-500: #33ff00;
-  --color-emerald-600: #29cc00;
+  --color-emerald-400: #4CAF8C;
+  --color-emerald-500: #2F9E7C;
+  --color-emerald-600: #23815F;
 
-  --color-green-400: #5cff33;
-  --color-green-500: #33ff00;
+  --color-green-400: #4CAF8C;
+  --color-green-500: #2F9E7C;
+  --color-green-600: #23815F;
 
-  --color-indigo-400: #33ff00;
-  --color-indigo-500: #29cc00;
-  --color-indigo-600: #1f9900;
+  --color-indigo-400: #8B7FB8;
+  --color-indigo-500: #7B6BA8;
+  --color-indigo-600: #665693;
 
-  --color-violet-400: #33ff00;
-  --color-violet-500: #29cc00;
+  --color-violet-400: #A084B5;
+  --color-violet-500: #8E6E9F;
+  --color-violet-600: #785C89;
 
-  --color-purple-400: #ffb000;
-  --color-purple-500: #ffb000;
-  --color-purple-600: #cc8d00;
+  --color-purple-400: #A084B5;
+  --color-purple-500: #8E6E9F;
+  --color-purple-600: #785C89;
 
-  --color-amber-400: #ffb000;
-  --color-amber-500: #ffb000;
-  --color-yellow-400: #ffb000;
-  --color-yellow-500: #ffb000;
+  --color-amber-400: #D9B96D;
+  --color-amber-500: #C9A961;
+  --color-amber-600: #B0904D;
+  --color-yellow-400: #D9B96D;
+  --color-yellow-500: #C9A961;
 
-  --color-red-400: #ff3333;
-  --color-red-500: #ff3333;
-  --color-red-600: #cc2929;
-  --color-rose-400: #ff3333;
-  --color-rose-500: #ff3333;
+  --color-red-400: #C06A6C;
+  --color-red-500: #A6484A;
+  --color-red-600: #8A3B3D;
+  --color-rose-400: #C06A6C;
+  --color-rose-500: #A6484A;
 
-  --color-pink-400: #ffb000;
-  --color-pink-500: #ffb000;
-  --color-orange-400: #ffb000;
-  --color-orange-500: #ffb000;
+  --color-pink-400: #C68FA0;
+  --color-pink-500: #B06E85;
+  --color-orange-400: #C98B5D;
+  --color-orange-500: #B8785A;
 }
 
 @layer base {
   * {
     scrollbar-width: thin;
-    scrollbar-color: #1f521f transparent;
+    scrollbar-color: #343A4C transparent;
   }
   html {
-    background: #0a0a0a;
+    background: #0B0E14;
   }
   body {
-    font-family: var(--font-mono);
-    background: #0a0a0a;
-    color: #33ff00;
+    font-family: var(--font-sans);
+    background: #0B0E14;
+    color: #E9E4D8;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     position: relative;
+    font-feature-settings: 'tnum' 1, 'cv11' 1;
   }
   h1, h2, h3, h4, h5, h6 {
-    text-transform: uppercase;
-    letter-spacing: 0.02em;
+    font-family: var(--font-display);
+    letter-spacing: -0.01em;
   }
   ::selection {
-    background: #33ff00;
-    color: #0a0a0a;
+    background: #C9A961;
+    color: #0B0E14;
   }
 }
 
 @layer utilities {
-  /* Global kill-switch: no blur, no gradients, anywhere in the app —
-     covers every page/component without needing a per-file rewrite. */
-  [class*="backdrop-blur"] {
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
+  /* Signature module header: eyebrow label + serif title + gold hairline —
+     the private-bank-statement motif carried across every module page. */
+  .module-eyebrow {
+    font-family: var(--font-sans);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #8B93A6;
   }
-  [class*="bg-gradient-to"] {
-    background-image: none !important;
+  .module-title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    background: linear-gradient(120deg, #F0DFAE 0%, #C9A961 55%, #8C7139 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
   }
-  [class*="blur-"] {
-    filter: none !important;
-  }
-  [class*="shadow-"] {
-    box-shadow: none !important;
-  }
-
-  /* CRT scanline overlay — fixed, subtle, never blocks interaction */
-  .crt-scanlines {
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 9999;
-    background: repeating-linear-gradient(
-      to bottom,
-      rgba(51, 255, 0, 0.025) 0px,
-      rgba(51, 255, 0, 0.025) 1px,
-      transparent 1px,
-      transparent 3px
-    );
-    mix-blend-mode: overlay;
+  .module-rule {
+    height: 1px;
+    background: linear-gradient(90deg, #C9A961 0%, rgba(201, 169, 97, 0.08) 100%);
   }
 
-  /* Panes replace "glass" — flat black box, 1px green border, no blur, no shadow */
+  /* Cards: soft elevation, warm-tinted shadow, gold hairline on hover */
   .glass,
   .glass-dark,
   .glass-card,
   .glass-light {
-    background: #0a0a0a;
+    background: #131722;
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
-    border: 1px solid #1f521f;
-    box-shadow: none;
+    border: 1px solid #232837;
+    border-radius: var(--radius-lg);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 12px 28px -16px rgba(0, 0, 0, 0.55);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
   }
   .glass-card:hover {
-    border-color: #33ff00;
-    box-shadow: none;
+    border-color: rgba(201, 169, 97, 0.45);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.45), 0 16px 32px -14px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(201, 169, 97, 0.08);
   }
 
   .gradient-athos {
-    background: #0a0a0a;
-    border: 1px solid #33ff00;
+    background: linear-gradient(135deg, #C9A961 0%, #8C7139 100%);
+    border: none;
+    color: #0B0E14;
   }
   .gradient-card {
-    background: #0a0a0a;
+    background: linear-gradient(160deg, #171B26 0%, #10131C 100%);
+    border-radius: var(--radius-lg);
   }
   .gradient-orb {
-    background: none;
+    background: radial-gradient(circle, rgba(201, 169, 97, 0.18) 0%, transparent 70%);
+    filter: blur(60px);
   }
   .text-gradient {
-    background: none;
-    -webkit-text-fill-color: unset;
-    color: #33ff00;
-    text-shadow: 0 0 5px rgba(51, 255, 0, 0.5);
+    background: linear-gradient(120deg, #F0DFAE 0%, #C9A961 55%, #8C7139 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: #C9A961;
   }
   .shadow-glow {
-    box-shadow: none;
-    text-shadow: 0 0 6px rgba(51, 255, 0, 0.4);
+    box-shadow: 0 0 24px rgba(201, 169, 97, 0.25);
   }
   .shadow-glow-blue {
-    box-shadow: none;
-    text-shadow: 0 0 6px rgba(51, 255, 0, 0.4);
+    box-shadow: 0 0 24px rgba(91, 127, 168, 0.3);
   }
   .bg-grid-teal,
   .bg-grid-subtle {
     background-image:
-      linear-gradient(rgba(51, 255, 0, 0.04) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(51, 255, 0, 0.04) 1px, transparent 1px);
-    background-size: 24px 24px;
+      linear-gradient(rgba(201, 169, 97, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(201, 169, 97, 0.05) 1px, transparent 1px);
+    background-size: 32px 32px;
   }
 
-  /* Terminal-specific utilities */
+  /* Legacy "terminal" utility names kept as aliases so existing markup
+     re-themes for free without a per-file rewrite. */
   .term-glow {
-    text-shadow: 0 0 5px rgba(51, 255, 0, 0.5);
+    text-shadow: 0 0 12px rgba(201, 169, 97, 0.35);
   }
   .term-pane {
-    background: #0a0a0a;
-    border: 1px solid #1f521f;
+    background: #131722;
+    border: 1px solid #232837;
+    border-radius: var(--radius-lg);
   }
   .term-cursor::after {
-    content: '_';
-    animation: blink 1s step-end infinite;
+    content: '';
   }
   .animate-blink {
-    animation: blink 1s step-end infinite;
+    animation: none;
   }
   .animate-glitch:hover {
-    animation: glitch 0.2s steps(2, end) 2;
+    animation: none;
   }
   .animate-typing {
     overflow: hidden;
@@ -273,20 +277,16 @@
     animation: slideRight 0.2s ease-out;
   }
   .animate-shimmer {
-    animation: none;
-    background: none;
+    animation: shimmer 2.5s ease-in-out infinite;
+    background: linear-gradient(110deg, transparent 35%, rgba(201, 169, 97, 0.18) 50%, transparent 65%);
+    background-size: 200% 100%;
   }
   .animate-pulse-glow {
     animation: pulseGlow 2s ease-in-out infinite;
   }
 
-  @keyframes blink {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0; }
-  }
   @keyframes glitch {
     0% { transform: translate(0, 0); }
-    50% { transform: translate(-1px, 1px); }
     100% { transform: translate(0, 0); }
   }
   @keyframes typing {
@@ -305,29 +305,32 @@
     from { opacity: 0; transform: translateX(-8px); }
     to { opacity: 1; transform: translateX(0); }
   }
+  @keyframes shimmer {
+    from { background-position: 200% 0; }
+    to { background-position: -200% 0; }
+  }
   @keyframes pulseGlow {
     0%, 100% { opacity: 0.6; }
     50% { opacity: 1; }
   }
 
-  /* Light mode: the terminal design system is dark-only (per spec) —
-     .light overrides intentionally collapse back to the same palette
-     so the existing theme toggle stays harmless instead of breaking. */
+  /* Light mode: this design system is dark-only (per spec) — .light
+     overrides intentionally collapse back to the same palette so the
+     existing theme toggle stays harmless instead of breaking. */
   .light .glass-card,
   .light .glass,
   .light body {
-    background: #0a0a0a;
-    color: #33ff00;
-    border-color: #1f521f;
+    background: #0B0E14;
+    color: #E9E4D8;
+    border-color: #232837;
   }
   .light .shadow-glow {
-    box-shadow: none;
-    text-shadow: 0 0 6px rgba(51, 255, 0, 0.4);
+    box-shadow: 0 0 24px rgba(201, 169, 97, 0.25);
   }
   .light .bg-grid-teal {
     background-image:
-      linear-gradient(rgba(51, 255, 0, 0.04) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(51, 255, 0, 0.04) 1px, transparent 1px);
-    background-size: 24px 24px;
+      linear-gradient(rgba(201, 169, 97, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(201, 169, 97, 0.05) 1px, transparent 1px);
+    background-size: 32px 32px;
   }
 }

@@ -17,10 +17,10 @@ import { getLancamentos, getFluxoCaixaMensal, refreshLancamentos, Lancamento } f
 import { alertas as mockAlertas, insightsIA, contratos, setores } from '../data/mockData';
 import Pane from '../components/TerminalPane';
 
-const COLORS = ['#33ff00', '#ffb000', '#5ecf7f', '#8fe6a8', '#1f9900', '#3f9e5c', '#ff3333', '#c9f7d6'];
-const TOOLTIP_STYLE = { background: '#0a0a0a', border: '1px solid #1f521f', borderRadius: 0, fontSize: '12px', color: '#33ff00' };
-const AXIS_TICK = { fill: '#3f9e5c', fontSize: 11 };
-const GRID_STROKE = 'rgba(51,255,0,0.08)';
+const COLORS = ['#C9A961', '#5B7FA8', '#2F9E7C', '#A6484A', '#8E6E9F', '#B8785A', '#B06E85', '#8B93A6'];
+const TOOLTIP_STYLE = { background: '#131722', border: '1px solid #232837', borderRadius: 10, fontSize: '12px', color: '#E9E4D8', boxShadow: '0 8px 24px rgba(0,0,0,0.4)' };
+const AXIS_TICK = { fill: '#8B93A6', fontSize: 11 };
+const GRID_STROKE = 'rgba(201,169,97,0.08)';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -111,20 +111,18 @@ const Dashboard: React.FC = () => {
     <motion.div className="p-6 space-y-6" variants={containerVariants} initial="hidden" animate="visible">
       <motion.div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4" variants={itemVariants}>
         <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold text-[#33ff00] term-glow">DASHBOARD_EXECUTIVO</h1>
-            <Sparkles size={18} className="text-[#33ff00]" />
-          </div>
-          <p className="text-sm mt-1 text-[#3f9e5c]">
-            $ status --geral: {lancamentos.length} lançamentos // {setores.length} setores
+          <p className="module-eyebrow mb-1">Visão Executiva</p>
+          <h1 className="font-display text-3xl text-[#F0E6CC]">Painel Geral</h1>
+          <p className="text-sm mt-1.5 text-[#8B93A6]">
+            {lancamentos.length} lançamentos · {setores.length} setores acompanhados
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={() => navigate('/ai')} className="flex items-center gap-2 px-4 py-2.5 text-[#ffb000] text-sm font-medium border border-[#ffb000] hover:bg-[#ffb000] hover:text-[#0a0a0a] transition-all">
-            <BrainCircuit size={14} /> IA_INSIGHTS
+          <button onClick={() => navigate('/ai')} className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-[#5B7FA8] text-sm font-medium border border-[#5B7FA8]/50 hover:bg-[#5B7FA8] hover:text-[#0B0E14] transition-all">
+            <BrainCircuit size={14} /> Insights de IA
           </button>
-          <button onClick={toggleAIPanel} className="flex items-center gap-2 px-4 py-2.5 border border-[#33ff00] text-[#33ff00] text-sm font-medium hover:bg-[#33ff00] hover:text-[#0a0a0a] transition-all">
-            <Sparkles size={14} /> ASSISTENTE_IA
+          <button onClick={toggleAIPanel} className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all" style={{ background: 'linear-gradient(135deg, #E0C583 0%, #C9A961 55%, #A98A47 100%)', color: '#12151E' }}>
+            <Sparkles size={14} /> Assistente IA
           </button>
         </div>
       </motion.div>
@@ -142,38 +140,38 @@ const Dashboard: React.FC = () => {
             key={i}
             whileHover={{ y: -1 }}
             onClick={() => navigate(item.route)}
-            className="p-4 border border-[#1f521f] text-center transition-all hover:border-[#33ff00]"
+            className="p-4 rounded-xl border border-[#2A2F3D] text-center transition-all hover:border-[#C9A961]"
           >
-            <item.icon size={18} className="mx-auto mb-2 text-[#33ff00]" />
-            <p className="text-lg font-bold text-[#33ff00]">{item.value}</p>
-            <p className="text-[10px] font-medium uppercase tracking-wider text-[#3f9e5c]">{item.label}</p>
+            <item.icon size={18} className="mx-auto mb-2 text-[#C9A961]" />
+            <p className="text-lg font-bold text-[#C9A961]">{item.value}</p>
+            <p className="text-[10px] font-medium uppercase tracking-wider text-[#8B93A6]">{item.label}</p>
           </motion.button>
         ))}
       </motion.div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <Pane title="FLUXO_DE_CAIXA_MENSAL" icon={<BarChart3 size={16} className="text-[#33ff00]" />} className="lg:col-span-2">
+        <Pane title="Fluxo de Caixa Mensal" icon={<BarChart3 size={16} className="text-[#C9A961]" />} className="lg:col-span-2">
           <ResponsiveContainer width="100%" height={300}>
             <AreaChart data={fluxoMensal.length > 0 ? fluxoMensal : [{ mes: 'Sem dados', receita: 0, despesa: 0, saldo: 0 }]}>
               <defs>
-                <linearGradient id="colorReceitas" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#33ff00" stopOpacity={0.25} /><stop offset="95%" stopColor="#33ff00" stopOpacity={0} /></linearGradient>
-                <linearGradient id="colorDespesas" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#ff3333" stopOpacity={0.25} /><stop offset="95%" stopColor="#ff3333" stopOpacity={0} /></linearGradient>
+                <linearGradient id="colorReceitas" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#C9A961" stopOpacity={0.25} /><stop offset="95%" stopColor="#C9A961" stopOpacity={0} /></linearGradient>
+                <linearGradient id="colorDespesas" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#A6484A" stopOpacity={0.25} /><stop offset="95%" stopColor="#A6484A" stopOpacity={0} /></linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke={GRID_STROKE} />
               <XAxis dataKey="mes" tick={AXIS_TICK} />
               <YAxis tick={AXIS_TICK} tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`} />
               <RTooltip contentStyle={TOOLTIP_STYLE} formatter={tooltipFmt} />
               <Legend />
-              <Area type="monotone" dataKey="receita" name="Receitas" stroke="#33ff00" fillOpacity={1} fill="url(#colorReceitas)" strokeWidth={1.5} />
-              <Area type="monotone" dataKey="despesa" name="Despesas" stroke="#ff3333" fillOpacity={1} fill="url(#colorDespesas)" strokeWidth={1.5} />
+              <Area type="monotone" dataKey="receita" name="Receitas" stroke="#C9A961" fillOpacity={1} fill="url(#colorReceitas)" strokeWidth={1.5} />
+              <Area type="monotone" dataKey="despesa" name="Despesas" stroke="#A6484A" fillOpacity={1} fill="url(#colorDespesas)" strokeWidth={1.5} />
             </AreaChart>
           </ResponsiveContainer>
         </Pane>
 
-        <Pane title="DESPESAS_CATEGORIA" icon={<BarChart3 size={16} className="text-[#33ff00]" />}>
+        <Pane title="Despesas por Categoria" icon={<BarChart3 size={16} className="text-[#C9A961]" />}>
           <ResponsiveContainer width="100%" height={200}>
             <RePieChart>
-              <Pie data={pieDespesas.length > 0 ? pieDespesas : [{ name: 'Sem dados', value: 1, cor: '#1f521f' }]} cx="50%" cy="50%" innerRadius={55} outerRadius={85} paddingAngle={2} dataKey="value" stroke="#0a0a0a">
+              <Pie data={pieDespesas.length > 0 ? pieDespesas : [{ name: 'Sem dados', value: 1, cor: '#2A2F3D' }]} cx="50%" cy="50%" innerRadius={55} outerRadius={85} paddingAngle={2} dataKey="value" stroke="#0B0E14">
                 {pieDespesas.map((entry, i) => <Cell key={i} fill={entry.cor} />)}
               </Pie>
               <RTooltip formatter={tooltipFmt} contentStyle={TOOLTIP_STYLE} />
@@ -185,14 +183,14 @@ const Dashboard: React.FC = () => {
                 <div className="flex items-center justify-between mb-1">
                   <div className="flex items-center gap-2">
                     <div className="w-2.5 h-2.5" style={{ backgroundColor: item.cor }} />
-                    <span className="text-xs text-[#3f9e5c]">{item.name}</span>
+                    <span className="text-xs text-[#8B93A6]">{item.name}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold text-[#33ff00]">{item.pct.toFixed(1)}%</span>
-                    <span className="text-xs font-semibold text-[#33ff00]">{fmt(item.value)}</span>
+                    <span className="text-xs font-bold text-[#C9A961]">{item.pct.toFixed(1)}%</span>
+                    <span className="text-xs font-semibold text-[#C9A961]">{fmt(item.value)}</span>
                   </div>
                 </div>
-                <div className="w-full h-1.5 border border-[#1f521f] overflow-hidden">
+                <div className="w-full h-1.5 rounded-full border border-[#2A2F3D] overflow-hidden">
                   <div className="h-full transition-all duration-500" style={{ width: `${Math.min(item.pct, 100)}%`, backgroundColor: item.cor }} />
                 </div>
               </div>
@@ -202,21 +200,21 @@ const Dashboard: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Pane title="KPIS_POR_SETOR" icon={<Radar size={16} className="text-[#33ff00]" />}>
+        <Pane title="Indicadores por Setor" icon={<Radar size={16} className="text-[#C9A961]" />}>
           <ResponsiveContainer width="100%" height={300}>
             <ReRadarChart data={radarData}>
-              <PolarGrid stroke="rgba(51,255,0,0.15)" />
+              <PolarGrid stroke="rgba(201,169,97,0.15)" />
               <PolarAngleAxis dataKey="setor" tick={AXIS_TICK} />
-              <PolarRadiusAxis angle={30} domain={[0, 100]} tick={{ fill: '#1f521f', fontSize: 10 }} />
-              <ReRadar name="Eficiência" dataKey="Eficiência" stroke="#33ff00" fill="#33ff00" fillOpacity={0.1} />
-              <ReRadar name="Produtividade" dataKey="Produtividade" stroke="#ffb000" fill="#ffb000" fillOpacity={0.1} />
+              <PolarRadiusAxis angle={30} domain={[0, 100]} tick={{ fill: '#2A2F3D', fontSize: 10 }} />
+              <ReRadar name="Eficiência" dataKey="Eficiência" stroke="#C9A961" fill="#C9A961" fillOpacity={0.1} />
+              <ReRadar name="Produtividade" dataKey="Produtividade" stroke="#5B7FA8" fill="#5B7FA8" fillOpacity={0.1} />
               <ReRadar name="Satisfação" dataKey="Satisfação" stroke="#5ecf7f" fill="#5ecf7f" fillOpacity={0.1} />
               <Legend />
             </ReRadarChart>
           </ResponsiveContainer>
         </Pane>
 
-        <Pane title="ORCAMENTO_VS_GASTOS" icon={<Building2 size={16} className="text-[#33ff00]" />}>
+        <Pane title="Orçamento vs. Gastos" icon={<Building2 size={16} className="text-[#C9A961]" />}>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={setorData} layout="vertical">
               <CartesianGrid strokeDasharray="3 3" stroke={GRID_STROKE} />
@@ -225,23 +223,23 @@ const Dashboard: React.FC = () => {
               <RTooltip formatter={tooltipFmt} contentStyle={TOOLTIP_STYLE} />
               <Legend />
               <Bar dataKey="orcamento" name="Orçamento" fill="#5ecf7f" />
-              <Bar dataKey="gastos" name="Gastos" fill="#ff3333" />
+              <Bar dataKey="gastos" name="Gastos" fill="#A6484A" />
             </BarChart>
           </ResponsiveContainer>
         </Pane>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <Pane title="IA_INSIGHTS" icon={<BrainCircuit size={16} className="text-[#ffb000]" />} right={<span className="text-[10px] text-[#33ff00] font-medium">{insightsIA.length}</span>}>
+        <Pane title="Insights de IA" icon={<BrainCircuit size={16} className="text-[#5B7FA8]" />} right={<span className="text-[10px] text-[#C9A961] font-medium">{insightsIA.length}</span>}>
           <div className="space-y-3">
             {insightsIA.slice(0, 4).map(insight => (
-              <div key={insight.id} className="p-3 border border-[#1f521f] hover:border-[#33ff00] transition-all">
+              <div key={insight.id} className="p-3 rounded-xl border border-[#2A2F3D] hover:border-[#C9A961] transition-all">
                 <div className="flex items-start gap-2.5">
-                  <div className={`w-2 h-2 mt-1.5 flex-shrink-0 ${insight.impacto === 'alto' ? 'bg-[#ff3333]' : insight.impacto === 'medio' ? 'bg-[#ffb000]' : 'bg-[#33ff00]'}`} />
+                  <div className={`w-2 h-2 mt-1.5 flex-shrink-0 ${insight.impacto === 'alto' ? 'bg-[#A6484A]' : insight.impacto === 'medio' ? 'bg-[#5B7FA8]' : 'bg-[#C9A961]'}`} />
                   <div>
-                    <p className="text-xs font-semibold text-[#33ff00]">{insight.titulo}</p>
-                    <p className="text-[11px] mt-0.5 text-[#3f9e5c]">{insight.descricao}</p>
-                    <p className="text-[10px] mt-1 text-[#1f521f]">{insight.data}</p>
+                    <p className="text-xs font-semibold text-[#C9A961]">{insight.titulo}</p>
+                    <p className="text-[11px] mt-0.5 text-[#8B93A6]">{insight.descricao}</p>
+                    <p className="text-[10px] mt-1 text-[#2A2F3D]">{insight.data}</p>
                   </div>
                 </div>
               </div>
@@ -249,38 +247,38 @@ const Dashboard: React.FC = () => {
           </div>
         </Pane>
 
-        <Pane title="ALERTAS" icon={<AlertTriangle size={16} className="text-[#ffb000]" />} right={<span className="text-[10px] text-[#33ff00] font-medium">{mockAlertas.filter(a => !a.lido).length}</span>}>
+        <Pane title="Alertas" icon={<AlertTriangle size={16} className="text-[#5B7FA8]" />} right={<span className="text-[10px] text-[#C9A961] font-medium">{mockAlertas.filter(a => !a.lido).length}</span>}>
           <div className="space-y-3">
             {mockAlertas.filter(a => !a.lido).slice(0, 5).map(alerta => (
-              <div key={alerta.id} className="p-3 border border-[#1f521f] hover:border-[#33ff00] transition-all">
+              <div key={alerta.id} className="p-3 rounded-xl border border-[#2A2F3D] hover:border-[#C9A961] transition-all">
                 <div className="flex items-start gap-2.5">
-                  <div className={`w-2 h-2 mt-1.5 flex-shrink-0 ${alerta.gravidade === 'alta' ? 'bg-[#ff3333]' : alerta.gravidade === 'media' ? 'bg-[#ffb000]' : 'bg-[#33ff00]'}`} />
+                  <div className={`w-2 h-2 mt-1.5 flex-shrink-0 ${alerta.gravidade === 'alta' ? 'bg-[#A6484A]' : alerta.gravidade === 'media' ? 'bg-[#5B7FA8]' : 'bg-[#C9A961]'}`} />
                   <div>
-                    <p className="text-xs font-semibold text-[#33ff00]">{alerta.titulo}</p>
-                    <p className="text-[11px] mt-0.5 text-[#3f9e5c]">{alerta.descricao}</p>
-                    <p className="text-[10px] mt-1 text-[#1f521f]">{alerta.data}</p>
+                    <p className="text-xs font-semibold text-[#C9A961]">{alerta.titulo}</p>
+                    <p className="text-[11px] mt-0.5 text-[#8B93A6]">{alerta.descricao}</p>
+                    <p className="text-[10px] mt-1 text-[#2A2F3D]">{alerta.data}</p>
                   </div>
                 </div>
               </div>
             ))}
             {mockAlertas.filter(a => !a.lido).length === 0 && (
-              <p className="text-xs text-center py-6 text-[#1f521f]">nenhum alerta pendente</p>
+              <p className="text-xs text-center py-6 text-[#2A2F3D]">nenhum alerta pendente</p>
             )}
           </div>
         </Pane>
 
-        <Pane title="CONTRATOS" icon={<FileText size={16} className="text-[#33ff00]" />}>
+        <Pane title="Contratos" icon={<FileText size={16} className="text-[#C9A961]" />}>
           <div className="space-y-2">
             {contratos.slice(0, 5).map(ct => (
-              <div key={ct.id} className="flex items-center justify-between p-3 transition-all hover:bg-[#0d1a0d]">
+              <div key={ct.id} className="flex items-center justify-between p-3 transition-all hover:bg-[#12151E]">
                 <div>
-                  <p className="text-sm font-medium text-[#33ff00]">{ct.titulo}</p>
-                  <p className="text-[11px] text-[#3f9e5c]">{ct.fornecedor} • {fmt(ct.valor)}/mês</p>
+                  <p className="text-sm font-medium text-[#C9A961]">{ct.titulo}</p>
+                  <p className="text-[11px] text-[#8B93A6]">{ct.fornecedor} • {fmt(ct.valor)}/mês</p>
                 </div>
                 <span className={`text-[10px] font-bold px-2 py-1 border ${
-                  ct.status === 'ativo' ? 'border-[#33ff00] text-[#33ff00]' :
-                  ct.status === 'encerrado' ? 'border-[#1f521f] text-[#1f521f]' :
-                  'border-[#ffb000] text-[#ffb000]'
+                  ct.status === 'ativo' ? 'border-[#C9A961] text-[#C9A961]' :
+                  ct.status === 'encerrado' ? 'border-[#2A2F3D] text-[#2A2F3D]' :
+                  'border-[#5B7FA8] text-[#5B7FA8]'
                 }`}>{ct.status}</span>
               </div>
             ))}
@@ -288,40 +286,40 @@ const Dashboard: React.FC = () => {
         </Pane>
       </div>
 
-      <Pane title="COMPARATIVO_MENSAL" icon={<Activity size={16} className="text-[#33ff00]" />}>
+      <Pane title="Comparativo Mensal" icon={<Activity size={16} className="text-[#C9A961]" />}>
         <ResponsiveContainer width="100%" height={280}>
           <BarChart data={fluxoMensal.length > 0 ? fluxoMensal : [{ mes: 'Sem dados', receita: 0, despesa: 0, saldo: 0 }]}>
             <CartesianGrid strokeDasharray="3 3" stroke={GRID_STROKE} />
             <XAxis dataKey="mes" tick={AXIS_TICK} />
             <YAxis tick={AXIS_TICK} tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`} />
             <RTooltip formatter={tooltipFmt} contentStyle={TOOLTIP_STYLE} />
-            <Bar dataKey="receita" name="Receitas" fill="#33ff00" />
-            <Bar dataKey="despesa" name="Despesas" fill="#ff3333" />
+            <Bar dataKey="receita" name="Receitas" fill="#C9A961" />
+            <Bar dataKey="despesa" name="Despesas" fill="#A6484A" />
           </BarChart>
         </ResponsiveContainer>
       </Pane>
 
-      <Pane title="TRANSACOES_RECENTES" icon={<Clock size={16} className="text-[#33ff00]" />}>
+      <Pane title="Transações Recentes" icon={<Clock size={16} className="text-[#C9A961]" />}>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
           {recentTransactions.map((tx, i) => (
-            <div key={i} className="flex items-center justify-between p-3 transition-all hover:bg-[#0d1a0d] border border-[#1f521f]">
+            <div key={i} className="flex items-center justify-between p-3 rounded-lg transition-all hover:bg-[#12151E] border border-[#2A2F3D]">
               <div className="flex items-center gap-3">
-                <div className={`w-9 h-9 flex items-center justify-center border ${tx.tipo === 'receita' ? 'border-[#33ff00] text-[#33ff00]' : 'border-[#ff3333] text-[#ff3333]'}`}>
+                <div className={`w-9 h-9 flex items-center justify-center border ${tx.tipo === 'receita' ? 'border-[#C9A961] text-[#C9A961]' : 'border-[#A6484A] text-[#A6484A]'}`}>
                   {tx.tipo === 'receita' ? <ArrowUpRight size={16} /> : <ArrowDownRight size={16} />}
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-[#33ff00]">{tx.descricao}</p>
-                  <p className="text-[11px] text-[#3f9e5c]">{tx.origem}</p>
+                  <p className="text-sm font-medium text-[#C9A961]">{tx.descricao}</p>
+                  <p className="text-[11px] text-[#8B93A6]">{tx.origem}</p>
                 </div>
               </div>
               <div className="text-right">
-                <p className={`text-sm font-bold ${tx.tipo === 'receita' ? 'text-[#33ff00]' : 'text-[#ff3333]'}`}>{tx.tipo === 'receita' ? '+' : '-'}{fmt(tx.valor)}</p>
-                <p className="text-[11px] text-[#3f9e5c]">{tx.data}</p>
+                <p className={`text-sm font-bold ${tx.tipo === 'receita' ? 'text-[#C9A961]' : 'text-[#A6484A]'}`}>{tx.tipo === 'receita' ? '+' : '-'}{fmt(tx.valor)}</p>
+                <p className="text-[11px] text-[#8B93A6]">{tx.data}</p>
               </div>
             </div>
           ))}
           {recentTransactions.length === 0 && (
-            <p className="text-xs text-center py-8 col-span-2 text-[#1f521f]">nenhuma transação ainda</p>
+            <p className="text-xs text-center py-8 col-span-2 text-[#2A2F3D]">nenhuma transação ainda</p>
           )}
         </div>
       </Pane>

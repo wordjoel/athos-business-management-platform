@@ -87,13 +87,13 @@ const DFC: React.FC = () => {
           <h3 className="text-sm font-semibold text-white mb-4">Fluxo Mensal</h3>
           <ResponsiveContainer width="100%" height={350}>
             <BarChart data={fluxoPorMes}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" />
-              <XAxis dataKey="mes" tick={{ fill: '#9ca3af', fontSize: 11 }} />
-              <YAxis tick={{ fill: '#9ca3af', fontSize: 11 }} />
-              <Tooltip contentStyle={{ background: '#1f2937', border: 'none', borderRadius: 8, color: '#fff', fontSize: 12 }} formatter={(v: any) => `R$ ${Number(v).toLocaleString()}`} />
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(201,169,97,0.08)" />
+              <XAxis dataKey="mes" tick={{ fill: '#8B93A6', fontSize: 11 }} />
+              <YAxis tick={{ fill: '#8B93A6', fontSize: 11 }} />
+              <Tooltip contentStyle={{ background: '#131722', border: '1px solid #232837', borderRadius: 10, color: '#E9E4D8', fontSize: 12, boxShadow: '0 8px 24px rgba(0,0,0,0.4)' }} formatter={(v: any) => `R$ ${Number(v).toLocaleString()}`} />
               <Legend />
-              <Bar dataKey="entradas" name="Entradas" fill="#10b981" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="saidas" name="Saídas" fill="#ef4444" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="entradas" name="Entradas" fill="#2F9E7C" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="saidas" name="Saídas" fill="#A6484A" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>

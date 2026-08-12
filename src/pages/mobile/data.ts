@@ -93,26 +93,26 @@ export const initialCards: CreditCard[] = [
 
 export const initialCategories: Category[] = [
   // Despesas
-  { id: 'cat-1', name: 'Alimentação', type: 'expense', icon: 'Utensils', color: '#EF4444', value: 2450.00 },
-  { id: 'cat-2', name: 'Transporte', type: 'expense', icon: 'Car', color: '#F59E0B', value: 1120.00 },
-  { id: 'cat-3', name: 'Marketing', type: 'expense', icon: 'Megaphone', color: '#3B82F6', value: 3500.00 },
-  { id: 'cat-4', name: 'Salários', type: 'expense', icon: 'Users', color: '#10B981', value: 12000.00 },
-  { id: 'cat-5', name: 'Serviços', type: 'expense', icon: 'Wrench', color: '#8B5CF6', value: 2780.00 },
-  { id: 'cat-6', name: 'Outros', type: 'expense', icon: 'Folder', color: '#6B7280', value: 1559.25 },
+  { id: 'cat-1', name: 'Alimentação', type: 'expense', icon: 'Utensils', color: '#A6484A', value: 2450.00 },
+  { id: 'cat-2', name: 'Transporte', type: 'expense', icon: 'Car', color: '#C9A961', value: 1120.00 },
+  { id: 'cat-3', name: 'Marketing', type: 'expense', icon: 'Megaphone', color: '#5B7FA8', value: 3500.00 },
+  { id: 'cat-4', name: 'Salários', type: 'expense', icon: 'Users', color: '#2F9E7C', value: 12000.00 },
+  { id: 'cat-5', name: 'Serviços', type: 'expense', icon: 'Wrench', color: '#8E6E9F', value: 2780.00 },
+  { id: 'cat-6', name: 'Outros', type: 'expense', icon: 'Folder', color: '#8B93A6', value: 1559.25 },
   
   // Receitas
-  { id: 'cat-7', name: 'Venda de produtos', type: 'revenue', icon: 'ShoppingBag', color: '#10B981', value: 38240.00 },
-  { id: 'cat-8', name: 'Serviços de Consultoria', type: 'revenue', icon: 'Laptop', color: '#06B6D4', value: 20000.00 },
-  { id: 'cat-9', name: 'Rendimentos', type: 'revenue', icon: 'TrendingUp', color: '#3B82F6', value: 450.00 }
+  { id: 'cat-7', name: 'Venda de produtos', type: 'revenue', icon: 'ShoppingBag', color: '#2F9E7C', value: 38240.00 },
+  { id: 'cat-8', name: 'Serviços de Consultoria', type: 'revenue', icon: 'Laptop', color: '#6B8FB0', value: 20000.00 },
+  { id: 'cat-9', name: 'Rendimentos', type: 'revenue', icon: 'TrendingUp', color: '#5B7FA8', value: 450.00 }
 ];
 
 export const initialCostCenters: CostCenter[] = [
-  { id: 'cc-1', name: 'Financeiro', value: 18500.00, color: '#10B981', percentage: 22 },
-  { id: 'cc-2', name: 'Comercial', value: 12500.00, color: '#3B82F6', percentage: 15 },
-  { id: 'cc-3', name: 'Marketing', value: 8500.00, color: '#F59E0B', percentage: 10 },
-  { id: 'cc-4', name: 'Projetos', value: 32000.00, color: '#8B5CF6', percentage: 38 },
-  { id: 'cc-5', name: 'RH', value: 6500.00, color: '#EC4899', percentage: 8 },
-  { id: 'cc-6', name: 'Administrativo', value: 6000.00, color: '#6B7280', percentage: 7 }
+  { id: 'cc-1', name: 'Financeiro', value: 18500.00, color: '#2F9E7C', percentage: 22 },
+  { id: 'cc-2', name: 'Comercial', value: 12500.00, color: '#5B7FA8', percentage: 15 },
+  { id: 'cc-3', name: 'Marketing', value: 8500.00, color: '#C9A961', percentage: 10 },
+  { id: 'cc-4', name: 'Projetos', value: 32000.00, color: '#8E6E9F', percentage: 38 },
+  { id: 'cc-5', name: 'RH', value: 6500.00, color: '#B06E85', percentage: 8 },
+  { id: 'cc-6', name: 'Administrativo', value: 6000.00, color: '#8B93A6', percentage: 7 }
 ];
 
 export const initialTransactions: Transaction[] = [
@@ -214,7 +214,7 @@ export const initialGoals: FinancialGoal[] = [
     targetValue: 100000.00,
     currentValue: 58240.00,
     deadline: '2026-07-31',
-    color: '#10B981', // Verde
+    color: '#2F9E7C', // Verde
   },
   {
     id: 'g-2',
@@ -222,7 +222,7 @@ export const initialGoals: FinancialGoal[] = [
     targetValue: 30000.00,
     currentValue: 33409.25, // Reduzir significa manter abaixo. Podemos inverter para mostrar percentual
     deadline: '2026-07-31',
-    color: '#EF4444', // Vermelho (estouro)
+    color: '#A6484A', // Vermelho (estouro)
   },
   {
     id: 'g-3',
@@ -230,7 +230,7 @@ export const initialGoals: FinancialGoal[] = [
     targetValue: 20000.00,
     currentValue: 18830.75,
     deadline: '2026-07-31',
-    color: '#3B82F6', // Azul
+    color: '#5B7FA8', // Azul
   }
 ];
 

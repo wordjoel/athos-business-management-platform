@@ -7,7 +7,7 @@ import {
   ChevronLeft, ChevronRight, Users, Settings, LogOut,
   HandHelping, Kanban, UserCheck, FileSignature, Building2,
   Briefcase, Eye, AlertTriangle, HardDrive, Trophy, Share2,
-  Star, Smartphone
+  Star, Smartphone, Search
 } from 'lucide-react';
 
 interface NavItem {
@@ -158,33 +158,33 @@ const Sidebar: React.FC = () => {
   }, [visibleItems, favorites, searchQuery]);
 
   return (
-    <aside className={`${sidebarCollapsed ? 'w-20' : 'w-72'} transition-all duration-300 flex flex-col relative bg-[#0a0a0a] border-r border-[#1f521f]`}>
-      <div className={`p-6 flex items-center justify-center border-b border-[#1f521f] ${sidebarCollapsed ? 'px-2' : ''}`}>
+    <aside className={`${sidebarCollapsed ? 'w-20' : 'w-72'} transition-all duration-300 flex flex-col relative bg-[#0B0E14] border-r border-[#2A2F3D]`}>
+      <div className={`p-6 flex items-center justify-center border-b border-[#2A2F3D] ${sidebarCollapsed ? 'px-2' : ''}`}>
         <div className="relative">
-          <div className={`${sidebarCollapsed ? 'w-10 h-10' : 'w-20 h-20'} flex items-center justify-center overflow-hidden border border-[#1f521f]`}>
+          <div className={`${sidebarCollapsed ? 'w-10 h-10' : 'w-20 h-20'} rounded-xl flex items-center justify-center overflow-hidden border border-[#2A2F3D]`}>
             <img src="/logo.png" alt="ATHOS Logo" className="w-full h-full object-contain" />
           </div>
-          <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-[#33ff00] border-2 border-[#0a0a0a]" />
+          <div className="absolute -bottom-1 -right-1 w-3 h-3 rounded-full bg-[#C9A961] border-2 border-[#0B0E14]" />
         </div>
       </div>
 
       <button
         onClick={toggleSidebar}
-        className="absolute -right-3 top-8 w-6 h-6 flex items-center justify-center z-10 transition-all bg-[#0a0a0a] border border-[#1f521f] text-[#1f521f] hover:text-[#33ff00]"
+        className="absolute -right-3 top-8 w-6 h-6 rounded-full flex items-center justify-center z-10 transition-all bg-[#131722] border border-[#2A2F3D] text-[#8B93A6] hover:text-[#C9A961] hover:border-[#C9A961]"
       >
         {sidebarCollapsed ? <ChevronRight size={12} /> : <ChevronLeft size={12} />}
       </button>
 
       {!sidebarCollapsed && (
-        <div className="px-3 mb-2 mt-3 text-[#3f9e5c]">
-          <div className="flex items-center gap-2 px-3 py-2 border border-[#1f521f]">
-            <span className="text-[#33ff00]">$</span>
+        <div className="px-3 mb-2 mt-3">
+          <div className="flex items-center gap-2 px-3 py-2 rounded-lg border border-[#2A2F3D] bg-[#131722] focus-within:border-[#C9A961]/60 transition-colors">
+            <Search size={13} className="text-[#8B93A6]" />
             <input
               type="text"
-              placeholder="grep modulo..."
+              placeholder="Buscar módulo..."
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
-              className="bg-transparent text-xs outline-none w-full placeholder-[#1f521f] text-[#33ff00]"
+              className="bg-transparent text-xs outline-none w-full placeholder-[#4E5468] text-[#E9E4D8]"
             />
           </div>
         </div>
@@ -199,10 +199,10 @@ const Sidebar: React.FC = () => {
               {!sidebarCollapsed && (
                 <div className="flex items-center gap-2 px-3 mb-2">
                   {IconComponent && (
-                    <IconComponent size={11} className="text-[#33ff00]" />
+                    <IconComponent size={11} className="text-[#C9A961]" />
                   )}
-                  <p className="text-[10px] font-semibold tracking-[0.2em] uppercase text-[#3f9e5c]">
-                    // {section}
+                  <p className="text-[10px] font-semibold tracking-[0.2em] uppercase text-[#8B93A6]">
+                    {section}
                   </p>
                 </div>
               )}
@@ -215,28 +215,28 @@ const Sidebar: React.FC = () => {
                     <div key={item.id} className="flex items-center group">
                       <NavLink
                         to={`/${item.id}`}
-                        className={({ isActive }) => `flex-1 flex items-center gap-3 px-3 py-2 transition-all duration-150 relative border-l-2 ${
+                        className={({ isActive }) => `flex-1 flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-150 relative border-l-2 ${
                           sidebarCollapsed ? 'justify-center px-2' : ''
                         } ${
                           isModuleHeader
-                            ? 'font-bold text-[#33ff00] border-[#33ff00] bg-[#0f2610]'
+                            ? 'font-bold text-[#C9A961] border-[#C9A961] bg-[#1E2430]'
                             : isActive
-                              ? 'bg-[#0f2610] text-[#33ff00] border-[#33ff00]'
-                              : 'text-[#3f9e5c] hover:text-[#33ff00] hover:bg-[#0d1a0d] border-transparent'
+                              ? 'bg-[#1E2430] text-[#C9A961] border-[#C9A961]'
+                              : 'text-[#8B93A6] hover:text-[#C9A961] hover:bg-[#12151E] border-transparent'
                         }`}
                       >
                         {!sidebarCollapsed && (
                           <>
                             <span className={`text-sm ${isModuleHeader ? 'font-bold' : 'font-medium'}`}>
-                              {isModuleHeader ? '> ' : ''}{item.label}
+                              {item.label}
                             </span>
                             {item.badge && (
-                              <span className={`ml-auto text-[9px] font-bold px-1.5 py-0.5 border ${
+                              <span className={`ml-auto text-[9px] font-bold px-1.5 py-0.5 rounded border ${
                                 item.badge === 'IA'
-                                  ? 'border-[#ffb000] text-[#ffb000]'
-                                  : 'border-[#33ff00] text-[#33ff00]'
+                                  ? 'border-[#5B7FA8] text-[#5B7FA8]'
+                                  : 'border-[#C9A961] text-[#C9A961]'
                               }`}>
-                                [{item.badge}]
+                                {item.badge}
                               </span>
                             )}
                           </>
@@ -247,11 +247,11 @@ const Sidebar: React.FC = () => {
                           onClick={() => toggleFavorite(item.id)}
                           className={`p-1.5 opacity-0 group-hover:opacity-100 transition-all ml-1 ${
                             isFavorite
-                              ? 'text-[#ffb000] opacity-100'
-                              : 'text-[#1f521f] hover:text-[#ffb000]'
+                              ? 'text-[#5B7FA8] opacity-100'
+                              : 'text-[#2A2F3D] hover:text-[#5B7FA8]'
                           }`}
                         >
-                          <Star size={12} className={isFavorite ? 'fill-[#ffb000]' : ''} />
+                          <Star size={12} className={isFavorite ? 'fill-[#5B7FA8]' : ''} />
                         </button>
                       )}
                     </div>
@@ -264,23 +264,23 @@ const Sidebar: React.FC = () => {
       </nav>
 
       {/* PWA Mobile Link - Web Mode Only */}
-      <div className="mx-3 mb-3 p-4 border border-[#1f521f] hover:border-[#33ff00] transition-all duration-150">
+      <div className="mx-3 mb-3 p-4 rounded-xl border border-[#2A2F3D] bg-[#131722] hover:border-[#C9A961]/50 transition-all duration-150">
         {!sidebarCollapsed ? (
           <div className="space-y-2.5">
             <div className="flex items-center gap-2">
-              <Smartphone size={18} className="text-[#33ff00]" />
-              <p className="text-xs font-bold text-[#33ff00]">./athos-mobile</p>
+              <Smartphone size={18} className="text-[#C9A961]" />
+              <p className="text-xs font-bold text-[#F0E6CC]">ATHOS Mobile</p>
             </div>
-            <p className="text-[9px] leading-relaxed text-[#3f9e5c]">
-              # escritorio inteligente no smartphone
+            <p className="text-[9px] leading-relaxed text-[#8B93A6]">
+              Seu escritório inteligente no smartphone.
             </p>
             <a
               href="/?pwa=true"
               target="_blank"
               rel="noreferrer"
-              className="block w-full py-2 border border-[#33ff00] text-[#33ff00] text-xs font-bold text-center transition-all hover:bg-[#33ff00] hover:text-[#0a0a0a] active:scale-[0.98]"
+              className="block w-full py-2 rounded-lg border border-[#C9A961]/60 text-[#C9A961] text-xs font-semibold text-center transition-all hover:bg-[#C9A961] hover:text-[#0B0E14] active:scale-[0.98]"
             >
-              [ ACESSAR ]
+              Acessar
             </a>
           </div>
         ) : (
@@ -289,26 +289,26 @@ const Sidebar: React.FC = () => {
             target="_blank"
             rel="noreferrer"
             title="Acessar ATHOS Mobile PWA"
-            className="flex items-center justify-center p-3 border border-[#33ff00] text-[#33ff00] hover:bg-[#33ff00] hover:text-[#0a0a0a] transition-all active:scale-[0.98]"
+            className="flex items-center justify-center p-3 rounded-lg border border-[#C9A961]/60 text-[#C9A961] hover:bg-[#C9A961] hover:text-[#0B0E14] transition-all active:scale-[0.98]"
           >
             <Smartphone size={18} />
           </a>
         )}
       </div>
 
-      <div className="p-4 border-t border-[#1f521f]">
+      <div className="p-4 border-t border-[#2A2F3D]">
         <div className={`flex items-center gap-3 ${sidebarCollapsed ? 'justify-center' : ''}`}>
-          <div className="w-9 h-9 border border-[#33ff00] flex items-center justify-center text-[#33ff00] text-sm font-bold flex-shrink-0">
+          <div className="w-9 h-9 rounded-full flex items-center justify-center text-[#0B0E14] text-sm font-bold flex-shrink-0" style={{ background: 'linear-gradient(135deg, #E0C583 0%, #C9A961 55%, #A98A47 100%)' }}>
             {user?.avatar || user?.nome?.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() || 'US'}
           </div>
           {!sidebarCollapsed && (
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold truncate text-[#33ff00]">{user?.nome || 'Usuário'}</p>
-              <p className="text-xs text-[#3f9e5c]">{user?.email || 'usuario@athos.com'}</p>
+              <p className="text-sm font-semibold truncate text-[#F0E6CC]">{user?.nome || 'Usuário'}</p>
+              <p className="text-xs text-[#8B93A6]">{user?.email || 'usuario@athos.com'}</p>
             </div>
           )}
           {!sidebarCollapsed && (
-            <button onClick={handleLogout} className="p-1.5 transition-colors text-[#3f9e5c] hover:text-[#ff3333]">
+            <button onClick={handleLogout} className="p-1.5 transition-colors text-[#8B93A6] hover:text-[#A6484A]">
               <LogOut size={16} />
             </button>
           )}

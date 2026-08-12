@@ -5,7 +5,7 @@ interface AthosLogoProps {
   size?: number;
 }
 
-export default function AthosLogo({ className = 'text-[#39ff14]', size = 48 }: AthosLogoProps) {
+export default function AthosLogo({ className = 'text-[#C9A961]', size = 48 }: AthosLogoProps) {
   return (
     <svg 
       width={size} 

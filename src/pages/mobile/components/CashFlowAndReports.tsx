@@ -45,7 +45,7 @@ export default function CashFlowAndReports({
   const [showAddCat, setShowAddCat] = useState(false);
   const [newCatName, setNewCatName] = useState('');
   const [newCatType, setNewCatType] = useState<'revenue' | 'expense'>('expense');
-  const [newCatColor, setNewCatColor] = useState('#3B82F6');
+  const [newCatColor, setNewCatColor] = useState('#5B7FA8');
   const [newCatIcon, setNewCatIcon] = useState('Folder');
 
   // PDF / Excel simulation state
@@ -346,13 +346,13 @@ export default function CashFlowAndReports({
                 <div className="relative w-24 h-24 flex items-center justify-center">
                   <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
                     {/* Background Circle */}
-                    <circle cx="18" cy="18" r="15.915" fill="none" stroke="#1e293b" strokeWidth="3" />
+                    <circle cx="18" cy="18" r="15.915" fill="none" stroke="#232837" strokeWidth="3" />
                     {/* Slice 1 (Venda de produtos: 60%) */}
-                    <circle cx="18" cy="18" r="15.915" fill="none" stroke="#10b981" strokeWidth="3" strokeDasharray="60 40" strokeDashoffset="0" />
+                    <circle cx="18" cy="18" r="15.915" fill="none" stroke="#2F9E7C" strokeWidth="3" strokeDasharray="60 40" strokeDashoffset="0" />
                     {/* Slice 2 (Serviços: 35%) */}
-                    <circle cx="18" cy="18" r="15.915" fill="none" stroke="#06b6d4" strokeWidth="3" strokeDasharray="35 65" strokeDashoffset="-60" />
+                    <circle cx="18" cy="18" r="15.915" fill="none" stroke="#C9A961" strokeWidth="3" strokeDasharray="35 65" strokeDashoffset="-60" />
                     {/* Slice 3 (Rendimentos: 5%) */}
-                    <circle cx="18" cy="18" r="15.915" fill="none" stroke="#3b82f6" strokeWidth="3" strokeDasharray="5 95" strokeDashoffset="-95" />
+                    <circle cx="18" cy="18" r="15.915" fill="none" stroke="#5B7FA8" strokeWidth="3" strokeDasharray="5 95" strokeDashoffset="-95" />
                   </svg>
                   <div className="absolute font-mono text-[10px] font-bold text-white">60%</div>
                 </div>
@@ -361,21 +361,21 @@ export default function CashFlowAndReports({
                 <div className="flex-1 space-y-1.5 text-xs text-slate-400">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-1.5 font-semibold">
-                      <span className="w-2.5 h-2.5 rounded bg-[#10b981]"></span>
+                      <span className="w-2.5 h-2.5 rounded bg-[#2F9E7C]"></span>
                       <span className="text-white">Venda de produtos</span>
                     </div>
                     <span className="font-mono text-[10px] font-medium">60%</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-1.5 font-semibold">
-                      <span className="w-2.5 h-2.5 rounded bg-[#06b6d4]"></span>
+                      <span className="w-2.5 h-2.5 rounded bg-[#C9A961]"></span>
                       <span className="text-white">Serviços</span>
                     </div>
                     <span className="font-mono text-[10px] font-medium">35%</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-1.5 font-semibold">
-                      <span className="w-2.5 h-2.5 rounded bg-[#3b82f6]"></span>
+                      <span className="w-2.5 h-2.5 rounded bg-[#5B7FA8]"></span>
                       <span className="text-white">Rendimentos</span>
                     </div>
                     <span className="font-mono text-[10px] font-medium">5%</span>
@@ -391,7 +391,7 @@ export default function CashFlowAndReports({
               <div className="space-y-3">
                 {[
                   { name: 'Salários', val: 12000.00, pct: 60, color: 'bg-emerald-500' },
-                  { name: 'Marketing', val: 3500.00, pct: 25, color: 'bg-[#3b82f6]' },
+                  { name: 'Marketing', val: 3500.00, pct: 25, color: 'bg-[#5B7FA8]' },
                   { name: 'Serviços de Escritório', val: 2780.00, pct: 15, color: 'bg-purple-500' }
                 ].map((item, i) => (
                   <div key={i} className="space-y-1">
@@ -460,11 +460,11 @@ export default function CashFlowAndReports({
                       onChange={(e) => setNewCatColor(e.target.value)}
                       className="w-full px-3 py-2 bg-slate-900 border border-slate-800 rounded-lg text-xs focus:outline-none"
                     >
-                      <option value="#EF4444">Vermelho</option>
-                      <option value="#F59E0B">Amarelo</option>
-                      <option value="#3B82F6">Azul</option>
-                      <option value="#10B981">Verde</option>
-                      <option value="#8B5CF6">Roxo</option>
+                      <option value="#A6484A">Vermelho</option>
+                      <option value="#C9A961">Dourado</option>
+                      <option value="#5B7FA8">Azul</option>
+                      <option value="#2F9E7C">Verde</option>
+                      <option value="#8E6E9F">Roxo</option>
                     </select>
                   </div>
                   <div className="space-y-1">

@@ -16,11 +16,11 @@ const itemVariants = {
 };
 
 const TerminalPane: React.FC<TerminalPaneProps> = ({ title, icon, className, children, right, noPadding }) => (
-  <motion.div variants={itemVariants} initial="hidden" animate="visible" className={`border border-[#1f521f] bg-[#0a0a0a] ${className || ''}`}>
-    <div className="px-5 py-3 border-b border-[#1f521f] flex items-center justify-between flex-wrap gap-2">
-      <div className="flex items-center gap-2">
-        {icon}
-        <h3 className="text-xs font-bold uppercase tracking-widest text-[#33ff00]">+--- {title} ---+</h3>
+  <motion.div variants={itemVariants} initial="hidden" animate="visible" className={`glass-card ${className || ''}`}>
+    <div className="px-5 py-4 border-b border-[#232837] flex items-center justify-between flex-wrap gap-2">
+      <div className="flex items-center gap-2.5">
+        {icon && <span className="text-[#C9A961]">{icon}</span>}
+        <h3 className="text-[13px] font-semibold tracking-[0.08em] uppercase text-[#8B93A6]">{title}</h3>
       </div>
       {right}
     </div>

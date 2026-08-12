@@ -468,7 +468,7 @@ export default function ProfileAndSettings({
                     className={`p-4 rounded-xl border transition relative text-left ${
                       not.read 
                         ? 'bg-slate-900/40 border-slate-800/50 opacity-75' 
-                        : 'bg-[#081a0b]/60 border-blue-500/30 shadow-sm'
+                        : 'bg-[#1E2430]/60 border-[#C9A961]/30 shadow-sm'
                     }`}
                   >
                     {/* Unread circle badge */}

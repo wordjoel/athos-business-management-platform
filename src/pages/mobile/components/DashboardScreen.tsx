@@ -136,9 +136,9 @@ export default function DashboardScreen({
 
       {/* Primary Balance Card */}
       <div className="px-5 mb-5">
-        <div className="relative p-5 bg-gradient-to-b from-[#081a0b] to-[#000000] border border-blue-500/40 rounded-2xl shadow-glow-blue overflow-hidden">
+        <div className="relative p-5 bg-gradient-to-b from-[#1E2430] to-[#0B0E14] border border-[#C9A961]/30 rounded-2xl shadow-glow overflow-hidden">
           {/* Subtle background glow circle */}
-          <div className="absolute -right-10 -bottom-10 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl"></div>
+          <div className="absolute -right-10 -bottom-10 w-32 h-32 bg-[#C9A961]/10 rounded-full blur-2xl"></div>
 
           <div className="flex justify-between items-center mb-2">
             <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Saldo total</span>
@@ -158,7 +158,7 @@ export default function DashboardScreen({
             <span className="text-slate-400">Conta principal ativa</span>
             <button 
               onClick={() => onNavigate('bank_accounts')}
-              className="flex items-center gap-1 text-blue-400 font-semibold hover:text-blue-300 transition"
+              className="flex items-center gap-1 text-[#C9A961] font-semibold hover:text-[#D9B96D] transition"
             >
               Gerenciar contas <ChevronRight className="w-3.5 h-3.5" />
             </button>
@@ -207,7 +207,7 @@ export default function DashboardScreen({
       <div className="px-5 mb-5">
         <div 
           onClick={() => onNavigate('cash_flow')}
-          className="p-4 bg-slate-900/95 border border-slate-800 rounded-xl cursor-pointer hover:border-blue-500/30 transition duration-200"
+          className="p-4 bg-slate-900/95 border border-slate-800 rounded-xl cursor-pointer hover:border-[#C9A961]/30 transition duration-200"
         >
           <div className="flex justify-between items-center mb-3">
             <div>
@@ -226,11 +226,11 @@ export default function DashboardScreen({
 
           {/* Glowing Animated Sparkline Chart */}
           <div className="h-14 w-full flex items-end relative overflow-hidden mt-4">
-            <svg viewBox="0 0 100 20" className="w-full h-full text-blue-400 filter drop-shadow-[0_0_6px_rgba(57,255,20,0.6)]">
+            <svg viewBox="0 0 100 20" className="w-full h-full text-[#C9A961] filter drop-shadow-[0_0_6px_rgba(201,169,97,0.5)]">
               <defs>
                 <linearGradient id="chart-glow" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#39ff14" stopOpacity="0.35" />
-                  <stop offset="100%" stopColor="#39ff14" stopOpacity="0.0" />
+                  <stop offset="0%" stopColor="#C9A961" stopOpacity="0.35" />
+                  <stop offset="100%" stopColor="#C9A961" stopOpacity="0.0" />
                 </linearGradient>
               </defs>
               <path

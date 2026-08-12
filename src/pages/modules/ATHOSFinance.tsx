@@ -89,14 +89,14 @@ const ATHOSFinance: React.FC = () => {
     <div className="p-5 space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-[#33ff00] term-glow">ATHOS_FINANCE</h1>
-          <p className="text-sm text-[#3f9e5c]"># gestão financeira</p>
+          <p className="module-eyebrow mb-1">Financeiro</p>
+          <h1 className="font-display text-2xl text-[#F0E6CC]">Central de Caixa</h1>
         </div>
       </div>
 
-      <div className="flex gap-1 border border-[#1f521f] p-1">
+      <div className="flex gap-1 rounded-xl border border-[#232837] p-1 bg-[#131722]">
         {abas.map(a => (
-          <button key={a.id} onClick={() => setAba(a.id)} className={`px-3 py-1.5 text-xs font-bold transition-colors ${aba === a.id ? 'bg-[#33ff00] text-[#0a0a0a]' : 'text-[#3f9e5c] hover:text-[#33ff00]'}`}>
+          <button key={a.id} onClick={() => setAba(a.id)} className={`px-3 py-1.5 rounded-lg text-xs font-semibold tracking-wide transition-colors ${aba === a.id ? 'bg-[#C9A961] text-[#0B0E14]' : 'text-[#8B93A6] hover:text-[#C9A961]'}`}>
             {a.label}
           </button>
         ))}
@@ -105,67 +105,67 @@ const ATHOSFinance: React.FC = () => {
       {aba === 'resumo' && (
         <>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            <div className="p-3 border border-[#1f521f]">
-              <div className="flex items-center gap-1 mb-1"><ArrowUpRight size={14} className="text-[#33ff00]" /><span className="text-xs text-[#3f9e5c]">Receitas</span></div>
-              <p className="text-lg font-bold text-[#33ff00]">R$ {receitasTotal.toLocaleString()}</p>
+            <div className="p-3 rounded-xl border border-[#232837] bg-[#131722]">
+              <div className="flex items-center gap-1 mb-1"><ArrowUpRight size={14} className="text-[#2F9E7C]" /><span className="text-xs text-[#8B93A6]">Receitas</span></div>
+              <p className="text-lg font-bold text-[#2F9E7C]">R$ {receitasTotal.toLocaleString()}</p>
             </div>
-            <div className="p-3 border border-[#1f521f]">
-              <div className="flex items-center gap-1 mb-1"><ArrowDownRight size={14} className="text-[#ff3333]" /><span className="text-xs text-[#3f9e5c]">Despesas</span></div>
-              <p className="text-lg font-bold text-[#ff3333]">R$ {despesasTotal.toLocaleString()}</p>
+            <div className="p-3 rounded-xl border border-[#232837] bg-[#131722]">
+              <div className="flex items-center gap-1 mb-1"><ArrowDownRight size={14} className="text-[#A6484A]" /><span className="text-xs text-[#8B93A6]">Despesas</span></div>
+              <p className="text-lg font-bold text-[#A6484A]">R$ {despesasTotal.toLocaleString()}</p>
             </div>
-            <div className="p-3 border border-[#1f521f]">
-              <div className="flex items-center gap-1 mb-1"><Wallet size={14} className="text-[#33ff00]" /><span className="text-xs text-[#3f9e5c]">Saldo</span></div>
-              <p className={`text-lg font-bold ${saldo >= 0 ? 'text-[#33ff00]' : 'text-[#ff3333]'}`}>R$ {saldo.toLocaleString()}</p>
+            <div className="p-3 rounded-xl border border-[#232837] bg-[#131722]">
+              <div className="flex items-center gap-1 mb-1"><Wallet size={14} className="text-[#C9A961]" /><span className="text-xs text-[#8B93A6]">Saldo</span></div>
+              <p className={`text-lg font-bold ${saldo >= 0 ? 'text-[#C9A961]' : 'text-[#A6484A]'}`}>R$ {saldo.toLocaleString()}</p>
             </div>
-            <div className="p-3 border border-[#1f521f]">
-              <div className="flex items-center gap-1 mb-1"><Receipt size={14} className="text-[#ffb000]" /><span className="text-xs text-[#3f9e5c]">Lançamentos</span></div>
-              <p className="text-lg font-bold text-[#33ff00]">{lancamentos.length}</p>
+            <div className="p-3 rounded-xl border border-[#232837] bg-[#131722]">
+              <div className="flex items-center gap-1 mb-1"><Receipt size={14} className="text-[#5B7FA8]" /><span className="text-xs text-[#8B93A6]">Lançamentos</span></div>
+              <p className="text-lg font-bold text-[#C9A961]">{lancamentos.length}</p>
             </div>
           </div>
 
-          <div className="border border-[#1f521f] bg-[#0a0a0a]">
-            <div className="px-4 py-3 border-b border-[#1f521f] flex items-center justify-between">
-              <h3 className="text-xs font-bold uppercase tracking-widest text-[#33ff00]">+--- LANCAMENTOS_RECENTES ---+</h3>
-              <button onClick={() => setShowForm(true)} className="px-3 py-1.5 border border-[#33ff00] text-xs text-[#33ff00] hover:bg-[#33ff00] hover:text-[#0a0a0a] transition-all">[ + NOVO ]</button>
+          <div className="glass-card">
+            <div className="px-4 py-3 border-b border-[#2A2F3D] flex items-center justify-between">
+              <h3 className="text-[13px] font-semibold tracking-[0.06em] uppercase text-[#8B93A6]">Lançamentos Recentes</h3>
+              <button onClick={() => setShowForm(true)} className="px-3 py-1.5 rounded-lg border border-[#C9A961]/50 text-xs font-medium text-[#C9A961] hover:bg-[#C9A961] hover:text-[#0B0E14] transition-all">+ Novo</button>
             </div>
             <div className="p-4 space-y-1">
               {lancamentos.slice(0, 5).map(l => (
-                <div key={l.id} className="flex items-center justify-between p-2 border-b border-[#1f521f]">
+                <div key={l.id} className="flex items-center justify-between p-2 border-b border-[#2A2F3D]">
                   <div>
-                    <p className="text-sm text-[#33ff00]">{l.descricao}</p>
-                    <p className="text-[10px] text-[#3f9e5c]">{l.vencimento} • {l.categoria}</p>
+                    <p className="text-sm text-[#C9A961]">{l.descricao}</p>
+                    <p className="text-[10px] text-[#8B93A6]">{l.vencimento} • {l.categoria}</p>
                   </div>
                   <div className="text-right">
-                    <p className={`text-sm font-medium ${l.tipo === 'receita' ? 'text-[#33ff00]' : 'text-[#ff3333]'}`}>{l.tipo === 'receita' ? '+' : '-'} R$ {l.valor.toLocaleString()}</p>
+                    <p className={`text-sm font-medium ${l.tipo === 'receita' ? 'text-[#2F9E7C]' : 'text-[#A6484A]'}`}>{l.tipo === 'receita' ? '+' : '-'} R$ {l.valor.toLocaleString()}</p>
                   </div>
                 </div>
               ))}
-              {lancamentos.length === 0 && <p className="text-xs text-[#1f521f]"># nenhum lançamento ainda</p>}
+              {lancamentos.length === 0 && <p className="text-xs text-[#4E5468] italic">Nenhum lançamento ainda.</p>}
             </div>
           </div>
         </>
       )}
 
       {aba === 'contas-pagar' && (
-        <div className="border border-[#1f521f] bg-[#0a0a0a]">
-          <div className="px-4 py-3 border-b border-[#1f521f] flex justify-between items-center">
-            <h3 className="text-xs font-bold uppercase tracking-widest text-[#33ff00]">+--- CONTAS_A_PAGAR ({contasPagar.length}) ---+</h3>
-            <button onClick={() => { setFormData({ ...formData, tipo: 'despesa' }); setShowForm(true); }} className="px-3 py-1.5 border border-[#33ff00] text-xs text-[#33ff00] hover:bg-[#33ff00] hover:text-[#0a0a0a] transition-all">[ + NOVA DESPESA ]</button>
+        <div className="glass-card">
+          <div className="px-4 py-3 border-b border-[#2A2F3D] flex justify-between items-center">
+            <h3 className="text-[13px] font-semibold tracking-[0.06em] uppercase text-[#8B93A6]">Contas a Pagar ({contasPagar.length})</h3>
+            <button onClick={() => { setFormData({ ...formData, tipo: 'despesa' }); setShowForm(true); }} className="px-3 py-1.5 rounded-lg border border-[#C9A961]/50 text-xs font-medium text-[#C9A961] hover:bg-[#C9A961] hover:text-[#0B0E14] transition-all">+ Nova Despesa</button>
           </div>
           <div className="p-4">
             {contasPagar.length === 0 ? (
-              <p className="text-sm text-[#1f521f]"># nenhuma conta pendente</p>
+              <p className="text-sm text-[#4E5468] italic">Nenhuma conta pendente.</p>
             ) : (
               <div className="space-y-1">
                 {contasPagar.map(l => (
-                  <div key={l.id} className="flex items-center justify-between p-2 border-b border-[#1f521f]">
+                  <div key={l.id} className="flex items-center justify-between p-2 border-b border-[#2A2F3D]">
                     <div>
-                      <p className="text-sm text-[#33ff00]">{l.descricao}</p>
-                      <p className="text-[10px] text-[#3f9e5c]">{l.contraparte} • {l.categoria}</p>
+                      <p className="text-sm text-[#E9E4D8]">{l.descricao}</p>
+                      <p className="text-[10px] text-[#8B93A6]">{l.contraparte} • {l.categoria}</p>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium text-[#ff3333]">R$ {l.valor.toLocaleString()}</span>
-                      <button onClick={() => excluir(l.id)} className="p-1 text-[#1f521f] hover:text-[#ff3333]"><X size={12} /></button>
+                      <span className="text-sm font-medium text-[#A6484A]">R$ {l.valor.toLocaleString()}</span>
+                      <button onClick={() => excluir(l.id)} className="p-1 text-[#2A2F3D] hover:text-[#A6484A]"><X size={12} /></button>
                     </div>
                   </div>
                 ))}
@@ -176,25 +176,25 @@ const ATHOSFinance: React.FC = () => {
       )}
 
       {aba === 'contas-receber' && (
-        <div className="border border-[#1f521f] bg-[#0a0a0a]">
-          <div className="px-4 py-3 border-b border-[#1f521f] flex justify-between items-center">
-            <h3 className="text-xs font-bold uppercase tracking-widest text-[#33ff00]">+--- CONTAS_A_RECEBER ({contasReceber.length}) ---+</h3>
-            <button onClick={() => { setFormData({ ...formData, tipo: 'receita' }); setShowForm(true); }} className="px-3 py-1.5 border border-[#33ff00] text-xs text-[#33ff00] hover:bg-[#33ff00] hover:text-[#0a0a0a] transition-all">[ + NOVA RECEITA ]</button>
+        <div className="glass-card">
+          <div className="px-4 py-3 border-b border-[#2A2F3D] flex justify-between items-center">
+            <h3 className="text-[13px] font-semibold tracking-[0.06em] uppercase text-[#8B93A6]">Contas a Receber ({contasReceber.length})</h3>
+            <button onClick={() => { setFormData({ ...formData, tipo: 'receita' }); setShowForm(true); }} className="px-3 py-1.5 rounded-lg border border-[#C9A961]/50 text-xs font-medium text-[#C9A961] hover:bg-[#C9A961] hover:text-[#0B0E14] transition-all">+ Nova Receita</button>
           </div>
           <div className="p-4">
             {contasReceber.length === 0 ? (
-              <p className="text-sm text-[#1f521f]"># nenhuma conta a receber</p>
+              <p className="text-sm text-[#4E5468] italic">Nenhuma conta a receber.</p>
             ) : (
               <div className="space-y-1">
                 {contasReceber.map(l => (
-                  <div key={l.id} className="flex items-center justify-between p-2 border-b border-[#1f521f]">
+                  <div key={l.id} className="flex items-center justify-between p-2 border-b border-[#2A2F3D]">
                     <div>
-                      <p className="text-sm text-[#33ff00]">{l.descricao}</p>
-                      <p className="text-[10px] text-[#3f9e5c]">{l.contraparte} • {l.categoria}</p>
+                      <p className="text-sm text-[#E9E4D8]">{l.descricao}</p>
+                      <p className="text-[10px] text-[#8B93A6]">{l.contraparte} • {l.categoria}</p>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium text-[#33ff00]">R$ {l.valor.toLocaleString()}</span>
-                      <button onClick={() => excluir(l.id)} className="p-1 text-[#1f521f] hover:text-[#ff3333]"><X size={12} /></button>
+                      <span className="text-sm font-medium text-[#2F9E7C]">R$ {l.valor.toLocaleString()}</span>
+                      <button onClick={() => excluir(l.id)} className="p-1 text-[#2A2F3D] hover:text-[#A6484A]"><X size={12} /></button>
                     </div>
                   </div>
                 ))}
@@ -205,35 +205,35 @@ const ATHOSFinance: React.FC = () => {
       )}
 
       {aba === 'fluxo' && (
-        <div className="border border-[#1f521f] bg-[#0a0a0a]">
-          <div className="px-4 py-3 border-b border-[#1f521f]">
-            <h3 className="text-xs font-bold uppercase tracking-widest text-[#33ff00]">+--- FLUXO_DE_CAIXA_MENSAL ---+</h3>
+        <div className="glass-card">
+          <div className="px-4 py-3 border-b border-[#2A2F3D]">
+            <h3 className="text-[13px] font-semibold tracking-[0.06em] uppercase text-[#8B93A6]">Fluxo de Caixa Mensal</h3>
           </div>
           <div className="p-4">
             <div className="h-40 flex items-end gap-3 overflow-x-auto">
               {fluxo.map(m => (
                 <div key={m.mes} className="flex-1 flex flex-col items-center min-w-[40px]">
                   <div className="w-full flex gap-0.5 justify-center">
-                    <div className="w-4 bg-[#33ff00]" style={{ height: `${Math.min((m.receita / maxFluxo) * 120, 120)}px` }} />
-                    <div className="w-4 bg-[#ff3333]" style={{ height: `${Math.min((m.despesa / maxFluxo) * 120, 120)}px` }} />
+                    <div className="w-4 rounded-t-[3px] bg-[#2F9E7C]" style={{ height: `${Math.min((m.receita / maxFluxo) * 120, 120)}px` }} />
+                    <div className="w-4 rounded-t-[3px] bg-[#A6484A]" style={{ height: `${Math.min((m.despesa / maxFluxo) * 120, 120)}px` }} />
                   </div>
-                  <span className="text-[10px] text-[#3f9e5c] mt-1">{m.mes}</span>
+                  <span className="text-[10px] text-[#8B93A6] mt-1">{m.mes}</span>
                 </div>
               ))}
-              {fluxo.length === 0 && <p className="text-sm w-full text-center py-10 text-[#1f521f]"># nenhum dado. lance receitas e despesas</p>}
+              {fluxo.length === 0 && <p className="text-sm w-full text-center py-10 text-[#4E5468] italic">Nenhum dado ainda — lance receitas e despesas.</p>}
             </div>
             <div className="flex justify-center gap-4 mt-3">
-              <div className="flex items-center gap-1"><div className="w-2 h-2 bg-[#33ff00]" /><span className="text-xs text-[#3f9e5c]">Receitas</span></div>
-              <div className="flex items-center gap-1"><div className="w-2 h-2 bg-[#ff3333]" /><span className="text-xs text-[#3f9e5c]">Despesas</span></div>
+              <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-[#2F9E7C]" /><span className="text-xs text-[#8B93A6]">Receitas</span></div>
+              <div className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-[#A6484A]" /><span className="text-xs text-[#8B93A6]">Despesas</span></div>
             </div>
           </div>
         </div>
       )}
 
       {aba === 'dre' && (
-        <div className="border border-[#1f521f] bg-[#0a0a0a]">
-          <div className="px-4 py-3 border-b border-[#1f521f]">
-            <h3 className="text-xs font-bold uppercase tracking-widest text-[#33ff00]">+--- DRE_DEMONSTRATIVO ---+</h3>
+        <div className="glass-card">
+          <div className="px-4 py-3 border-b border-[#2A2F3D]">
+            <h3 className="text-[13px] font-semibold tracking-[0.06em] uppercase text-[#8B93A6]">DRE — Demonstrativo de Resultado</h3>
           </div>
           <div className="p-4 space-y-1">
             {[
@@ -248,9 +248,9 @@ const ATHOSFinance: React.FC = () => {
               { label: '(-) IR', valor: -dre.irContribuicoes },
               { label: '= Lucro Líquido', valor: dre.lucroLiquido, bold: true },
             ].map((r, i) => (
-              <div key={i} className="flex justify-between text-sm py-1 border-b border-[#1f521f]">
-                <span className={`text-[#33ff00] ${r.bold ? 'font-semibold' : ''}`}>{r.label}</span>
-                <span className={`font-mono font-medium ${r.valor >= 0 ? 'text-[#33ff00]' : 'text-[#ff3333]'}`}>R$ {Math.abs(r.valor).toLocaleString()}</span>
+              <div key={i} className="flex justify-between text-sm py-1.5 border-b border-[#2A2F3D]">
+                <span className={`text-[#E9E4D8] ${r.bold ? 'font-semibold' : ''}`}>{r.label}</span>
+                <span className={`font-mono font-medium ${r.valor >= 0 ? 'text-[#2F9E7C]' : 'text-[#A6484A]'}`}>R$ {Math.abs(r.valor).toLocaleString()}</span>
               </div>
             ))}
           </div>
@@ -259,23 +259,23 @@ const ATHOSFinance: React.FC = () => {
 
       {showForm && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-          <div className="p-5 w-full max-w-md border border-[#33ff00] bg-[#0a0a0a]">
+          <div className="p-5 w-full max-w-md rounded-2xl border border-[#232837] bg-[#131722] shadow-2xl">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-sm font-bold uppercase tracking-widest text-[#33ff00]">{formData.tipo === 'receita' ? 'NOVA_RECEITA' : 'NOVA_DESPESA'}</h2>
-              <button onClick={() => setShowForm(false)}><X size={18} className="text-[#3f9e5c] hover:text-[#33ff00]" /></button>
+              <h2 className="font-display text-lg text-[#F0E6CC]">{formData.tipo === 'receita' ? 'Nova Receita' : 'Nova Despesa'}</h2>
+              <button onClick={() => setShowForm(false)}><X size={18} className="text-[#8B93A6] hover:text-[#C9A961]" /></button>
             </div>
             <div className="space-y-3">
               <div className="flex gap-2">
-                <button onClick={() => setFormData({ ...formData, tipo: 'receita' })} className={`flex-1 py-2 text-sm border transition-all ${formData.tipo === 'receita' ? 'bg-[#33ff00] text-[#0a0a0a] border-[#33ff00]' : 'text-[#3f9e5c] border-[#1f521f]'}`}>Receita</button>
-                <button onClick={() => setFormData({ ...formData, tipo: 'despesa' })} className={`flex-1 py-2 text-sm border transition-all ${formData.tipo === 'despesa' ? 'bg-[#ff3333] text-[#0a0a0a] border-[#ff3333]' : 'text-[#3f9e5c] border-[#1f521f]'}`}>Despesa</button>
+                <button onClick={() => setFormData({ ...formData, tipo: 'receita' })} className={`flex-1 py-2 rounded-lg text-sm border transition-all ${formData.tipo === 'receita' ? 'bg-[#2F9E7C] text-[#0B0E14] border-[#2F9E7C]' : 'text-[#8B93A6] border-[#2A2F3D]'}`}>Receita</button>
+                <button onClick={() => setFormData({ ...formData, tipo: 'despesa' })} className={`flex-1 py-2 rounded-lg text-sm border transition-all ${formData.tipo === 'despesa' ? 'bg-[#A6484A] text-[#0B0E14] border-[#A6484A]' : 'text-[#8B93A6] border-[#2A2F3D]'}`}>Despesa</button>
               </div>
-              <input type="text" value={formData.descricao} onChange={e => setFormData({ ...formData, descricao: e.target.value })} placeholder="Descrição" className="w-full py-2 bg-transparent border-0 border-b border-[#1f521f] focus:border-[#33ff00] text-[#33ff00] placeholder-[#1f521f] text-sm outline-none" />
-              <input value={formData.contraparte} onChange={e => setFormData({ ...formData, contraparte: e.target.value })} placeholder="Cliente / Fornecedor" className="w-full py-2 bg-transparent border-0 border-b border-[#1f521f] focus:border-[#33ff00] text-[#33ff00] placeholder-[#1f521f] text-sm outline-none" />
-              <input type="number" value={formData.valor} onChange={e => setFormData({ ...formData, valor: e.target.value })} placeholder="Valor" className="w-full py-2 bg-transparent border-0 border-b border-[#1f521f] focus:border-[#33ff00] text-[#33ff00] placeholder-[#1f521f] text-sm outline-none" />
-              <select value={formData.categoria} onChange={e => setFormData({ ...formData, categoria: e.target.value })} className="w-full py-2 bg-transparent border-0 border-b border-[#1f521f] focus:border-[#33ff00] text-[#33ff00] text-sm outline-none">
+              <input type="text" value={formData.descricao} onChange={e => setFormData({ ...formData, descricao: e.target.value })} placeholder="Descrição" className="w-full py-2.5 px-3 rounded-lg bg-[#0B0E14] border border-[#232837] focus:border-[#C9A961] text-[#E9E4D8] placeholder-[#4E5468] text-sm outline-none transition-colors" />
+              <input value={formData.contraparte} onChange={e => setFormData({ ...formData, contraparte: e.target.value })} placeholder="Cliente / Fornecedor" className="w-full py-2.5 px-3 rounded-lg bg-[#0B0E14] border border-[#232837] focus:border-[#C9A961] text-[#E9E4D8] placeholder-[#4E5468] text-sm outline-none transition-colors" />
+              <input type="number" value={formData.valor} onChange={e => setFormData({ ...formData, valor: e.target.value })} placeholder="Valor" className="w-full py-2.5 px-3 rounded-lg bg-[#0B0E14] border border-[#232837] focus:border-[#C9A961] text-[#E9E4D8] placeholder-[#4E5468] text-sm outline-none transition-colors" />
+              <select value={formData.categoria} onChange={e => setFormData({ ...formData, categoria: e.target.value })} className="w-full py-2.5 px-3 rounded-lg bg-[#0B0E14] border border-[#232837] focus:border-[#C9A961] text-[#E9E4D8] text-sm outline-none transition-colors">
                 <option>Serviços</option><option>Aluguel</option><option>Marketing</option><option>Impostos</option><option>Salários</option><option>Operacional</option><option>Financeiro</option><option>Outros</option>
               </select>
-              <button onClick={salvarTransacao} disabled={salvando} className="w-full py-2.5 border border-[#33ff00] text-[#33ff00] text-sm font-bold hover:bg-[#33ff00] hover:text-[#0a0a0a] transition-all disabled:opacity-40">{salvando ? 'SALVANDO...' : '[ SALVAR ]'}</button>
+              <button onClick={salvarTransacao} disabled={salvando} className="w-full py-2.5 rounded-lg font-medium text-sm transition-all disabled:opacity-50" style={{ background: salvando ? '#232837' : 'linear-gradient(135deg, #E0C583 0%, #C9A961 55%, #A98A47 100%)', color: salvando ? '#8B93A6' : '#12151E' }}>{salvando ? 'Salvando…' : 'Salvar'}</button>
             </div>
           </div>
         </div>

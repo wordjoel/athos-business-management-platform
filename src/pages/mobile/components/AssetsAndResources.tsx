@@ -87,7 +87,7 @@ export default function AssetsAndResources({
         targetValue: parseFloat(goalTarget),
         currentValue: parseFloat(goalCurrent || '0'),
         deadline: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 30 days
-        color: '#3B82F6'
+        color: '#5B7FA8'
       });
       setGoalName('');
       setGoalTarget('');
@@ -132,7 +132,7 @@ export default function AssetsAndResources({
         accountNumber: accountNum || '12.345-6',
         status: 'active',
         icon: 'Building2',
-        color: '#3B82F6'
+        color: '#5B7FA8'
       });
       setBankName('');
       setAccountBalance('');
@@ -286,7 +286,7 @@ export default function AssetsAndResources({
                   <div className="flex items-center gap-3">
                     <div 
                       className="w-10 h-10 rounded-xl flex items-center justify-center text-slate-950 font-bold"
-                      style={{ backgroundColor: acc.color || '#3b82f6' }}
+                      style={{ backgroundColor: acc.color || '#5B7FA8' }}
                     >
                       {acc.bankName.slice(0, 2).toUpperCase()}
                     </div>

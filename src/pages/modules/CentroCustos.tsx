@@ -6,14 +6,14 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recha
 import { Building2, Plus, TrendingDown, TrendingUp, Search, Filter } from 'lucide-react';
 
 const CATEGORIAS_DEFAULT = [
-  { nome: 'TI & Tecnologia', orcamento: 50000, cor: '#06b6d4' },
-  { nome: 'Pessoal', orcamento: 120000, cor: '#8b5cf6' },
-  { nome: 'Marketing', orcamento: 30000, cor: '#f59e0b' },
-  { nome: 'Operacional', orcamento: 40000, cor: '#10b981' },
-  { nome: 'Administrativo', orcamento: 25000, cor: '#ef4444' },
-  { nome: 'Comercial', orcamento: 35000, cor: '#ec4899' },
-  { nome: 'Jurídico', orcamento: 15000, cor: '#6366f1' },
-  { nome: 'RH', orcamento: 20000, cor: '#f97316' },
+  { nome: 'TI & Tecnologia', orcamento: 50000, cor: '#5B7FA8' },
+  { nome: 'Pessoal', orcamento: 120000, cor: '#8E6E9F' },
+  { nome: 'Marketing', orcamento: 30000, cor: '#C9A961' },
+  { nome: 'Operacional', orcamento: 40000, cor: '#2F9E7C' },
+  { nome: 'Administrativo', orcamento: 25000, cor: '#A6484A' },
+  { nome: 'Comercial', orcamento: 35000, cor: '#B06E85' },
+  { nome: 'Jurídico', orcamento: 15000, cor: '#4C6D95' },
+  { nome: 'RH', orcamento: 20000, cor: '#B8785A' },
 ];
 
 const CentroCustos: React.FC = () => {
@@ -124,7 +124,7 @@ const CentroCustos: React.FC = () => {
               <Pie data={dados.map(d => ({ name: d.nome, value: d.gasto }))} cx="50%" cy="50%" innerRadius={60} outerRadius={100} dataKey="value">
                 {dados.map((d, i) => <Cell key={i} fill={d.cor} />)}
               </Pie>
-              <Tooltip formatter={(v: any) => `R$ ${Number(v).toLocaleString()}`} contentStyle={{ background: '#1f2937', border: 'none', borderRadius: 8, color: '#fff', fontSize: 12 }} />
+              <Tooltip formatter={(v: any) => `R$ ${Number(v).toLocaleString()}`} contentStyle={{ background: '#131722', border: '1px solid #232837', borderRadius: 10, color: '#E9E4D8', fontSize: 12, boxShadow: '0 8px 24px rgba(0,0,0,0.4)' }} />
               <Legend />
             </PieChart>
           </ResponsiveContainer>

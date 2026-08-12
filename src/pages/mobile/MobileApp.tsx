@@ -477,7 +477,7 @@ export default function MobileApp() {
                   {
                     label: 'Lancamento recorrente',
                     desc: 'Configurar cobranca mensal fixa',
-                    icon: <Clock className="w-5 h-5 text-[#8b5cf6]" />,
+                    icon: <Clock className="w-5 h-5 text-[#8E6E9F]" />,
                     action: () => {
                       alert('Lancamento recorrente corporativo simulado!');
                       setShowFABSheet(false);

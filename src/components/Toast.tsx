@@ -62,40 +62,33 @@ const ToastContainer: React.FC<{ toasts: Toast[]; removeToast: (id: string) => v
 
 const ToastItem: React.FC<{ toast: Toast; onClose: () => void }> = ({ toast, onClose }) => {
   const icons = {
-    success: <CheckCircle className="text-[#33ff00]" size={20} />,
-    error: <XCircle className="text-[#ff3333]" size={20} />,
-    warning: <AlertCircle className="text-[#ffb000]" size={20} />,
-    info: <Info className="text-[#33ff00]" size={20} />,
-  };
-
-  const labels = {
-    success: '[OK]',
-    error: '[ERR]',
-    warning: '[WARN]',
-    info: '[INFO]',
+    success: <CheckCircle className="text-[#2F9E7C]" size={20} />,
+    error: <XCircle className="text-[#A6484A]" size={20} />,
+    warning: <AlertCircle className="text-[#5B7FA8]" size={20} />,
+    info: <Info className="text-[#C9A961]" size={20} />,
   };
 
   const colors = {
-    success: 'border-[#33ff00]',
-    error: 'border-[#ff3333]',
-    warning: 'border-[#ffb000]',
-    info: 'border-[#33ff00]',
+    success: 'border-[#2F9E7C]/40',
+    error: 'border-[#A6484A]/40',
+    warning: 'border-[#5B7FA8]/40',
+    info: 'border-[#C9A961]/40',
   };
 
   return (
     <div
-      className={`flex items-start gap-3 p-4 border bg-[#0a0a0a] ${colors[toast.type]} animate-slide-up`}
+      className={`flex items-start gap-3 p-4 rounded-xl border bg-[#131722] shadow-2xl ${colors[toast.type]} animate-slide-up`}
     >
       {icons[toast.type]}
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-[#33ff00]">{labels[toast.type]} {toast.title}</p>
+        <p className="text-sm font-medium text-[#F0E6CC]">{toast.title}</p>
         {toast.message && (
-          <p className="text-xs text-[#3f9e5c] mt-1 line-clamp-2">{toast.message}</p>
+          <p className="text-xs text-[#8B93A6] mt-1 line-clamp-2">{toast.message}</p>
         )}
       </div>
       <button
         onClick={onClose}
-        className="text-[#3f9e5c] hover:text-[#33ff00] transition-colors"
+        className="text-[#8B93A6] hover:text-[#C9A961] transition-colors"
       >
         <X size={16} />
       </button>
