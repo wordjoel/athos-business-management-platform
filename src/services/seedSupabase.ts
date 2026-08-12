@@ -43,15 +43,6 @@ const defaultUsuarios = [
     permissions: ['read', 'write', 'manage_team', 'reports', 'approve'],
     ativo: true,
   },
-  {
-    email: 'carlos@atos.com',
-    nome: 'Carlos Atos',
-    avatar: 'CA',
-    cargo: 'Diretor',
-    role: 'admin',
-    permissions: ['all'],
-    ativo: true,
-  },
 ];
 
 const defaultContasBancarias = [
