@@ -21,8 +21,8 @@
     <div id="root"></div>
     <div class="crt-scanlines" aria-hidden="true"></div>
     <script type="module" src="/src/main.tsx"></script>
-    <script>
-      if ('serviceWorker' in navigator) {
+    <script type="module">
+      if ('serviceWorker' in navigator && import.meta.env.PROD) {
         window.addEventListener('load', () => {
           navigator.serviceWorker.register('/sw.js').catch(() => {});
         });
